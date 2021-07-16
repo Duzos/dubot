@@ -46,7 +46,7 @@ class Other(commands.Cog):
 
     @commands.command(name='invite', description='Sends the bots invite link')
     async def invite(self, ctx):
-        await ctx.send('this is my invite: https://discord.com/api/oauth2/authorize?client_id=865190020179296267&permissions=8&scope=bot')
+        await ctx.send('this is my invite: INVITEHERE')
     
      
     @commands.command(name='info', description='Tells you info on the bot')
