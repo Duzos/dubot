@@ -1,25 +1,102 @@
 # le importing
+from asyncio.windows_events import NULL
 import discord
+import json
 import random
 import os
+import sys
 from discord.ext import commands
+from discord.ext.commands.core import has_permissions
+from discord.message import Message
 from discord.utils import get
 from discord import Member
+from discord.ext import tasks
+from itertools import cycle
 #le intents
 intents = discord.Intents.default()
-intents.presences = True
+intents.presences = False
 intents.members = True
 # le client stuff
-client = commands.Bot(command_prefix = 'd.', intents=intents)
+
+def get_prefix(client, message):
+    with open('json/prefixes.json', 'r') as f:
+        prefixes = json.load(f)
+
+    return prefixes[str(message.guild.id)]
+
+
+client = commands.Bot(command_prefix = get_prefix, intents=intents)
 client.remove_command('help')
 token = 'TOKENHERE'
-
+statuses = cycle(["statuses","here"])
 #le on le ready
 @client.event
 async def on_ready():
-    await client.change_presence(status=discord.Status.idle, activity=discord.Game("banana"))
+    changeStatus.start()
     print(f'{client.user.name} is ready')
+    #await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{len(client.guilds)} servers!"))
 
+#le error handling
+@client.event
+async def on_command_error(ctx, error):
+    errorEmbed = discord.Embed(title='ERROR',description=error,color=0x992D22)
+    errorEmbed.set_author(
+        name=ctx.message.author.name,
+        icon_url=ctx.message.author.avatar_url
+    )
+    errorEmbed.set_thumbnail(url=client.user.avatar_url)
+    await ctx.send(embed=errorEmbed)
+
+#le stuff that involves json
+@client.event
+async def on_guild_join(guild):
+    with open('json/leave.json', 'r') as lf:
+        leave = json.load(lf)
+    with open('json/welcome.json', 'r') as wf:
+        welcome = json.load(wf)
+    with open('json/prefixes.json', 'r') as f:
+        prefixes = json.load(f)
+
+    idGuild = str(guild.id)
+
+    leave[str(guild.id)] = False
+    leave[f"{idGuild} Channel"] = False
+    welcome[str(guild.id)] = False
+    welcome[f"{idGuild} Channel"] = False
+    prefixes[str(guild.id)] = ['d.','D.']
+
+    with open('json/prefixes.json', 'w') as f:
+        json.dump(prefixes, f, indent=4)
+    with open('json/welcome.json', 'w') as wf:
+        json.dump(welcome, wf, indent=4)
+    with open('json/leave.json', 'w') as lf:
+        json.dump(leave, lf, indent=4   )
+
+@client.event
+async def on_guild_remove(guild):
+    with open('json/leave.json', 'r') as lf:
+        leave = json.load(lf)
+    with open('json/welcome.json', 'r') as wf:
+        welcome = json.load(wf)
+    with open('json/prefixes.json', 'r') as f:
+        prefixes = json.load(f)
+
+    idGuild = str(guild.id)
+
+    leave.pop(f"{idGuild} Channel")
+    leave.pop(str(guild.id))
+    welcome.pop(f"{idGuild} Channel")
+    welcome.pop(str(guild.id))
+    prefixes.pop(str(guild.id))
+
+    with open('json/prefixes.json', 'w') as f:
+        json.dump(prefixes, f, indent=4)
+    with open('json/welcome.json', 'w') as wf:
+        json.dump(welcome, wf, indent=4)
+    with open('json/leave.json', 'w') as lf:
+        json.dump(leave, lf, indent=4)
+
+ 
 
 #le colour list
 colors = {
@@ -54,20 +131,62 @@ colors = {
 }
 
 
-#@client.event
-#async def on_member_update(before, after):
-#
-#    if before.status != after.status:  # to only run on status
-#        embed = discord.Embed(title=f"Changed status")
-#        embed.add_field(name='User', value=before.mention)
-#        embed.add_field(name='Before', value=before.status)
-#        embed.add_field(name='After', value=after.status)#
-        # send to admin or channel you choose
-#        admin = client.get_user(327807253052653569)  # admin to notify
-#        await admin.send(embed=embed)
-#        return
 
 # le comands
+
+#changing the status
+@tasks.loop(seconds=30)
+async def changeStatus():
+    await client.change_presence(activity=discord.Game(next(statuses),status=discord.Status.idle))
+
+@client.event
+async def on_member_join(member : discord.Member):
+    color_list = [c for c in colors.values()]
+    guild = member.guild
+
+    with open('welcome.json', 'r') as wf:
+        welcome = json.load(wf)    
+    
+    idGuild = str(guild.id)
+    welcomeChoiceGuild = welcome[idGuild]
+
+
+    if welcomeChoiceGuild == True:
+        welcomeChannel = welcome[f"{idGuild} Channel"]
+        welcomeEmbed = discord.Embed(title='New Member', description=f'{member.mention} joined!',color=random.choice(color_list))
+        welcomeEmbed.set_thumbnail(url=member.avatar_url)
+        welcomeEmbed.set_author(
+            name=client.user.display_name,
+            icon_url=client.user.avatar_url
+            )
+        await client.get_channel(welcomeChannel).send(embed=welcomeEmbed)
+    else:
+        return
+
+@client.event
+async def on_member_remove(member : discord.Member):
+    color_list = [c for c in colors.values()]
+    guild = member.guild
+
+    with open('leave.json', 'r') as lf:
+        leave = json.load(lf)    
+    
+    idGuild = str(guild.id)
+    leaveChoiceGuild = leave[idGuild]
+
+
+    if leaveChoiceGuild == True:
+        leaveChannel = leave[f"{idGuild} Channel"]
+        leaveEmbed = discord.Embed(title='Member Left', description=f'**{member.mention}** left.',color=random.choice(color_list))
+        leaveEmbed.set_thumbnail(url=member.avatar_url)
+        leaveEmbed.set_author(
+            name=client.user.display_name,
+            icon_url=client.user.avatar_url
+            )
+        await client.get_channel(leaveChannel).send(embed=leaveEmbed)
+    else:
+        return
+
 @client.command()
 @commands.is_owner()
 async def idle(ctx, *, text):
@@ -104,11 +223,19 @@ async def pausebot(ctx):
 @client.command()
 @commands.is_owner()
 async def shutdown(ctx):
-    await ctx.send("I am shutting down..")
-    await client.change_presence(status=discord.Status.offline)
+    await ctx.send("Goodbye.")
+    await client.change_presence(status=discord.Status.invisible)
     await client.close()
     await ctx.send("Unable to shutdown.")
 
+def restart_bot():
+    os.execv(sys.executable, ['python'] + sys.argv)
+
+@client.command()
+@commands.is_owner()
+async def restart(ctx):
+    await ctx.send("Restarting.")
+    restart_bot()
 
 @client.command()
 async def realping(ctx):
@@ -132,58 +259,46 @@ async def reload(ctx, extension):
     client.unload_extension(f'cogs.{extension}')
     client.load_extension(f'cogs.{extension}')
     await ctx.send("Reload complete.")
-@client.command(aliases=["fardultrahd"])
-async def fard(ctx):
-    fdescription = ""
-    fardmessages = ["", "https://media1.tenor.com/images/4829a619ed1a8fbf2369a56f814f589b/tenor.gif?itemid=16776506", "https://media1.tenor.com/images/fe3596baf57eb04ed26698c843d29bca/tenor.gif?itemid=17107071", "https://media.giphy.com/media/QsZol42CPIjMzke1QW/giphy.gif"]
-    fardchoice = random.choice(fardmessages)
+
+#@client.command()
+#async def status(ctx, user: discord.Member):
+#    color_list = [c for c in colors.values()]
+#    status = discord.Embed (
+#    color=random.choice(color_list)
+#    )
+#    
+#    stat = user.status
+#
+#
+#    status.add_field(name=f"Status for {user.display_name}", value=f"currently: {stat}")
+#
+#    await ctx.send(embed=status)
+
+
+@client.command()
+async def test(ctx):
+    title="test"
+    desc="test"
     color_list = [c for c in colors.values()]
-    if fardchoice == "https://media2.giphy.com/media/QsZol42CPIjMzke1QW/200w_s.gif":
-        fdescription = "YOU GOT THE GOLDEN FARD?!!?!???"
-    if fardchoice == "https://media1.tenor.com/images/fe3596baf57eb04ed26698c843d29bca/tenor.gif?itemid=17107071":
-        fdescription = "LOL YOU GOT UN;LUCKY FARD????!!!!!!"
-    if fardchoice == "https://media1.tenor.com/images/4829a619ed1a8fbf2369a56f814f589b/tenor.gif?itemid=16776506":
-        fdescription = "i feels bad for you :pensive: you got the cocomelon jr fard"
-    if fardchoice == "":
-        fdescription = "YOU GOT NO FARD LOL"
-    fardembed = discord.Embed(title=f'{ctx.author.name} farded',description=f'{fdescription}',color=random.choice(color_list),type='gifv')
-    fardembed.set_image(url=fardchoice)
-    fardembed.set_author(
+    msg = await ctx.send("one seccc")
+    embed=discord.Embed(
+    title=title,
+        desc=desc,
+        color=random.choice(color_list)
+    )
+    embed.set_thumbnail(url=client.user.avatar_url)
+    embed.set_author(
         name=ctx.message.author.name,
         icon_url=ctx.message.author.avatar_url
     )
-    await ctx.send(embed=fardembed)
-
-@client.command()
-async def shootout(ctx):
-    await ctx.send("https://tenor.com/view/fat-guy-gun-gif-20983542")
-    await ctx.send("https://tenor.com/view/gun-fat-guy-firing-shoot-gif-17510265")
-
-@client.command()
-async def status(ctx, user: discord.Member):
-    color_list = [c for c in colors.values()]
-    status = discord.Embed (
-    color=random.choice(color_list)
+    await msg.edit(
+        embed=embed,
+        content=None
     )
-    
-    stat = user.status
-
-
-    status.add_field(name=f"Status for {user.display_name}", value=f"currently: {stat}")
-
-    await ctx.send(embed=status)
 
 @client.command()
-async def mzsty(ctx):
-    mzstygif = "https://media.tenor.com/images/417f08657d11aaa7cc76be7eaafb9f80/tenor.gif"
-    color_list = [c for c in colors.values()]
-    mzstyembed = discord.Embed(title='secret mzsty command',description='',color=random.choice(color_list),type='gifv')
-    mzstyembed.set_image(url=mzstygif)
-    mzstyembed.set_author(
-        name=ctx.message.author.name,
-        icon_url=ctx.message.author.avatar_url
-    )
-    await ctx.send(embed=mzstyembed)
+async def rawavatar(ctx, user: discord.Member):
+    await ctx.send(user.avatar_url)
 
 #@client.event
 #async def on_message(message):
@@ -203,3 +318,4 @@ for filename in os.listdir('./cogs'):
 
 # run le bot
 client.run(token)
+ 
