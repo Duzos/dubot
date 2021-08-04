@@ -63,7 +63,7 @@ async def on_guild_join(guild):
     leave[f"{idGuild} Channel"] = False
     welcome[str(guild.id)] = False
     welcome[f"{idGuild} Channel"] = False
-    prefixes[str(guild.id)] = ['d.','D.']
+    prefixes[str(guild.id)] = ['PREFIXES','HERE']
 
     with open('json/prefixes.json', 'w') as f:
         json.dump(prefixes, f, indent=4)
