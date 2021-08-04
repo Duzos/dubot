@@ -224,7 +224,9 @@ async def pausebot(ctx):
 @client.command()
 @commands.is_owner()
 async def shutdown(ctx):
+    changeStatus.stop()
     await ctx.send("Goodbye.")
+    await client.change_presence(activity=discord.Game("Shutting Down."))
     await client.change_presence(status=discord.Status.invisible)
     await client.close()
     await ctx.send("Unable to shutdown.")
@@ -235,6 +237,9 @@ def restart_bot():
 @client.command()
 @commands.is_owner()
 async def restart(ctx):
+    changeStatus.stop()
+    await client.change_presence(activity=discord.Game("Restarting."))
+    await client.change_presence(status=discord.Status.invisible)
     await ctx.send("Restarting.")
     restart_bot()
 
