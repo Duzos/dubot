@@ -27,6 +27,7 @@ def get_prefix(client, message):
 
 client = commands.Bot(command_prefix = get_prefix, intents=intents)
 client.remove_command('help')
+prefix = ["PREFIXES","HERE"]
 token = 'TOKENHERE'
 statuses = cycle(["statuses","here"])
 #le on le ready
@@ -63,7 +64,7 @@ async def on_guild_join(guild):
     leave[f"{idGuild} Channel"] = False
     welcome[str(guild.id)] = False
     welcome[f"{idGuild} Channel"] = False
-    prefixes[str(guild.id)] = ['PREFIXES','HERE']
+    prefixes[str(guild.id)] = prefix
 
     with open('json/prefixes.json', 'w') as f:
         json.dump(prefixes, f, indent=4)
