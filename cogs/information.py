@@ -121,7 +121,7 @@ class Information(commands.Cog):
     async def info(self, ctx):
         await ctx.message.delete()
         title="discord.py | Python"
-        description="by Duzo#0001"
+        description="by Duzo#0001\n<@!327807253052653569>"
         color_list = [c for c in colors.values()]
         msg = await ctx.send("one seccc")
         embed=discord.Embed(
