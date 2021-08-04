@@ -20,6 +20,8 @@ Click add bot
 
 Copy the token and put it in the "TOKENHERE" in the dubot.py file
 
+Put the prefixes for the bot in the "prefix" section
+
 Make sure you have discord.py and python
 
 Run the file
