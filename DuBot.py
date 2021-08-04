@@ -238,9 +238,6 @@ async def restart(ctx):
     await ctx.send("Restarting.")
     restart_bot()
 
-@client.command()
-async def realping(ctx):
-    await ctx.send(f'im so speedy my latency is only {round(client.latency * 1000)}ms')
 
 @client.command()
 @commands.is_owner()
