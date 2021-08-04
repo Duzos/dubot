@@ -1,15 +1,15 @@
-#DuBot
+<h1>DuBot</h1>
 This is the GitHub version of my discord bot, some features are missing but it is mostly there.
 To use this bot you will need Python and Discord.py
 
-#Python
+<h3>Python</h3>
 Install python at: https://www.python.org/
 
-#Discord.py
+<h3>Discord.py</h3>
 Install discord.py by going into command prompt and typing:
 pip install discord.py
 
-#Setup
+<h3>Setup</h3>
 Go to https://discord.com/developers/applications and create a new application.
 Click on the bot tab
 Click add bot
