@@ -44,7 +44,17 @@ class Information(commands.Cog):
 
     def __init__(self, client):
         self.client = client
+        
+    @commands.command(name='ping',description='Tells you the bots ping.')
+    async def ping(self, ctx):
+        await ctx.message.delete()
+        color_list = [c for c in colors.values()]
 
+        pingEmbed = discord.Embed(title=f'Ping of {self.client.user.name}',description=f':stopwatch:  {round(self.client.latency * 1000)}ms',color=random.choice(color_list))
+        pingEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        pingEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        await ctx.send(embed=pingEmbed)
+       
     @commands.command(name='avatar', description='Gets you the avatar of someone.')
     async def avatar(self, ctx, user: commands.MemberConverter):
         await ctx.message.delete()
