@@ -117,11 +117,11 @@ class Information(commands.Cog):
         await ctx.send(embed=uinfoEmbed)
             
      
-    @commands.command(name='info', description='Tells you info on the bot')
+    @commands.command(aliases=['information'],name='info', description='Tells you info on the bot')
     async def info(self, ctx):
         await ctx.message.delete()
         title="discord.py | Python"
-        description="by Duzo#0001\n<@!327807253052653569>"
+        description="by Duzo#0001\n<@!327807253052653569>\n[Github Page](https://github.com/Duzos/dubot)"
         color_list = [c for c in colors.values()]
         msg = await ctx.send("one seccc")
         embed=discord.Embed(
