@@ -45,6 +45,17 @@ class Other(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(aliases=['rcolour','rcolor','randomcolor'],name='randomcolour',description='Gives you a random colour.')
+    async def randomcolour(self, ctx):
+        colour=discord.Color.random()
+        await ctx.message.delete()
+        colourEmbed=discord.Embed(title=colour,description='The colour is the colour of this embed.',color=colour)
+        colourEmbed.set_author(
+            name=ctx.message.author.name,
+            icon_url=ctx.message.author.avatar_url
+            )
+        colourEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        await ctx.send(embed=colourEmbed)
     
     #@commands.command()
     #async def cum(self, ctx):
@@ -52,22 +63,10 @@ class Other(commands.Cog):
 
     @commands.command(aliases=['reportbug', 'bug', 'error'],name='bug_report',description='Reports a bug.')
     async def bug_report(self, ctx, *, message=None):
-        with open('json/bugs.json', 'r') as f:
-            bug = json.load(f)
-        
         await ctx.message.delete()
-
         duzo = self.client.get_user(327807253052653569)
         await duzo.send(f'Bug: "{message}"')
         await duzo.send(f'Bug reported by {ctx.message.author}')
-
-        bugMessageNumber = random.randint(1,100)
-        bugMessageAuthor = str(ctx.message.author)
-        bug[f"{bugMessageAuthor} {bugMessageNumber} "] = message
-
-        with open('json/bugs.json', 'w') as f:
-            json.dump(bug, f, indent=4)
-
         msg = await ctx.send("Bug reported.")
         await msg.delete()
 
@@ -75,7 +74,7 @@ class Other(commands.Cog):
     @commands.command(name='welcome_option', description='Turn welcome messages on and off.')
     @has_permissions(manage_channels=True)
     async def welcome_option(self, ctx, welcomeChannel: commands.TextChannelConverter, welcomeChoice = False):
-        with open('json/welcome.json', 'r') as f:
+        with open('json/data.json', 'r') as f:
             welcome = json.load(f)
         
         await ctx.message.delete()
@@ -100,19 +99,19 @@ class Other(commands.Cog):
         welcomeChannelID = welcomeChannel.id
 
 
-        welcome[str(ctx.guild.id)] = welcomeChoice
-        welcome[f"{idGuild} Channel"] = welcomeChannelID
+        welcome[f"{idGuild} welcome"] = welcomeChoice
+        welcome[f"{idGuild} welcomeChannel"] = welcomeChannelID
 
         msg = await ctx.send("Done.")
         await msg.delete()
 
-        with open('json/welcome.json', 'w') as f:
+        with open('json/data.json', 'w') as f:
             json.dump(welcome, f , indent=4)
 
     @commands.command(name='leave_option', description='Turn leave messages on and off.')
     @has_permissions(manage_channels=True)
     async def leave_option(self, ctx, leaveChannel: commands.TextChannelConverter, leaveChoice = False):
-        with open('json/leave.json', 'r') as f:
+        with open('json/data.json', 'r') as f:
             leave = json.load(f)
         
         await ctx.message.delete()
@@ -137,13 +136,13 @@ class Other(commands.Cog):
         leaveChannelID = leaveChannel.id
 
 
-        leave[str(ctx.guild.id)] = leaveChoice
-        leave[f"{idGuild} Channel"] = leaveChannelID
+        leave[f"{idGuild} leave"] = leaveChoice
+        leave[f"{idGuild} leaveChannel"] = leaveChannelID
 
         msg = await ctx.send("Done.")
         await msg.delete()
 
-        with open('json/leave.json', 'w') as f:
+        with open('json/data.json', 'w') as f:
             json.dump(leave, f , indent=4)
 
 
@@ -151,14 +150,16 @@ class Other(commands.Cog):
     @has_permissions(manage_channels=True)
     async def prefix(self, ctx, newprefix):
         #await ctx.channel.purge(limit=1)
-        with open('json/prefixes.json', 'r') as f:
+        with open('json/data.json', 'r') as f:
             prefixes = json.load(f)
 
-        prefixes[str(ctx.guild.id)] = [f'{newprefix},']
+        guildID = str(ctx.guild.id)
+        prefixes[f"{guildID} prefix"] = [f'{newprefix}']
 
-        with open('json/prefixes.json', 'w') as f:
+        with open('json/data.json', 'w') as f:
             json.dump(prefixes, f, indent=4)
         await ctx.send(f'Changed the Prefix to **{newprefix}**')
+
         
     @commands.command(
     name='help',

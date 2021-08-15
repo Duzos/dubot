@@ -5,6 +5,7 @@ from random import Random, randint
 import datetime
 from datetime import datetime
 from datetime import date
+import json
 
 from discord.ext.commands.converter import PartialMessageConverter, clean_content
 colors = {
@@ -45,7 +46,46 @@ class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(aliases=['sayt','tsay','saytoggle'],name='togglesay',description='A version of say that can be toggled.')
+    async def togglesay(self, ctx):
+        with open('json/data.json', 'r') as f:
+            sayToggle = json.load(f)
+        
+        authorID = f'{ctx.message.author.id} say'
 
+        if authorID not in sayToggle:
+            with open('json/data.json', 'r') as nf:
+                sNew = json.load(nf)
+
+                sNew[f'{ctx.message.author.id} say'] = False
+
+                with open('json/data.json', 'w') as nf:
+                    json.dump(sNew, nf, indent=4)
+        
+        sayCurrent = sayToggle[authorID]
+
+        if sayCurrent == True:
+            with open('json/data.json', 'r') as ff:
+                sFalse = json.load(ff)
+
+            sFalse[authorID] = False
+
+            with open('json/data.json', 'w') as ff:
+                json.dump(sFalse, ff, indent=4)
+
+            await ctx.send("Repeating is now off.")
+            return
+
+        if sayCurrent == False:
+            with open('json/data.json', 'r') as tf:
+                sTrue = json.load(tf)
+
+            sTrue[authorID] = True
+
+            with open('json/data.json', 'w') as tf:
+                json.dump(sTrue, tf, indent=4)
+            await ctx.send("Repeating is now on.")
+            return
 
 
     @commands.command(aliases=['speak','saythis', 'copy', 'doasisayslave'], name='say', description='Makes the bot say what you want it to say')

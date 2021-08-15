@@ -18,14 +18,16 @@ intents.presences = False
 intents.members = True
 # le client stuff
 
+
 def get_prefix(client, message):
-    with open('json/prefixes.json', 'r') as f:
+    with open('json/data.json', 'r') as f:
         prefixes = json.load(f)
 
-    return prefixes[str(message.guild.id)]
+    guildID = str(message.guild.id)
+    return prefixes[f"{guildID} prefix"]
 
 
-client = commands.Bot(command_prefix = get_prefix, intents=intents)
+client = commands.Bot(command_prefix = get_prefix, intents=intents, case_insensitive=True)
 client.remove_command('help')
 prefix = ["PREFIXES","HERE"]
 token = 'TOKENHERE'
@@ -51,50 +53,50 @@ async def on_command_error(ctx, error):
 #le stuff that involves json
 @client.event
 async def on_guild_join(guild):
-    with open('json/leave.json', 'r') as lf:
+    with open('json/data.json', 'r') as lf:
         leave = json.load(lf)
-    with open('json/welcome.json', 'r') as wf:
+    with open('json/data.json', 'r') as wf:
         welcome = json.load(wf)
-    with open('json/prefixes.json', 'r') as f:
+    with open('json/data.json', 'r') as f:
         prefixes = json.load(f)
 
     idGuild = str(guild.id)
 
-    leave[str(guild.id)] = False
-    leave[f"{idGuild} Channel"] = False
-    welcome[str(guild.id)] = False
-    welcome[f"{idGuild} Channel"] = False
-    prefixes[str(guild.id)] = prefix
+    leave[f"{idGuild} leave"] = False
+    leave[f"{idGuild} leaveChannel"] = False
+    welcome[f"{idGuild} welcome"] = False
+    welcome[f"{idGuild} welcomeChannel"] = False
+    prefixes[f"{idGuild} prefix"] = prefix
 
-    with open('json/prefixes.json', 'w') as f:
+    with open('json/data.json', 'w') as f:
         json.dump(prefixes, f, indent=4)
-    with open('json/welcome.json', 'w') as wf:
+    with open('json/data.json', 'w') as wf:
         json.dump(welcome, wf, indent=4)
-    with open('json/leave.json', 'w') as lf:
-        json.dump(leave, lf, indent=4   )
+    with open('json/data.json', 'w') as lf:
+        json.dump(leave, lf, indent=4)
 
 @client.event
 async def on_guild_remove(guild):
-    with open('json/leave.json', 'r') as lf:
+    with open('json/data.json', 'r') as lf:
         leave = json.load(lf)
-    with open('json/welcome.json', 'r') as wf:
+    with open('json/data.json', 'r') as wf:
         welcome = json.load(wf)
-    with open('json/prefixes.json', 'r') as f:
+    with open('json/data.json', 'r') as f:
         prefixes = json.load(f)
 
     idGuild = str(guild.id)
 
-    leave.pop(f"{idGuild} Channel")
-    leave.pop(str(guild.id))
-    welcome.pop(f"{idGuild} Channel")
-    welcome.pop(str(guild.id))
-    prefixes.pop(str(guild.id))
+    leave.pop(f"{idGuild} leaveChannel")
+    leave.pop(f"{idGuild} leave")
+    welcome.pop(f"{idGuild} welcomeChannel")
+    welcome.pop(f"{idGuild} welcome")
+    prefixes.pop(f"{idGuild} prefix")
 
-    with open('json/prefixes.json', 'w') as f:
+    with open('json/data.json', 'w') as f:
         json.dump(prefixes, f, indent=4)
-    with open('json/welcome.json', 'w') as wf:
+    with open('json/data.json', 'w') as wf:
         json.dump(welcome, wf, indent=4)
-    with open('json/leave.json', 'w') as lf:
+    with open('json/data.json', 'w') as lf:
         json.dump(leave, lf, indent=4)
 
  
@@ -141,19 +143,55 @@ async def changeStatus():
     await client.change_presence(activity=discord.Game(next(statuses),status=discord.Status.idle))
 
 @client.event
+async def on_message(message):
+    if message.author.id == client.user.id:
+        return
+    
+    await client.process_commands(message)
+
+    with open('json/data.json', 'r') as f:
+        sayCheck = json.load(f)
+
+    senderID = f'{message.author.id} say'
+
+    if senderID not in sayCheck:
+        with open('json/data.json', 'r') as nf:
+            sNew = json.load(nf)
+
+        sNew[f'{message.author.id} say'] = False
+
+        with open('json/data.json', 'w') as nf:
+            json.dump(sNew, nf, indent=4)
+        return
+
+    sayContent = sayCheck[f'{message.author.id} say']
+
+    if sayContent == True:
+        message_components = message.content.split()
+        if "@everyone" in message_components or "@here" in message_components:
+            await message.channel.send("You cannot have everyone or here in your message!")
+            return
+        await message.delete()
+        await message.channel.send(message.content)
+        return
+    if sayContent == False:
+        return
+
+@client.event
 async def on_member_join(member : discord.Member):
+    #welcome messages stuff
     color_list = [c for c in colors.values()]
     guild = member.guild
 
-    with open('welcome.json', 'r') as wf:
+    with open('json/data.json', 'r') as wf:
         welcome = json.load(wf)    
     
     idGuild = str(guild.id)
-    welcomeChoiceGuild = welcome[idGuild]
+    welcomeChoiceGuild = welcome[f"{idGuild} welcome"]
 
 
     if welcomeChoiceGuild == True:
-        welcomeChannel = welcome[f"{idGuild} Channel"]
+        welcomeChannel = welcome[f"{idGuild} welcomeChannel"]
         welcomeEmbed = discord.Embed(title='New Member', description=f'{member.mention} joined!',color=random.choice(color_list))
         welcomeEmbed.set_thumbnail(url=member.avatar_url)
         welcomeEmbed.set_author(
@@ -169,15 +207,15 @@ async def on_member_remove(member : discord.Member):
     color_list = [c for c in colors.values()]
     guild = member.guild
 
-    with open('leave.json', 'r') as lf:
+    with open('json/data.json', 'r') as lf:
         leave = json.load(lf)    
     
     idGuild = str(guild.id)
-    leaveChoiceGuild = leave[idGuild]
+    leaveChoiceGuild = leave[f"{idGuild} leave"]
 
 
     if leaveChoiceGuild == True:
-        leaveChannel = leave[f"{idGuild} Channel"]
+        leaveChannel = leave[f"{idGuild} leaveChannel"]
         leaveEmbed = discord.Embed(title='Member Left', description=f'**{member.mention}** left.',color=random.choice(color_list))
         leaveEmbed.set_thumbnail(url=member.avatar_url)
         leaveEmbed.set_author(
