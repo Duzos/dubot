@@ -5,8 +5,8 @@ from discord.ext import commands
 import random
 import json
 from discord.ext.commands.converter import MessageConverter
-
 from discord.ext.commands.core import has_permissions
+import requests
 
 colors = {
   'DEFAULT': 0x000000,
@@ -44,7 +44,27 @@ class Information(commands.Cog):
 
     def __init__(self, client):
         self.client = client
-        
+
+    @commands.command(name='bitcoin',description='Gets the current price of Bitcoin.')
+    async def bitcoin(self, ctx):
+        color_list = [c for c in colors.values()]
+
+        response_API = requests.get('https://api.coindesk.com/v1/bpi/currentprice.json')
+        data = response_API.text
+        parse_json = json.loads(data)
+        bitcoinGBP = parse_json['bpi']['GBP']['rate_float']
+        bitcoinUSD = parse_json['bpi']['USD']['rate_float']
+        bitcoinEUR = parse_json['bpi']['EUR']['rate_float']
+
+
+        bitcoinEmbed = discord.Embed(title='Current price of bitcoin',color=random.choice(color_list))
+        bitcoinEmbed.add_field(name='(€)EUR',value=round(bitcoinEUR),inline=True)
+        bitcoinEmbed.add_field(name='(£)GBP',value=round(bitcoinGBP),inline=True)
+        bitcoinEmbed.add_field(name='($)USD',value=round(bitcoinUSD),inline=True)
+        bitcoinEmbed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/64px-Bitcoin.svg.png")
+        bitcoinEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        await ctx.send(embed=bitcoinEmbed)
+
     @commands.command(name='ping',description='Tells you the bots ping.')
     async def ping(self, ctx):
         await ctx.message.delete()
