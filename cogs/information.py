@@ -49,6 +49,8 @@ class Information(commands.Cog):
     async def bitcoin(self, ctx):
         color_list = [c for c in colors.values()]
 
+        await ctx.message.delete()
+
         response_API = requests.get('https://api.coindesk.com/v1/bpi/currentprice.json')
         data = response_API.text
         parse_json = json.loads(data)
