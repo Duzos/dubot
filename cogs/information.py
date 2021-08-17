@@ -45,7 +45,7 @@ class Information(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='bitcoin',description='Gets the current price of Bitcoin.')
+    @commands.command(aliases=['bcoin','bitc'],name='bitcoin',description='Gets the current price of Bitcoin.')
     async def bitcoin(self, ctx):
         color_list = [c for c in colors.values()]
 
