@@ -6,6 +6,8 @@ import datetime
 from datetime import datetime
 from datetime import date
 import json
+import requests
+from discord.embeds import EmptyEmbed
 
 from discord.ext.commands.converter import PartialMessageConverter, clean_content
 colors = {
@@ -45,6 +47,64 @@ class Fun(commands.Cog):
 
     def __init__(self, client):
         self.client = client
+
+    @commands.command(aliases=['cat','catrandom'],name='randomcat',description='Gives you a random cat picture.')
+    async def randomcat(self, ctx):
+        color_list = [c for c in colors.values()]
+
+        await ctx.message.delete()
+
+        for i in requests.get("https://api.thecatapi.com/v1/images/search").json():
+            catURL = i["url"]
+            catID = i["id"]
+
+        catEmbed = discord.Embed(title='Cat',color=random.choice(color_list),type='image')
+        catEmbed.set_image(url=catURL)
+        catEmbed.set_footer(text=f'ID: {catID}',icon_url=EmptyEmbed)
+        catEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        await ctx.send(embed=catEmbed)
+
+    @commands.command(aliases=['bored'],name='activity',description='Gives you something to do.')
+    async def activity(self, ctx):
+        color_list = [c for c in colors.values()]
+
+        await ctx.message.delete()
+
+        response_API = requests.get("https://www.boredapi.com/api/activity/")
+        data = response_API.text
+        parse_json = json.loads(data)
+        activityCurrent = parse_json['activity']
+        activityType = parse_json['type']
+        #activityLink = parse_json['link']
+        activityKey = parse_json['key']
+        activityPeople = parse_json['participants']
+
+        activityEmbed = discord.Embed(title='Activity',color=random.choice(color_list))
+        activityEmbed.add_field(name='Activity:',value=activityCurrent,inline=False)
+        activityEmbed.add_field(name='Type:',value=activityType,inline=False)
+        activityEmbed.add_field(name='Number of People:',value=activityPeople,inline=False)
+        #activityEmbed.add_field(name="",value=activityLink,inline=True)
+        activityEmbed.set_footer(text=f"ID: {activityKey}",icon_url=EmptyEmbed)
+        activityEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        activityEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        await ctx.send(embed=activityEmbed)   
+
+    @commands.command(name='advice',description='Gives you a random piece of advice.')
+    async def advice(self, ctx):
+        color_list = [c for c in colors.values()]
+
+        await ctx.message.delete()
+
+        response_API = requests.get("https://api.adviceslip.com/advice")
+        data = response_API.text
+        parse_json = json.loads(data)
+        currentAdvice = parse_json['slip']['advice']
+        currentAdviceID = parse_json['slip']['id']
+
+        adviceEmbed = discord.Embed(title='Advice',description=currentAdvice,color=random.choice(color_list))
+        adviceEmbed.set_footer(text=f"ID: {currentAdviceID}",icon_url=EmptyEmbed)
+        adviceEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        adviceEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
 
     @commands.command(aliases=['sayt','tsay','saytoggle'],name='togglesay',description='A version of say that can be toggled.')
     async def togglesay(self, ctx):
