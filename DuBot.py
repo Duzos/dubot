@@ -6,7 +6,7 @@ import random
 import os
 import sys
 from discord.ext import commands
-from discord.ext.commands.core import has_permissions
+from discord.ext.commands.core import has_permissions, is_owner
 from discord.message import Message
 from discord.utils import get
 from discord import Member
@@ -98,6 +98,76 @@ async def on_guild_remove(guild):
         json.dump(welcome, wf, indent=4)
     with open('json/data.json', 'w') as lf:
         json.dump(leave, lf, indent=4)
+
+@client.command()
+@is_owner()
+async def datareset(ctx):
+    def check(ms):
+        return ms.channel == ctx.message.channel and ms.author == ctx.message.author
+
+    await ctx.send("are you sure.")
+    msg = await client.wait_for('message', check=check)
+    if msg.content == "no":
+        await ctx.send("Cancelling.")
+        return
+    elif msg.content == "yes":
+        await ctx.send("Proceeding.")
+    else:
+        await ctx.send("Invalid response.")
+        return
+    
+    message = ""
+    for guild in client.guilds:
+        message += f"{guild.name}: {guild.id}\n"
+    await ctx.send(message)
+    await ctx.send("Please choose a server to reset in ID form")
+    msg = await client.wait_for('message', check=check)
+    guildValue = msg.content
+    with open("json/data.json","r") as f:
+        add = json.load(f)
+        
+    add[f"{guildValue} leave"] = False
+    add[f"{guildValue} leaveChannel"] = False
+    add[f"{guildValue} welcome"] = False
+    add[f"{guildValue} welcomeChannel"] = False
+    add[f"{guildValue} prefix"] = prefix
+
+    with open("json/data.json","w") as f:
+        json.dump(add,f,indent=4)
+        
+    await ctx.send("complete.")
+    
+@client.command()
+@is_owner()
+async def dataresetall(ctx):    
+    def check(ms):
+        return ms.channel == ctx.message.channel and ms.author == ctx.message.author
+
+    await ctx.send("are you sure.")
+    msg = await client.wait_for('message', check=check)
+    if msg.content == "no":
+        await ctx.send("Cancelling.")
+        return
+    elif msg.content == "yes":
+        await ctx.send("Proceeding.")
+    else:
+        await ctx.send("Invalid response.")
+        return
+
+    for guild in client.guilds:
+        guildValue = guild.id
+        with open("json/data.json","r") as f:
+            add = json.load(f)
+            
+        add[f"{guildValue} leave"] = False
+        add[f"{guildValue} leaveChannel"] = False
+        add[f"{guildValue} welcome"] = False
+        add[f"{guildValue} welcomeChannel"] = False
+        add[f"{guildValue} prefix"] = prefix
+
+        with open("json/data.json","w") as f:
+            json.dump(add,f,indent=4)
+    await ctx.send("Complete.")
 
  
 # le comands
