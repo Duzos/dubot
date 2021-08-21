@@ -1,14 +1,72 @@
 import discord
-import random
 from discord.ext import commands
 from discord.ext.commands.core import has_permissions
+import json
 
 class Moderation(commands.Cog):
 
     def __init__(self, client):
         self.client = client
 
+    @commands.command(aliases=["toggletickets","toggleticket","ticketstoggle"],name='tickettoggle',description='Toggles tickets.')
+    @has_permissions(manage_channels=True)
+    async def tickettoggle(self,ctx):
+        with open("json/data.json","r") as f:
+            ticketToggle = json.load(f)
+        
 
+        if f"{ctx.message.guild.id} Ticket" not in ticketToggle:
+            ticketToggle[f"{ctx.message.guild.id} Ticket"] = False
+            with open("json/data.json","w") as f:
+                json.dump(ticketToggle, f,indent=4)
+            return await ctx.send("Tickets are now off.")
+        elif ticketToggle[f"{ctx.message.guild.id} Ticket"] == True:
+            ticketToggle[f"{ctx.message.guild.id} Ticket"] = False
+            with open("json/data.json","w") as f:
+                json.dump(ticketToggle,f,indent=4)
+            return await ctx.send("Tickets are now off.")
+        elif ticketToggle[f"{ctx.message.guild.id} Ticket"] == False:
+            ticketToggle[f"{ctx.message.guild.id} Ticket"] = True
+            with open("json/data.json","w") as f:
+                json.dump(ticketToggle,f,indent=4)
+            return await ctx.send("Tickets are now on.")
+        
+
+    @commands.command(aliases=['ticket_create','create_ticket','createticket'],name='ticketcreate',description='Creates a ticket.')
+    #@has_permissions(administrator=True)
+    async def ticketcreate(self, ctx):
+        with open("json/data.json","r") as f:
+            ticketCheck = json.load(f)
+
+        if f"{ctx.message.guild.id} Ticket" not in ticketCheck:
+            ticketCheck[f"{ctx.message.guild.id} Ticket"] = False
+            return await ctx.send("Tickets are off. (test)")
+        elif ticketCheck[f"{ctx.message.guild.id} Ticket"] == False:
+            return await ctx.send("Tickets are off.")
+
+        await ctx.message.delete()
+
+        def check(reaction, user):  
+            return str(reaction) == "🔒" and user == user
+
+        guild = ctx.message.guild
+        overwrites={
+            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            guild.me: discord.PermissionOverwrite(read_messages=True),
+            ctx.message.author: discord.PermissionOverwrite(manage_channels=True),
+            ctx.message.author: discord.PermissionOverwrite(read_messages=True),
+        }
+        channel = await guild.create_text_channel(f'ticket-{ctx.author}', overwrites=overwrites, reason="ticket system")
+
+        pingMessage = await channel.send(f"<@!{ctx.message.author.id}>")
+        await pingMessage.delete()
+
+        message = await channel.send(":lock: to lock the channel.")
+        await message.add_reaction("🔒")
+
+        await self.client.wait_for("reaction_add", check=check)
+        await channel.set_permissions(ctx.message.author,reason="Locking the channel.", send_messages=False)
+        await channel.send("Channel Locked.")
 
 
     @commands.command(aliases=['comeback', 'revive', 'oops', 'pardon'], permissions=["ban_members"], name='unban', description='Unbans a banned user')
