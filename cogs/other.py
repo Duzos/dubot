@@ -114,20 +114,42 @@ class Other(commands.Cog):
         with open('json/data.json', 'w') as f:
             json.dump(leave, f , indent=4)
 
-
     @commands.command(aliases=['changeprefix'],name='prefix',description='Changes the bots prefix.')
     @has_permissions(manage_channels=True)
-    async def prefix(self, ctx, newprefix):
+    async def prefix(self, ctx):
+
+        await ctx.message.delete()
+    
+        def check(ms):
+            return ms.channel == ctx.message.channel and ms.author == ctx.message.author
         #await ctx.channel.purge(limit=1)
         with open('json/data.json', 'r') as f:
             prefixes = json.load(f)
 
+        msgRequest = await ctx.send("What is the new prefix?")
+        msg1 = await self.client.wait_for('message', check=check)
+        await msgRequest.delete()
+        await msg1.delete()
+        prefixList = []
+        prefixList.append(msg1.content)
+        prefixList.append(f"<@!{self.client.user.id}> ")
+        msgRequest = await ctx.send("Would you like to add an extra prefix?")
+        msg2 = await self.client.wait_for('message', check=check)
+        await msgRequest.delete()
+        await msg2.delete()
+        if msg2.content == "Yes" or msg2.content == "yes":
+            msgRequest = await ctx.send("What is the extra prefix?")
+            msg3 = await self.client.wait_for('message',check=check)
+            await msgRequest.delete()
+            await msg3.delete()
+            prefixList.append(msg3.content)
+
         guildID = str(ctx.guild.id)
-        prefixes[f"{guildID} prefix"] = [f'{newprefix}']
+        prefixes[f"{guildID} prefix"] = prefixList
 
         with open('json/data.json', 'w') as f:
             json.dump(prefixes, f, indent=4)
-        await ctx.send(f'Changed the Prefix to **{newprefix}**')
+        await ctx.send(f'Changed the Prefixes to **{prefixList}**')
 
         
     @commands.command(
