@@ -7,7 +7,7 @@ import json
 from discord.ext.commands.converter import MessageConverter
 from discord.ext.commands.core import has_permissions
 import requests
-
+from datetime import datetime
 
 # le cog of le other
 class Information(commands.Cog):
@@ -36,6 +36,20 @@ class Information(commands.Cog):
         bitcoinEmbed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/64px-Bitcoin.svg.png")
         bitcoinEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
         await ctx.send(embed=bitcoinEmbed)
+
+    @commands.command(name='uptime',description='Tells you how long the bot has been online.')
+    async def uptime(self,ctx):
+        await ctx.message.delete()
+
+        delta_uptime = datetime.utcnow() - self.client.start_time
+        hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        days, hours = divmod(hours, 24)
+
+        uptimeEmbed = discord.Embed(title='Uptime',description=f"{days}d, {hours}h, {minutes}m, {seconds}s",color=discord.Color.random())
+        uptimeEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        uptimeEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        await ctx.send(embed=uptimeEmbed)
 
     @commands.command(name='ping',description='Tells you the bots ping.')
     async def ping(self, ctx):

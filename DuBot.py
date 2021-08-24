@@ -12,6 +12,8 @@ from discord.utils import get
 from discord import Member
 from discord.ext import tasks
 from itertools import cycle
+from datetime import datetime
+
 #le intents
 intents = discord.Intents.default()
 intents.presences = False
@@ -35,6 +37,7 @@ statuses = cycle(["statuses","here"])
 #le on le ready
 @client.event
 async def on_ready():
+    client.start_time = datetime.utcnow()
     changeStatus.start()
     print(f'{client.user.name} is ready')
     #await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{len(client.guilds)} servers!"))
