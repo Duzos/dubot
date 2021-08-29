@@ -8,6 +8,30 @@ class Moderation(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(aliases=['lockchannel','lockc','clock','lc'],name='channellock',description='Locks the channel.')
+    @has_permissions(manage_channels=True)
+    async def channellock(self, ctx, channel: discord.TextChannel=None):
+        await ctx.message.delete()
+        
+        #This bit of code came from https://stackoverflow.com/questions/62706813/how-do-i-lock-a-channel-that-is-mentioned-discord-py 
+        channel = channel or ctx.channel
+        overwrite = channel.overwrites_for(ctx.guild.default_role)
+        overwrite.send_messages = False
+        await channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
+        await ctx.send('Channel locked.')
+
+    @commands.command(aliases=['unlockchannel','unlockc','cunlock','ulc'],name='channelunlock',description='Unlocks a channel.')
+    @has_permissions(manage_channels=True)
+    async def channelunlock(self,ctx, channel: discord.TextChannel=None):
+        await ctx.message.delete()
+        
+        #This bit of code came from https://stackoverflow.com/questions/62706813/how-do-i-lock-a-channel-that-is-mentioned-discord-py 
+        channel = channel or ctx.channel
+        overwrite = channel.overwrites_for(ctx.guild.default_role)
+        overwrite.send_messages = True
+        await channel.set_permissions(ctx.guild.default_role, overwrite=overwrite)
+        await ctx.send('Channel unlocked.')
+
     @commands.command(aliases=["toggletickets","toggleticket","ticketstoggle"],name='tickettoggle',description='Toggles tickets.')
     @has_permissions(manage_channels=True)
     async def tickettoggle(self,ctx):
