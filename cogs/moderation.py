@@ -47,7 +47,7 @@ class Moderation(commands.Cog):
         await ctx.message.delete()
 
         def check(reaction, user):  
-            return str(reaction) == "🔒" and user == user
+            return str(reaction) == "🔒" and user == ctx.message.author
 
         guild = ctx.message.guild
         overwrites={
@@ -61,12 +61,13 @@ class Moderation(commands.Cog):
         pingMessage = await channel.send(f"<@!{ctx.message.author.id}>")
         await pingMessage.delete()
 
-        message = await channel.send(":lock: to lock the channel.")
+        message = await channel.send("React with :lock: to close the ticket.")
         await message.add_reaction("🔒")
+        await ctx.message.delete()
 
         await self.client.wait_for("reaction_add", check=check)
-        await channel.set_permissions(ctx.message.author,reason="Locking the channel.", send_messages=False)
-        await channel.send("Channel Locked.")
+        await channel.set_permissions(ctx.message.author,reason="Closing the ticket.", send_messages=False)
+        await channel.send("Ticket Closed.")
 
 
     @commands.command(aliases=['comeback', 'revive', 'oops', 'pardon'], permissions=["ban_members"], name='unban', description='Unbans a banned user')
