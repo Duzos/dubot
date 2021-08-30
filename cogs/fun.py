@@ -368,6 +368,19 @@ class Fun(commands.Cog):
         # Since we don't want it to stay to 'Now generating embed...'
 
         return
+        
+    @commands.command(name='yn',description='Gives you a yes or no answer.')
+    async def yn(self, ctx, *, question):
+        await ctx.message.delete()
+        responses=['Yes.','No.']
+        answer = random.choice(responses)
+        ynEmbed = discord.Embed(title=question,description=answer,color=discord.Colour.random())
+        ynEmbed.set_author(
+            name=ctx.message.author.name,
+            icon_url=ctx.message.author.avatar_url
+        )
+        ynEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        await ctx.send(embed=ynEmbed)
 
     @commands.command(aliases=['8ball', 'eightball'], name='ball', description='Gives you advice')
     async def _8ball (self, ctx, *, question):
