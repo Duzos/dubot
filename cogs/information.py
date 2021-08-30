@@ -40,7 +40,6 @@ class Information(commands.Cog):
     @commands.command(name='uptime',description='Tells you how long the bot has been online.')
     async def uptime(self,ctx):
         await ctx.message.delete()
-
         delta_uptime = datetime.utcnow() - self.client.start_time
         hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
         minutes, seconds = divmod(remainder, 60)
@@ -51,21 +50,22 @@ class Information(commands.Cog):
         uptimeEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
         await ctx.send(embed=uptimeEmbed)
 
-    @commands.command(name='ping',description='Tells you the bots ping.')
+
+    @commands.command(aliases=['test'],name='ping',description='Tells you the bots ping.')
     async def ping(self, ctx):
         await ctx.message.delete()
-        
 
         pingEmbed = discord.Embed(title=f'Ping of {self.client.user.name}',description=f':stopwatch:  {round(self.client.latency * 1000)}ms',color=discord.Colour.random())
         pingEmbed.set_thumbnail(url=self.client.user.avatar_url)
         pingEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
         await ctx.send(embed=pingEmbed)
-       
+
     @commands.command(name='avatar', description='Gets you the avatar of someone.')
-    async def avatar(self, ctx, user: commands.MemberConverter):
+    async def avatar(self, ctx, user: commands.MemberConverter=None):
+        user = user or ctx.message.author
         await ctx.message.delete()
         avatar = user.avatar_url
-        
+
         avatarembed = discord.Embed(description=f'Avatar of {user.mention}',color=discord.Colour.random(),type='image')
         avatarembed.set_image(url=avatar)
         avatarembed.set_author(
@@ -75,10 +75,11 @@ class Information(commands.Cog):
         await ctx.send(embed=avatarembed)
 
     @commands.command(aliases=['channelinfo','cinfo'],name='channel_info',description='Gives info on a channel.')
-    async def channel_info(self, ctx, channel: commands.TextChannelConverter):
+    async def channel_info(self, ctx, channel: commands.TextChannelConverter=None):
+        channel = channel or ctx.channel
         await ctx.message.delete()
         date_format = "%a, %d %b %Y %I:%M %p"
-        
+
 
         cinfoEmbed = discord.Embed(title=f'Info on {channel.name}',description=f'**Topic:**\n```{channel.topic}```\n**ID:**\n```{channel.id}```\n**Type:**\n```{channel.type}```\n**Category:**\n```{channel.category}```\n**Channel Created On:**\n```{channel.created_at.strftime(date_format)}```',color=discord.Colour.random())
         cinfoEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
@@ -99,7 +100,7 @@ class Information(commands.Cog):
         await ctx.message.delete()
         guild = ctx.guild
         date_format = "%a, %d %b %Y %I:%M %p"
-        
+
         roleList = ", ".join([str(r.name) for r in guild.roles])
 
         ginfoEmbed = discord.Embed(title=f'Info on {guild.name}',description=f'**Description:**\n```{guild.description}```\n**Member Count:**\n```{guild.member_count}```\n**Owner:**\n```{guild.owner}```\n**Roles:**\n```{roleList}```\n**Boost Level:**\n```{guild.premium_tier}```\n**Boost Count:**\n```{guild.premium_subscription_count}```\n**ID:**\n```{guild.id}```\n**Guild Created On:**\n```{guild.created_at.strftime(date_format)}```\n**Region:**\n```{guild.region}```',color=discord.Colour.random())
@@ -108,12 +109,13 @@ class Information(commands.Cog):
         await ctx.send(embed=ginfoEmbed)
 
     @commands.command(aliases=['userinfo','uinfo'],name='user_info',description='Gives info on a user.')
-    async def user_info(self, ctx, member: commands.MemberConverter):
+    async def user_info(self, ctx, member: commands.MemberConverter=None):
+        member = member or ctx.message.author
         await ctx.message.delete()
         rolelist = [r.name for r in member.roles if r != ctx.guild.default_role]
         roles = ", ".join(rolelist)
         date_format = "%a, %d %b %Y %I:%M %p"
-        
+
         uinfoEmbed = discord.Embed(title=f'Info on {member.name}#{member.discriminator}', description=f'**ID:**\n```{member.id}```\n**Roles:**\n```{roles}```\n**Account Created On:**\n```{member.created_at.strftime(date_format)}```\n**Account Joined Guild On:**\n```{member.joined_at.strftime(date_format)}```\n**Nickname:**\n```{member.nick}```\n**Is Bot:**\n```{member.bot}```',color=discord.Colour.random())
         uinfoEmbed.set_thumbnail(url=member.avatar_url)
         uinfoEmbed.set_author(

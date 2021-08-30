@@ -40,30 +40,46 @@ class Other(commands.Cog):
         await msg.delete()
 
     
-    @commands.command(name='welcome_option', description='Turn welcome messages on and off.')
+    @commands.command(aliases=['welcomeoption','woption'],name='welcome_option', description='Turn welcome messages on and off.')
     @has_permissions(manage_channels=True)
-    async def welcome_option(self, ctx, welcomeChannel: commands.TextChannelConverter, welcomeChoice = False):
+    async def welcome_option(self, ctx):
+        def check(ms):
+            return ms.channel == ctx.message.channel and ms.author == ctx.message.author
         with open('json/data.json', 'r') as f:
             welcome = json.load(f)
         
         await ctx.message.delete()
 
 
+        msg = await ctx.send("Do you want it to be on or off?")
+        Msg = await self.client.wait_for('message', check=check)
+        welcomeChoice = Msg.content
+        await msg.delete()
+        await Msg.delete()
+
+
         idGuild = str(ctx.guild.id)
 
-        if welcomeChoice == "true":
+        if welcomeChoice == "on":
             welcomeChoice = True
-        elif welcomeChoice == "false":
+        elif welcomeChoice == "off":
             welcomeChoice = False
             return
-        elif welcomeChoice == False:
+        elif welcomeChoice == "Off":
             welcomeChoice = False
-        elif welcomeChoice == True:
+            return
+        elif welcomeChoice == "On":
             welcomeChoice = True
         else:
-            msg = await ctx.send("Invalid choice, please choose True or False")
+            msg = await ctx.send("Invalid choice, please choose on or off")
             await msg.delete()
             return
+
+        msg = await ctx.send("What is the channel you want the message to be sent in?")
+        ChannelMsg = await self.client.wait_for('message',check=check)
+        welcomeChannel = await commands.TextChannelConverter().convert(ctx, Msg.content)
+        await msg.delete()
+        await Msg.delete()
 
         welcomeChannelID = welcomeChannel.id
 
@@ -77,30 +93,44 @@ class Other(commands.Cog):
         with open('json/data.json', 'w') as f:
             json.dump(welcome, f , indent=4)
 
-    @commands.command(name='leave_option', description='Turn leave messages on and off.')
+    @commands.command(aliases=['leaveoption','loption'],name='leave_option', description='Turn leave messages on and off.')
     @has_permissions(manage_channels=True)
-    async def leave_option(self, ctx, leaveChannel: commands.TextChannelConverter, leaveChoice = False):
+    async def leave_option(self, ctx):
+        def check(ms):
+            return ms.channel == ctx.message.channel and ms.author == ctx.message.author
         with open('json/data.json', 'r') as f:
             leave = json.load(f)
         
         await ctx.message.delete()
 
         idGuild = str(ctx.guild.id)
+        
+        msg = await ctx.send("Do you want it to be on or off?")
+        Msg = await self.client.wait_for('message', check=check)
+        leaveChoice = Msg.content
+        await msg.delete()
+        await Msg.delete()
 
-
-        if leaveChoice == "true":
+        if leaveChoice == "on":
             leaveChoice = True
-        elif leaveChoice == "false":
+        elif leaveChoice == "off":
             leaveChoice = False
             return
-        elif leaveChoice == False:
+        elif leaveChoice == "Off":
             leaveChoice = False
-        elif leaveChoice == True:
+            return
+        elif leaveChoice == "On":
             leaveChoice = True
         else:
-            msg = await ctx.send("Invalid choice, please choose True or False")
+            msg = await ctx.send("Invalid choice, please choose on or off")
             await msg.delete()
             return
+
+        msg = await ctx.send("What is the channel you want the message to be sent in?")
+        Msg = await self.client.wait_for('message',check=check)
+        leaveChannel = await commands.TextChannelConverter().convert(ctx, Msg.content)
+        await msg.delete()
+        await Msg.delete()
 
         leaveChannelID = leaveChannel.id
 
