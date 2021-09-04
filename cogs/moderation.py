@@ -8,6 +8,63 @@ class Moderation(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(name='mute',description='Mutes the user you ping.')
+    @has_permissions(manage_roles=True)
+    async def mute(self,ctx, user: commands.MemberConverter=None):
+        if user == None:
+            await ctx.send("Please provide a user!")
+            return
+        await ctx.message.delete()
+        guild = ctx.message.guild 
+        roles = await guild.fetch_roles()
+        channels = await guild.fetch_channels()
+        for discord.Role in roles:
+            if discord.Role.name.upper() == "MUTED":
+                await user.add_roles(discord.Role)
+                muteEmbed = discord.Embed(title='Mute',description=f'Muted {user.mention}',color=discord.Colour.random())
+                muteEmbed.set_thumbnail(url=self.client.user.avatar_url)
+                muteEmbed.set_author(
+                        name=ctx.message.author.name,
+                        icon_url=ctx.message.author.avatar_url
+                    )
+                await ctx.send(embed=muteEmbed)
+                return
+        permissions=discord.Permissions(permissions=0,send_messages=False)
+        role = await guild.create_role(name="Muted",reason="Muted role did not exist.",permissions=permissions)
+        msg = await ctx.send("Please wait while I setup the Muted role.")
+        for discord.TextChannel in channels:
+            await discord.TextChannel.set_permissions(role,send_messages=False)
+        await msg.delete()
+        await user.add_roles(role)
+        muteEmbed = discord.Embed(title='Mute',description=f'Muted {user.mention}',color=discord.Colour.random())
+        muteEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        muteEmbed.set_author(
+            name=ctx.message.author.name,
+            icon_url=ctx.message.author.avatar_url
+        )
+        await ctx.send(embed=muteEmbed)
+    
+    @commands.command(name='unmute',description='Unmutes the user you ping.')
+    @has_permissions(manage_roles=True)
+    async def unmute(self,ctx,user: commands.MemberConverter=None):
+        if user == None:
+            await ctx.send("Please provide a user!")
+            return
+        await ctx.message.delete()
+        roles = user.roles
+        for discord.Role in roles:
+            if discord.Role.name.upper() == "MUTED":
+                await user.remove_roles(discord.Role,reason="Unmuting the user.")
+                unmuteEmbed = discord.Embed(title='Unmute',description=f'Unmuted {user.mention}',color=discord.Colour.random())
+                unmuteEmbed.set_thumbnail(url=self.client.user.avatar_url)
+                unmuteEmbed.set_author(
+                        name=ctx.message.author.name,
+                        icon_url=ctx.message.author.avatar_url
+                    )
+                await ctx.send(embed=unmuteEmbed)
+                return
+        await ctx.send(f"{user.mention} is not muted!")
+
     @commands.command(aliases=['lockchannel','lockc','clock','lc'],name='channellock',description='Locks the channel.')
     @has_permissions(manage_channels=True)
     async def channellock(self, ctx, channel: discord.TextChannel=None):

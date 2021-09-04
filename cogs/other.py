@@ -163,17 +163,22 @@ class Other(commands.Cog):
         prefixList = []
         prefixList.append(msg1.content)
         prefixList.append(f"<@!{self.client.user.id}> ")
-        msgRequest = await ctx.send("Would you like to add an extra prefix?")
-        msg2 = await self.client.wait_for('message', check=check)
-        await msgRequest.delete()
-        await msg2.delete()
-        if msg2.content == "Yes" or msg2.content == "yes":
-            msgRequest = await ctx.send("What is the extra prefix?")
-            msg3 = await self.client.wait_for('message',check=check)
+        prefixLoop = True
+        while prefixLoop == True:
+            msgRequest = await ctx.send("Would you like to add another prefix?")
+            msg2 = await self.client.wait_for('message', check=check)
             await msgRequest.delete()
-            await msg3.delete()
-            prefixList.append(msg3.content)
-
+            await msg2.delete()
+            if msg2.content.upper() == "YES":
+                msgRequest = await ctx.send("What is the extra prefix?")
+                msg3 = await self.client.wait_for('message',check=check)
+                await msgRequest.delete()
+                await msg3.delete()
+                prefixList.append(msg3.content)
+            elif msg2.content.upper() == "NO":
+                prefixLoop = False
+            else:
+                await ctx.send("Invalid choice please choose between Yes or No.")
         guildID = str(ctx.guild.id)
         prefixes[f"{guildID} prefix"] = prefixList
 
