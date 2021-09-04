@@ -45,13 +45,42 @@ async def on_ready():
 #le error handling
 @client.event
 async def on_command_error(ctx, error):
-    errorEmbed = discord.Embed(title='ERROR',description=error,color=0x992D22)
-    errorEmbed.set_author(
-        name=ctx.message.author.name,
-        icon_url=ctx.message.author.avatar_url
-    )
-    errorEmbed.set_thumbnail(url=client.user.avatar_url)
-    await ctx.send(embed=errorEmbed)
+    if isinstance(error, commands.CommandNotFound) or isinstance(error, commands.NotOwner):
+        return
+    elif isinstance(error, commands.BotMissingPermissions):
+        botPermEmbed = discord.Embed(title='ERROR',description='The Bot is missing the required permission(s).',color=0x992D22)
+        permValues = ''
+        for perm in error.missing_perms:
+            permValues = permValues+ f"{perm}\n"
+        botPermEmbed.add_field(name="Missing Permission(s):",value=permValues,inline=False)
+        botPermEmbed.set_author(
+            name=ctx.message.author.name,
+            icon_url=ctx.message.author.avatar_url
+        )
+        botPermEmbed.set_thumbnail(url=client.user.avatar_url)
+        await ctx.send(embed=botPermEmbed)
+        return
+    elif isinstance(error, commands.MissingPermissions):
+        botPermEmbed = discord.Embed(title='ERROR',description='You are missing the required permission(s).',color=0x992D22)
+        permValues = ''
+        for perm in error.missing_perms:
+            permValues = permValues+ f"{perm}\n"
+        botPermEmbed.add_field(name="Missing Permission(s):",value=permValues,inline=False)
+        botPermEmbed.set_author(
+            name=ctx.message.author.name,
+            icon_url=ctx.message.author.avatar_url
+        )
+        botPermEmbed.set_thumbnail(url=client.user.avatar_url)
+        await ctx.send(embed=botPermEmbed)
+        return
+    else:
+        errorEmbed = discord.Embed(title='ERROR',description=error,color=0x992D22)
+        errorEmbed.set_author(
+            name=ctx.message.author.name,
+            icon_url=ctx.message.author.avatar_url
+        )
+        errorEmbed.set_thumbnail(url=client.user.avatar_url)
+        await ctx.send(embed=errorEmbed)
 
 #le stuff that involves json
 @client.event
