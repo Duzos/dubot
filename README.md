@@ -25,3 +25,5 @@ Put the prefixes for the bot in the "prefix" section
 Make sure you have discord.py and python
 
 Run the file
+
+lol outdated tutorial
