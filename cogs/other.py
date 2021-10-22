@@ -1,4 +1,11 @@
 from operator import truediv
+from discord import channel
+from discord.errors import NotFound
+from random_word import RandomWords
+rword = RandomWords()
+from PyDictionary import PyDictionary
+dict = PyDictionary
+#import re
 import discord
 from discord import guild
 from discord.ext import commands
@@ -8,12 +15,97 @@ from discord.ext.commands.converter import MessageConverter
 from discord.ext.commands.core import has_permissions
 
 
+
 # le cog of le other
 class Other(commands.Cog):
 
     def __init__(self, client):
         self.client = client
 
+    @commands.command(name='math',description='Does calculations')
+    async def math(self,ctx):
+        def check(ms):
+            return ms.channel == ctx.message.channel and ms.author == ctx.message.author
+
+        await ctx.message.delete()
+
+        msg = await ctx.send("What is the first number?")
+        Msg = await self.client.wait_for('message', check=check)
+        numberOne=int(Msg.content)
+        await msg.delete()
+        await Msg.delete()
+
+        msg = await ctx.send("What is the operator? ( + - / * )")
+        Msg = await self.client.wait_for('message', check=check)
+        numberOperator = Msg.content
+        await msg.delete()
+        await Msg.delete()
+
+        msg = await ctx.send("What is the second number?")
+        Msg = await self.client.wait_for('message', check=check)
+        numberTwo = int(Msg.content)
+        await msg.delete()
+        await Msg.delete()
+
+
+
+        if numberOperator == "+":
+            numberEmbed = discord.Embed(title=f'{numberOne} {numberOperator} {numberTwo}',description=numberOne+numberTwo,color=discord.Color.random())
+            numberEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            numberEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            await ctx.send(embed=numberEmbed)
+            return
+        elif numberOperator == "-":
+            numberEmbed = discord.Embed(title=f'{numberOne} {numberOperator} {numberTwo}',description=numberOne-numberTwo,color=discord.Color.random())
+            numberEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            numberEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            await ctx.send(embed=numberEmbed)
+            return
+        elif numberOperator == "/":
+            numberEmbed = discord.Embed(title=f'{numberOne} {numberOperator} {numberTwo}',description=numberOne/numberTwo,color=discord.Color.random())
+            numberEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            numberEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            await ctx.send(embed=numberEmbed)
+            return
+        elif numberOperator == "*":
+            numberEmbed = discord.Embed(title=f'{numberOne} {numberOperator} {numberTwo}',description=numberOne*numberTwo,color=discord.Color.random())
+            numberEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            numberEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            await ctx.send(embed=numberEmbed)
+            return
+        else:
+            await ctx.send("Invalid operator! Please choose from ( + - / * )")
+            return    
+        
+
+
+
+    @commands.command(aliases=['sword','searchw'],name='searchword',description='Searches a word.')
+    async def searchword(self, ctx,word=None):
+        wordDict=dict(word)
+        wordDictLong=wordDict.getMeanings()
+
+        await ctx.message.delete()
+        searchEmbed=discord.Embed(title=f'{word}',description=f'{wordDictLong}',color=discord.Colour.random())
+        searchEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        searchEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        await ctx.send(embed=searchEmbed)
+
+
+    @commands.command(aliases=["randomword","randomw","rword"],name="random_word",description="Gives you a random word and a definition.")
+    async def random_word(self, ctx):
+        word = rword.get_random_word(hasDictionaryDef='true')
+        wordDict=dict(word)
+        wordDefLong = wordDict.getMeanings()
+    #    wordDefSearch=re.search("['(.+?)']", wordDefLong)
+    #    if wordDefSearch:
+    #        wordDef=wordDefSearch.group(1)
+        await ctx.message.delete()
+        wordEmbed=discord.Embed(title=f'{word}',description=f'{wordDefLong}',color=discord.Colour.random())
+        wordEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        wordEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        await ctx.send(embed=wordEmbed)
+    
     @commands.command(aliases=['rcolour','rcolor','randomcolor'],name='randomcolour',description='Gives you a random colour.')
     async def randomcolour(self, ctx):
         colour=discord.Color.random()
@@ -25,24 +117,81 @@ class Other(commands.Cog):
             )
         colourEmbed.set_thumbnail(url=self.client.user.avatar_url)
         await ctx.send(embed=colourEmbed)
-    
+
+        
+
     #@commands.command()
     #async def cum(self, ctx):
     #    await ctx.send("no im not adding this command this is getting removed after.")
 
     @commands.command(aliases=['reportbug', 'bug', 'error'],name='bug_report',description='Reports a bug.')
     async def bug_report(self, ctx, *, message=None):
-        await ctx.message.delete()
+        if message == None:
+            def check(ms):
+                return ms.channel == ctx.message.channel and ms.author == ctx.message.author
+            bugMessage = await ctx.send("What's the bug?")
+            OtherMessage = await self.client.wait_for('message', check=check)
+            message = OtherMessage.content
+            await bugMessage.delete()
+            await OtherMessage.delete()
+
         duzo = self.client.get_user(327807253052653569)
-        await duzo.send(f'Bug: "{message}"')
-        await duzo.send(f'Bug reported by {ctx.message.author}')
-        msg = await ctx.send("Bug reported.")
-        await msg.delete()
+        duzoChannel = self.client.get_channel(899683973356204126)
+        duzoBug = discord.Embed(title='New Bug:',color=discord.Colour.random())
+        duzoBug.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        duzoBug.add_field(name='Bug:',value=message)
+        duzoBug.add_field(name='Reported By:',value=f'<@!{ctx.message.author.id}>')
+        await duzo.send(embed=duzoBug)
+        await duzoChannel.send(embed=duzoBug)
+
+        confirmEmbed = discord.Embed(title='Bug Recieved.',color=discord.Colour.random())
+        confirmEmbed.add_field(name='Bug:',value=message)
+        confirmEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        await ctx.message.author.send(embed=confirmEmbed)
+        await ctx.message.delete() 
+
+    @commands.command(aliases=['suggest', 'suggestion'],name='idea', description='give me ideas')
+    async def idea(self, ctx, *, message=None):
+        if message == None:
+            def check(ms):
+                return ms.channel == ctx.message.channel and ms.author == ctx.message.author
+            ideaMessage = await ctx.send("What's your idea?")
+            OtherMessage = await self.client.wait_for('message', check=check)
+            message = OtherMessage.content
+            await ideaMessage.delete()
+            await OtherMessage.delete()
+
+        with open('json/data.json','r') as f:
+            ideaID = json.load(f)
+        
+        IDNumber = random.randint(1,1000000)
+        ideaID[f'{IDNumber}'] = ctx.message.author.id
+
+
+        duzo = self.client.get_user(327807253052653569)
+        duzoChannel = self.client.get_channel(899683961117237268)
+        duzoIdea = discord.Embed(title='New Idea:',color=discord.Colour.random())
+        duzoIdea.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        duzoIdea.add_field(name='Idea:',value=f'{message}')
+        duzoIdea.add_field(name='Author:',value=f'<@!{ctx.message.author.id}>')
+        duzoIdea.set_footer(text=f"ID: {IDNumber}")
+        await duzo.send(embed=duzoIdea)
+        await duzoChannel.send(embed=duzoIdea)
+
+        confirmEmbed = discord.Embed(title='Idea Recieved.',color=discord.Colour.random())
+        confirmEmbed.add_field(name='Your Idea:',value=message)
+        confirmEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        confirmEmbed.set_footer(text=f'ID: {IDNumber}')
+        await ctx.message.author.send(embed=confirmEmbed)
+        await ctx.message.delete()        
+    
+        with open('json/data.json','w') as f:
+            json.dump(ideaID, f, indent=4)
 
     
     @commands.command(aliases=['welcomeoption','woption'],name='welcome_option', description='Turn welcome messages on and off.')
     @has_permissions(manage_channels=True)
-    async def welcome_option(self, ctx):
+    async def welcome_option(self, ctx,welcomeChoice=None,welcomeChannel=None):
         def check(ms):
             return ms.channel == ctx.message.channel and ms.author == ctx.message.author
         with open('json/data.json', 'r') as f:
@@ -50,36 +199,32 @@ class Other(commands.Cog):
         
         await ctx.message.delete()
 
-
-        msg = await ctx.send("Do you want it to be on or off?")
-        Msg = await self.client.wait_for('message', check=check)
-        welcomeChoice = Msg.content
-        await msg.delete()
-        await Msg.delete()
+        if welcomeChoice==None:
+            msg = await ctx.send("Do you want it to be on or off?")
+            Msg = await self.client.wait_for('message', check=check)
+            welcomeChoice = Msg.content.upper()
+            await msg.delete()
+            await Msg.delete()
 
 
         idGuild = str(ctx.guild.id)
 
-        if welcomeChoice == "on":
+        if welcomeChoice == "ON":
             welcomeChoice = True
-        elif welcomeChoice == "off":
+        elif welcomeChoice == "OFF":
             welcomeChoice = False
             return
-        elif welcomeChoice == "Off":
-            welcomeChoice = False
-            return
-        elif welcomeChoice == "On":
-            welcomeChoice = True
         else:
             msg = await ctx.send("Invalid choice, please choose on or off")
             await msg.delete()
             return
 
-        msg = await ctx.send("What is the channel you want the message to be sent in?")
-        ChannelMsg = await self.client.wait_for('message',check=check)
-        welcomeChannel = await commands.TextChannelConverter().convert(ctx, Msg.content)
-        await msg.delete()
-        await Msg.delete()
+        if welcomeChannel==None:
+            msg = await ctx.send("What is the channel you want the message to be sent in?")
+            ChannelMsg = await self.client.wait_for('message',check=check)
+            welcomeChannel = await commands.TextChannelConverter().convert(ctx, ChannelMsg.content)
+            await msg.delete()
+            await ChannelMsg.delete()
 
         welcomeChannelID = welcomeChannel.id
 
@@ -95,7 +240,7 @@ class Other(commands.Cog):
 
     @commands.command(aliases=['leaveoption','loption'],name='leave_option', description='Turn leave messages on and off.')
     @has_permissions(manage_channels=True)
-    async def leave_option(self, ctx):
+    async def leave_option(self, ctx,leaveChoice=None,leaveChannel=None):
         def check(ms):
             return ms.channel == ctx.message.channel and ms.author == ctx.message.author
         with open('json/data.json', 'r') as f:
@@ -104,33 +249,29 @@ class Other(commands.Cog):
         await ctx.message.delete()
 
         idGuild = str(ctx.guild.id)
-        
-        msg = await ctx.send("Do you want it to be on or off?")
-        Msg = await self.client.wait_for('message', check=check)
-        leaveChoice = Msg.content
-        await msg.delete()
-        await Msg.delete()
+        if leaveChoice==None:
+            msg = await ctx.send("Do you want it to be on or off?")
+            Msg = await self.client.wait_for('message', check=check)
+            leaveChoice = Msg.content.upper()
+            await msg.delete()
+            await Msg.delete()
 
-        if leaveChoice == "on":
+        if leaveChoice == "ON":
             leaveChoice = True
-        elif leaveChoice == "off":
+        elif leaveChoice == "OFF":
             leaveChoice = False
             return
-        elif leaveChoice == "Off":
-            leaveChoice = False
-            return
-        elif leaveChoice == "On":
-            leaveChoice = True
         else:
             msg = await ctx.send("Invalid choice, please choose on or off")
             await msg.delete()
             return
 
-        msg = await ctx.send("What is the channel you want the message to be sent in?")
-        Msg = await self.client.wait_for('message',check=check)
-        leaveChannel = await commands.TextChannelConverter().convert(ctx, Msg.content)
-        await msg.delete()
-        await Msg.delete()
+        if leaveChannel==None:
+            msg = await ctx.send("What is the channel you want the message to be sent in?")
+            Msg = await self.client.wait_for('message',check=check)
+            leaveChannel = await commands.TextChannelConverter().convert(ctx, Msg.content)
+            await msg.delete()
+            await Msg.delete()
 
         leaveChannelID = leaveChannel.id
 
@@ -143,6 +284,7 @@ class Other(commands.Cog):
 
         with open('json/data.json', 'w') as f:
             json.dump(leave, f , indent=4)
+
 
     @commands.command(aliases=['changeprefix'],name='prefix',description='Changes the bots prefix.')
     @has_permissions(manage_channels=True)
@@ -179,96 +321,41 @@ class Other(commands.Cog):
                 prefixLoop = False
             else:
                 await ctx.send("Invalid choice please choose between Yes or No.")
+
         guildID = str(ctx.guild.id)
         prefixes[f"{guildID} prefix"] = prefixList
 
         with open('json/data.json', 'w') as f:
             json.dump(prefixes, f, indent=4)
         await ctx.send(f'Changed the Prefixes to **{prefixList}**')
+     
+    @commands.command(name='help',description='This command.',aliases=['commands','command'],usage='cog')
+    async def help(self,ctx,cog='all'):
 
-        
-    @commands.command(
-    name='help',
-    description='This command.',
-    aliases=['commands', 'command'],
-    usage='cog'
-    )
-    async def help(self, ctx, cog='all'):
-        await ctx.message.delete()
-        help_embed = discord.Embed(
-            title='Help',
-            color=discord.Colour.random()
-        )
+        help_embed = discord.Embed(title='Help',color=discord.Colour.random())
         help_embed.set_thumbnail(url=self.client.user.avatar_url)
-        help_embed.set_footer(
-            text=f'Requested by {ctx.message.author.name}',
-            icon_url=self.client.user.avatar_url
-        )
-
-        # Get a list of all cogs
+        help_embed.set_footer(text=f'Requested by {ctx.message.author.name}',icon_url=ctx.message.author.avatar_url)
+        
         cogs = [c for c in self.client.cogs.keys()]
 
-        # If cog is not specified by the user, we list all cogs and commands
-
         if cog == 'all':
+            values = ""
             for cog in cogs:
-                # Get a list of all commands under each cog
-
-                cog_commands = self.client.get_cog(cog).get_commands()
-                commands_list = ''
-                for comm in cog_commands:
-                    commands_list += f'**{comm.name}** - {comm.description}\n'
-
-                # Add the cog's details to the embed.
-
-                help_embed.add_field(
-                    name=cog,
-                    value=commands_list,
-                    inline=True
-                ).add_field(
-                    name='\u200b', value='\u200b', inline=False
-                )
-
-                # Also added a blank field '\u200b' is a whitespace character.
+                values = values + f"**{cog}**\n"
             pass
+            help_embed.add_field(name='Cogs',value=values,inline=True)
         else:
-
-            # If the cog was specified
-
             lower_cogs = [c.lower() for c in cogs]
 
-            # If the cog actually exists.
             if cog.lower() in lower_cogs:
 
-                # Get a list of all commands in the specified cog
                 commands_list = self.client.get_cog(cogs[ lower_cogs.index(cog.lower()) ]).get_commands()
                 help_text=''
 
-                # Add details of each command to the help text
-                # Command Name
-                # Description
-                # [Aliases]
-                #
-                # Format
                 for command in commands_list:
-                    help_text += f'```{command.name}```\n' \
-                        f'**{command.description}**\n\n'
-
-                    # Also add aliases, if there are any
-                    if len(command.aliases) > 0:
-                        help_text += f'**Aliases :** `{"`, `".join(command.aliases)}`\n\n\n'
-                    else:
-                        # Add a newline character to keep it pretty
-                        # That IS the whole purpose of custom help
-                        help_text += '\n'
-
-                    # Finally the format
-                    help_text += f'Format: `d.' \
-                        f' {command.name}{command.usage if command.usage is not None else ""}`\n\n\n\n'
-
+                    help_text+= f'`{command.name}` - {command.description}\n'
                 help_embed.description = help_text
             else:
-                # Notify the user of invalid cog and finish the command
                 await ctx.send('Invalid cog specified.\nUse `help` command to list all cogs.')
                 return
 
@@ -276,6 +363,97 @@ class Other(commands.Cog):
         await ctx.send(embed=help_embed)
         
         return
+
+    # @commands.command(
+    # name='help',
+    # description='This command.',
+    # aliases=['commands', 'command'],
+    # usage='cog'
+    # )
+    # async def help(self, ctx, cog='all'):
+    #     await ctx.message.delete()
+        
+    #     help_embed = discord.Embed(
+    #         title='Help',
+    #         color=discord.Colour.random()
+    #     )
+    #     help_embed.set_thumbnail(url=self.client.user.avatar_url)
+    #     help_embed.set_footer(
+    #         text=f'Requested by {ctx.message.author.name}',
+    #         icon_url=self.client.user.avatar_url
+    #     )
+
+    #     # Get a list of all cogs
+    #     cogs = [c for c in self.client.cogs.keys()]
+
+    #     # If cog is not specified by the user, we list all cogs and commands
+
+    #     if cog == 'all':
+    #         for cog in cogs:
+    #             # Get a list of all commands under each cog
+
+    #             cog_commands = self.client.get_cog(cog).get_commands()
+    #             commands_list = ''
+    #             for comm in cog_commands:
+    #                 commands_list += f'**{comm.name}** - {comm.description}\n'
+
+    #             # Add the cog's details to the embed.
+
+    #             help_embed.add_field(
+    #                 name=cog,
+    #                 value=commands_list,
+    #                 inline=True
+    #             ).add_field(
+    #                 name='\u200b', value='\u200b', inline=False
+    #             )
+
+    #             # Also added a blank field '\u200b' is a whitespace character.
+    #         pass
+    #     else:
+
+    #         # If the cog was specified
+
+    #         lower_cogs = [c.lower() for c in cogs]
+
+    #         # If the cog actually exists.
+    #         if cog.lower() in lower_cogs:
+
+    #             # Get a list of all commands in the specified cog
+    #             commands_list = self.client.get_cog(cogs[ lower_cogs.index(cog.lower()) ]).get_commands()
+    #             help_text=''
+
+    #             # Add details of each command to the help text
+    #             # Command Name
+    #             # Description
+    #             # [Aliases]
+    #             #
+    #             # Format
+    #             for command in commands_list:
+    #                 help_text += f'```{command.name}```\n' \
+    #                     f'**{command.description}**\n\n'
+
+    #                 # Also add aliases, if there are any
+    #                 if len(command.aliases) > 0:
+    #                     help_text += f'**Aliases :** `{"`, `".join(command.aliases)}`\n\n\n'
+    #                 else:
+    #                     # Add a newline character to keep it pretty
+    #                     # That IS the whole purpose of custom help
+    #                     help_text += '\n'
+
+    #                 # Finally the format
+    #                 help_text += f'Format: `d.' \
+    #                     f' {command.name}{command.usage if command.usage is not None else ""}`\n\n\n\n'
+
+    #             help_embed.description = help_text
+    #         else:
+    #             # Notify the user of invalid cog and finish the command
+    #             await ctx.send('Invalid cog specified.\nUse `help` command to list all cogs.')
+    #             return
+
+
+    #     await ctx.send(embed=help_embed)
+        
+    #     return
 
 
 def setup(client):

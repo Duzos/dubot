@@ -15,11 +15,11 @@ class Information(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(aliases=['bcoin','bitc'],name='bitcoin',description='Gets the current price of Bitcoin.')
-    async def bitcoin(self, ctx):
-        
 
+    @commands.command(aliases=['bcoin','bitc'],name='bitcoin',description='Gets the current price of Bitcoin.')
+    async def bitcoin(self, ctx,amount=1):
         await ctx.message.delete()
+        
 
         response_API = requests.get('https://api.coindesk.com/v1/bpi/currentprice.json')
         data = response_API.text
@@ -29,10 +29,10 @@ class Information(commands.Cog):
         bitcoinEUR = parse_json['bpi']['EUR']['rate_float']
 
 
-        bitcoinEmbed = discord.Embed(title='Current price of bitcoin',color=discord.Colour.random())
-        bitcoinEmbed.add_field(name='(€)EUR',value=round(bitcoinEUR),inline=True)
-        bitcoinEmbed.add_field(name='(£)GBP',value=round(bitcoinGBP),inline=True)
-        bitcoinEmbed.add_field(name='($)USD',value=round(bitcoinUSD),inline=True)
+        bitcoinEmbed = discord.Embed(title=f'Price of {amount} bitcoin',color=discord.Colour.gold())
+        bitcoinEmbed.add_field(name='(€)EUR',value=round(bitcoinEUR * amount),inline=True)
+        bitcoinEmbed.add_field(name='(£)GBP',value=round(bitcoinGBP*amount),inline=True)
+        bitcoinEmbed.add_field(name='($)USD',value=round(bitcoinUSD*amount),inline=True)
         bitcoinEmbed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/64px-Bitcoin.svg.png")
         bitcoinEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
         await ctx.send(embed=bitcoinEmbed)
@@ -108,6 +108,8 @@ class Information(commands.Cog):
         ginfoEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
         await ctx.send(embed=ginfoEmbed)
 
+
+
     @commands.command(aliases=['userinfo','uinfo'],name='user_info',description='Gives info on a user.')
     async def user_info(self, ctx, member: commands.MemberConverter=None):
         member = member or ctx.message.author
@@ -115,8 +117,13 @@ class Information(commands.Cog):
         rolelist = [r.name for r in member.roles if r != ctx.guild.default_role]
         roles = ", ".join(rolelist)
         date_format = "%a, %d %b %Y %I:%M %p"
+        #await ctx.send(hasattr(member.activities[0],"details"))
+        # if hasattr(member.activities[0],"details") == False:
+        #     setattr(member.activities[0],"details",False)
+        #     await ctx.send(hasattr(member.activities[0],"details"))
+        # \n**Status:**\n```{member.status}\n{member.activities[0].name}\n{member.activities[0].details}```
 
-        uinfoEmbed = discord.Embed(title=f'Info on {member.name}#{member.discriminator}', description=f'**ID:**\n```{member.id}```\n**Roles:**\n```{roles}```\n**Account Created On:**\n```{member.created_at.strftime(date_format)}```\n**Account Joined Guild On:**\n```{member.joined_at.strftime(date_format)}```\n**Nickname:**\n```{member.nick}```\n**Is Bot:**\n```{member.bot}```',color=discord.Colour.random())
+        uinfoEmbed = discord.Embed(title=f'Info on {member.name}#{member.discriminator}', description=f'**ID:**\n`{member.id}`\n**Roles:**\n`{roles}`\n**Account Created On:**\n`{member.created_at.strftime(date_format)}`\n**Account Joined Guild On:**\n`{member.joined_at.strftime(date_format)}`\n**Nickname:**\n`{member.nick}`\n**Is Bot:**\n`{member.bot}`',color=discord.Colour.random())
         uinfoEmbed.set_thumbnail(url=member.avatar_url)
         uinfoEmbed.set_author(
             name=ctx.message.author.name,
@@ -124,14 +131,24 @@ class Information(commands.Cog):
         )
         await ctx.send(embed=uinfoEmbed)
             
-     
+    @commands.command(name='invite', description='Sends the bots invite link')
+    async def invite(self, ctx):
+        await ctx.message.delete()
+        inviteEmbed = discord.Embed(title="Invite Link",description="[Bot Invite](https://discord.com/api/oauth2/authorize?client_id=865190020179296267&permissions=93184&scope=bot)",color=discord.Colour.random())
+        inviteEmbed.set_author(
+            name=ctx.message.author.name,
+            icon_url=ctx.message.author.avatar_url
+            )
+        inviteEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        inviteEmbed.add_field(name='Support Server',value="[Server Invite](https://discord.gg/Raakw6367z)")
+        await ctx.send(embed=inviteEmbed)
+
     @commands.command(aliases=['information'],name='info', description='Tells you info on the bot')
     async def info(self, ctx):
         await ctx.message.delete()
         title="discord.py | Python"
-        description="by Duzo#0001\n<@!327807253052653569>\n[Github Page](https://github.com/Duzos/dubot)"
-        
-        msg = await ctx.send("one seccc")
+        description="by <@!327807253052653569>\n[Github Page](https://github.com/Duzos/dubot)\n[Support Server](https://discord.gg/Raakw6367z)"
+
         embed=discord.Embed(
             title=title,
             description=description,
@@ -143,10 +160,21 @@ class Information(commands.Cog):
             icon_url=ctx.message.author.avatar_url
             )
             
-        await msg.edit(
-            embed=embed,
-            content=None
-        )
+        await ctx.send(embed=embed)
+
+    @commands.command(name='prefixes',description='Gives you the prefixes.')
+    async def prefixes(self,ctx):
+        with open('json/data.json','r') as f:
+            jsonPrefix = json.load(f)
+
+        guildID = str(ctx.guild.id)
+        currentPrefixes = jsonPrefix[f"{guildID} prefix"] 
+
+        prefixEmbed = discord.Embed(title='Prefixes',description=currentPrefixes,color=discord.Colour.random())
+        prefixEmbed.set_thumbnail(url=ctx.guild.icon_url)
+        prefixEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)                            
+        await ctx.send(embed=prefixEmbed)
+        await ctx.message.delete()
 
 def setup(client):
     client.add_cog(Information(client))
