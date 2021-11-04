@@ -14,7 +14,12 @@ from requests.api import request
 from requests.sessions import TooManyRedirects
 import praw
 
-reddit = praw.Reddit(client_id='xJlAJkjgTw7UEiQlDqiE6Q',client_secret='uJN0OegNk3kr9r0DmpQ0CoJ1722_lA',user_agent='DeadInsidePerson')
+with open('config.json','r') as f:
+    config = json.load(f)
+redditID = config['redditID']
+redditSecret = config['redditSecret']
+redditAgent = config['redditAgent']
+reddit = praw.Reddit(client_id=redditID,client_secret=redditSecret,user_agent=redditAgent)
 
 
 
