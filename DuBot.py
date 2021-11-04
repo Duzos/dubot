@@ -56,7 +56,6 @@ statuses = cycle(statusList)
 @client.event
 async def on_ready():
     client.start_time = datetime.utcnow()
-    statusList.append(f"in {len(client.guilds)} servers.")
     changeStatus.start()
     print(f'{client.user.name} is ready')
 
@@ -245,6 +244,11 @@ async def dataresetall(ctx):
 @tasks.loop(seconds=30)
 async def changeStatus():
     await client.change_presence(activity=discord.Game(next(statuses),status=discord.Status.idle))
+
+@tasks.loop(minutes=5)
+async def guildAmountCheck():
+    statusList.pop(len(statusList)-1)
+    statusList.append(f"in {len(client.guilds)} servers.")
 
 @client.event
 async def on_message(message):
