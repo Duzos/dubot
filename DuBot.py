@@ -39,18 +39,18 @@ def get_prefix(client, message):
     guildID = str(message.guild.id)
     return prefixes[f"{guildID} prefix"]
 
-
-client = commands.Bot(command_prefix = get_prefix, intents=intents, case_insensitive=True)
-slash =  SlashCommand(client,sync_commands=True)
-client.remove_command('help')
-statusList=['Running on the Server','d.help','in Python','RIP north west development']
-statuses = cycle(statusList)
-
 with open('config.json','r') as cf:
     config = json.load(cf)
 
 token = config['token']
 prefix = config['prefix']
+statusList = config['statusList']
+
+client = commands.Bot(command_prefix = get_prefix, intents=intents, case_insensitive=True)
+slash =  SlashCommand(client,sync_commands=True)
+client.remove_command('help')
+statuses = cycle(statusList)
+
 
 #le on le ready
 @client.event
