@@ -3,5 +3,6 @@ dubot.code-workspace
 run.bat
 statuses.txt
 WinSCP.Ink
-./json
+./json/data.json
+./json/blocked.json
 ./alternate
