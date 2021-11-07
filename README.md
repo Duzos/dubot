@@ -1,4 +1,7 @@
 <h1>DuBot</h1>
+<a href="https://top.gg/bot/865190020179296267">
+  <img src="https://top.gg/api/widget/865190020179296267.svg">
+</a>
 This is the GitHub version of my discord bot, some features are missing but it is mostly there.
 To use this bot you will need Python and Discord.py
 
