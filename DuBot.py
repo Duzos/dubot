@@ -19,6 +19,7 @@ from discord.ext import tasks
 from itertools import cycle
 import time
 from datetime import datetime
+import topgg
 
 # Getting the prefix for the server
 
@@ -31,8 +32,8 @@ def get_prefix(client, message):
 
 # The bots intents
 intents = discord.Intents.default()
-intents.presences = False
-intents.members = False
+intents.presences = True
+intents.members = True
 
 # Getting items from the config
 with open('config.json','r') as cf:
@@ -40,9 +41,14 @@ with open('config.json','r') as cf:
 
 token = config['token']
 prefix = config['prefix']
+topToken = config['topToken']
+ownerID = config['ownerID']
 
 # Setting up the client.
 client = commands.Bot(command_prefix = get_prefix, intents=intents, case_insensitive=True)
+client.topgg = topgg.DBLClient(bot=client,token=topToken)
+client.topgg_webhook = topgg.WebhookManager(client).dbl_webhook(route='/dblwebhook',auth_key='password')
+client.topgg_webhook.run(4999)
 client.remove_command('help')
 
 # When the bot is ready.
@@ -58,8 +64,38 @@ async def statusChange():
     try:
         await client.change_presence(status=discord.Status.online, activity=discord.Game(f"in {len(client.guilds)} servers."))
     except Exception as e:
-        owner = client.get_user(client.owner_id)
-        owner.send('Failed to update status\n{}:{}'.format(type(e).__name__, e))
+        owner = await client.fetch_user(ownerID)
+        await owner.send('Failed to update status\n{}:{}'.format(type(e).__name__, e))
+
+# TopGG Stuff (Remove if you dont have TopGG)
+@tasks.loop(minutes=30)
+async def update_stats():
+    try:
+        await client.topgg.post_guild_count()
+    except Exception as e:
+        owner = await client.fetch_user(ownerID)
+        await owner.send('Failed to post server count\n{}: {}'.format(type(e).__name__, e))
+update_stats.start()
+
+@client.event
+async def on_dbl_test(data):
+    user = await client.fetch_user(int(data['user']))
+    print(f"Recieved test vote:\n{data}")
+    testEmbed = discord.Embed(title='Test Vote Successful',description=f'Thank you for voting {user.mention}',color=discord.Colour.random())
+    testEmbed.add_field(name='Raw Data',value=data)
+    testEmbed.set_thumbnail(url="https://clipart.info/images/ccovers/1518056315Dark-Red-Heart-Transparent-Background.png")
+    await user.send(embed=testEmbed)
+
+@client.event
+async def on_dbl_vote(data):
+    if data['type'] == 'test':
+        return client.dispatch('dbl_test',data)
+    user = await client.fetch_user(int(data['user']))
+    voteEmbed = discord.Embed(title=f'Thank you for voting for {client.user.name}!',description=f'Thank you for voting {user.mention}',color=discord.Colour.random())
+    voteEmbed.set_thumbnail(url="https://clipart.info/images/ccovers/1518056315Dark-Red-Heart-Transparent-Background.png")
+    await user.send(embed=voteEmbed)
+
+
 
 # On Messages
 @client.event
@@ -450,7 +486,7 @@ async def blocked(ctx):
 @client.command()
 @commands.is_owner()
 async def server_list(ctx):
-    duzo = client.get_user(327807253052653569)
+    duzo = await client.fetch_user(ownerID)
     message = ""
     for guild in client.guilds:
         message += f"{guild.name}: {guild.id}\n"
@@ -460,7 +496,7 @@ async def server_list(ctx):
 @client.command()
 @commands.is_owner()
 async def server_info_owner(ctx,guild: commands.GuildConverter=None):
-    duzo = client.get_user(327807253052653569)
+    duzo = await client.fetch_user(ownerID)
     guild = guild or ctx.guild
 
     date_format = "%a, %d %b %Y %I:%M %p"
@@ -475,7 +511,7 @@ async def server_info_owner(ctx,guild: commands.GuildConverter=None):
 @client.command()
 @commands.is_owner()
 async def server_invite_owner(ctx, guild: commands.GuildConverter=None):
-    duzo = client.get_user(327807253052653569)
+    duzo = await client.fetch_user(ownerID)
     guild = guild or ctx.guild
     guildChannel = guild.text_channels[0]
     invite = await guildChannel.create_invite(unique=False)
@@ -492,7 +528,7 @@ async def ideaApprove(ctx, idea=None):
     approveEmbed = discord.Embed(title='Hooray!',description='Your idea has been approved!',color=discord.Colour.random())
     approveEmbed.set_footer(text=f'Idea ID: {idea}')
 
-    approvePerson = client.get_user(approve[idea])
+    approvePerson = await client.fetch_user(approve[idea])
     await approvePerson.send(embed=approveEmbed)
     await ctx.send(f"Idea {idea} approved.")
     approve.pop(idea)
@@ -510,7 +546,7 @@ async def ideaDeny(ctx, idea=None):
     denyEmbed = discord.Embed(title='Sorry.',description='Your idea has been denied.',color=discord.Colour.random())
     denyEmbed.set_footer(text=f'Idea ID: {idea}')
 
-    denyPerson = client.get_user(deny[idea])
+    denyPerson = await client.fetch_user(deny[idea])
     await denyPerson.send(embed=denyEmbed)
     await ctx.send(f"Idea {idea} denied.")
     deny.pop(idea) 

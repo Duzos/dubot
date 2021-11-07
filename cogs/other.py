@@ -1,5 +1,5 @@
 from operator import truediv
-from discord import channel
+from discord import channel, client
 from discord.errors import NotFound
 from random_word import RandomWords
 rword = RandomWords()
@@ -14,6 +14,11 @@ import json
 from discord.ext.commands.converter import MessageConverter
 from discord.ext.commands.core import has_permissions
 
+# Getting items from config.json
+with open('config.json','r') as cf:
+    config = json.load(cf)
+
+ownerID = config['ownerID']
 
 
 # le cog of le other
@@ -22,12 +27,20 @@ class Other(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='slashcommand',description='run this command or else')
-    async def _slashCommand(ctx):
-        await ctx.send("GET THE SLASH COMMANDS BOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        inviteEmbed = discord.Embed(title="Invite Link",description="[Bot Invite](https://discord.com/api/oauth2/authorize?client_id=900481597311172660&permissions=0&scope=bot%20applications.commands)",color=discord.Colour.random())
-        inviteEmbed.add_field(name='Support Server',value="[Server Invite](https://discord.gg/Raakw6367z)")
-        await ctx.send(embed=inviteEmbed)
+    @commands.command(name='vote',description='Vote for the bot.')
+    async def _vote(self, ctx):
+        voteEmbed = discord.Embed(title=f'Vote',description=f'[top.gg](https://top.gg/bot/{self.client.user.id}/vote)',color=discord.Colour.random())
+        voteEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        voteEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        await ctx.send(embed=voteEmbed)
+
+
+    # @commands.command(name='slashcommand',description='run this command or else')
+    # async def _slashCommand(self, ctx):
+    #     await ctx.send("GET THE SLASH COMMANDS BOT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    #     inviteEmbed = discord.Embed(title="Invite Link",description="[Bot Invite](https://discord.com/api/oauth2/authorize?client_id=900481597311172660&permissions=0&scope=bot%20applications.commands)",color=discord.Colour.random())
+    #     inviteEmbed.add_field(name='Support Server',value="[Server Invite](https://discord.gg/Raakw6367z)")
+    #     await ctx.send(embed=inviteEmbed)
 
     @commands.command(name='math',description='Does calculations')
     async def math(self,ctx):
@@ -138,7 +151,7 @@ class Other(commands.Cog):
             await bugMessage.delete()
             await OtherMessage.delete()
 
-        duzo = self.client.get_user(327807253052653569)
+        duzo = await self.client.fetch_user(ownerID)
         duzoChannel = self.client.get_channel(899683973356204126)
         duzoBug = discord.Embed(title='New Bug:',color=discord.Colour.random())
         duzoBug.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
@@ -170,7 +183,7 @@ class Other(commands.Cog):
         ideaID[f'{IDNumber}'] = ctx.message.author.id
 
 
-        duzo = self.client.get_user(327807253052653569)
+        duzo = await self.client.fetch_user(ownerID)
         duzoChannel = self.client.get_channel(899683961117237268)
         duzoIdea = discord.Embed(title='New Idea:',color=discord.Colour.random())
         duzoIdea.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
