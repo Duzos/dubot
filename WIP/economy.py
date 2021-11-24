@@ -12,9 +12,13 @@ class Economy(commands.Cog):
 
     @commands.command(aliases=['econsetup'],name='economysetup',description='Redos the setup of your bank.')
     async def economysetup(self, ctx):
-        with open('wip/econ.json', 'r') as ef:
+        with open('WIP/econ.json', 'r') as ef:
             econ = json.load(ef)
 
+        def check(ms):
+            return ms.channel == ctx.message.channel and ms.author == ctx.message.author
+
+        
         askMessage = await ctx.send("What's your messaage?")
         OtherMessage = await self.client.wait_for('message', check=check)
         
@@ -23,7 +27,7 @@ class Economy(commands.Cog):
         econ[f"{ctx.message.author.id} say"] = False
         #econ[f"{ctx.message.author.id} Daily"] = str(datetime.date(2000,1,1))
 
-        with open('wip/econ.json', 'w') as ef:
+        with open('WIP/econ.json', 'w') as ef:
             json.dump(econ, ef, indent=4)
 
         await ctx.message.delete()
@@ -35,28 +39,9 @@ class Economy(commands.Cog):
         setupEmbed.set_thumbnail(url=self.client.user.avatar_url)
         await ctx.send(embed=setupEmbed)
 
-    @commands.command(name='daily',description='Gives you your daily D10')
-    async def daily(self, ctx):
-        with open('wip/econ.json', 'r') as ef:
-            econ = json.load(ef)
-        
-        #econ[f"{ctx.message.author.id} Daily"] = str(datetime.datetime.today)
-        currentBal = econ[str(ctx.message.author.id)]
-        newBal = currentBal + 10
-        econ[str(ctx.message.author.id)] = newBal
-        with open('wip/econ.json', 'w') as ef:
-            json.dump(econ, ef, indent=4)
-        dailyEmbed=discord.Embed(title="Daily",description=f'Your new balance is: D${newBal}',color=discord.Colour.random())
-        dailyEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
-            )
-        dailyEmbed.set_thumbnail(url=self.client.user.avatar_url)
-        await ctx.send(embed=dailyEmbed)
-
     @commands.command(name='buy',description='lets you buy a command')
     async def buy(self,ctx, command=None):
-        with open('wip/econ.json', 'r') as ef:
+        with open('WIP/econ.json', 'r') as ef:
             econ = json.load(ef)
         bal=econ[str(ctx.message.author.id)]
         
@@ -75,7 +60,7 @@ class Economy(commands.Cog):
                 newBal=bal-10
                 econ[str(ctx.message.author.id)] = newBal
                 await ctx.send("Successfully bought the say command")
-                with open('wip/econ.json', 'w') as ef:
+                with open('WIP/econ.json', 'w') as ef:
                     json.dump(econ, ef, indent=4)
                 return
             else:
@@ -84,7 +69,7 @@ class Economy(commands.Cog):
 
     @commands.command(aliases=['bal'],name='balance',description='Tells you your balance.')
     async def balance(self, ctx):
-        with open('wip/econ.json', 'r') as ef:
+        with open('WIP/econ.json', 'r') as ef:
             econ = json.load(ef)
         
         bal=econ[str(ctx.message.author.id)]

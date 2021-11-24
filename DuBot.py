@@ -185,14 +185,15 @@ async def on_member_join(member : discord.Member):
     guild = member.guild
 
     with open('json/data.json', 'r') as wf:
-        welcome = json.load(wf)    
-    
-    idGuild = str(guild.id)
-    welcomeChoiceGuild = welcome[f"{idGuild} welcome"]
+        jsonData = json.load(wf)    
 
+    idGuild = str(guild.id)
+    welcomeChoiceGuild = jsonData[f"{idGuild} welcome"]
+    statsChoice = jsonData[f'{guild.id} stats']
+        
 
     if welcomeChoiceGuild == True:
-        welcomeChannel = welcome[f"{idGuild} welcomeChannel"]
+        welcomeChannel = jsonData[f"{idGuild} welcomeChannel"]
         welcomeEmbed = discord.Embed(title='New Member', description=f'{member.mention} joined!',color=discord.Colour.random())
         welcomeEmbed.set_thumbnail(url=member.avatar_url)
         welcomeEmbed.set_author(
@@ -200,22 +201,42 @@ async def on_member_join(member : discord.Member):
             icon_url=client.user.avatar_url
             )
         await client.get_channel(welcomeChannel).send(embed=welcomeEmbed)
-    else:
-        return
+
+    if statsChoice == True:
+        totalMemberCount = 0
+        botMemberCount = 0
+        memberCount = 0
+        await client.get_user(ownerID).send(member.bot)
+        for member in guild.members:
+            totalMemberCount += 1
+            if member.bot == True:
+                botMemberCount += 1
+            else:
+                memberCount += 1
+        if member.bot == True:
+            botChannel = jsonData[f'{guild.id} stats bot']
+            await client.get_channel(botChannel).edit(name=f'Bots: {botMemberCount}')
+        else:
+            memberChannel = jsonData[f'{guild.id} stats member']
+            await client.get_channel(memberChannel).edit(name=f'Members: {memberCount}')
+        
+        totalChannel = jsonData[f'{guild.id} stats total']
+        await client.get_channel(totalChannel).edit(name=f'Total Members: {totalMemberCount}')
 
 @client.event
 async def on_member_remove(member : discord.Member):
     guild = member.guild
 
     with open('json/data.json', 'r') as lf:
-        leave = json.load(lf)    
+        jsonData = json.load(lf)    
     
     idGuild = str(guild.id)
-    leaveChoiceGuild = leave[f"{idGuild} leave"]
+    leaveChoiceGuild = jsonData[f"{idGuild} leave"]
+    statsChoice = jsonData[f'{guild.id} stats']
 
 
     if leaveChoiceGuild == True:
-        leaveChannel = leave[f"{idGuild} leaveChannel"]
+        leaveChannel = jsonData[f"{idGuild} leaveChannel"]
         leaveEmbed = discord.Embed(title='Member Left', description=f'**{member.mention}** left.',color=discord.Colour.random())
         leaveEmbed.set_thumbnail(url=member.avatar_url)
         leaveEmbed.set_author(
@@ -223,8 +244,28 @@ async def on_member_remove(member : discord.Member):
             icon_url=client.user.avatar_url
             )
         await client.get_channel(leaveChannel).send(embed=leaveEmbed)
-    else:
-        return
+    if statsChoice == True:
+        totalMemberCount = 0
+        botMemberCount = 0
+        memberCount = 0
+        await client.get_user(ownerID).send(member.bot)
+        for member in guild.members:
+            totalMemberCount += 1
+            if member.bot == True:
+                botMemberCount += 1
+            else:
+                memberCount += 1
+        if member.bot == True:
+            botChannel = jsonData[f'{guild.id} stats bot']
+            await client.get_channel(botChannel).edit(name=f'Bots: {botMemberCount}')
+        else:
+            memberChannel = jsonData[f'{guild.id} stats member']
+            await client.get_channel(memberChannel).edit(name=f'Members: {memberCount}')
+        
+        totalChannel = jsonData[f'{guild.id} stats total']
+        await client.get_channel(totalChannel).edit(name=f'Total Members: {totalMemberCount}')
+
+    
 
 # Json events
 @client.event
@@ -414,12 +455,6 @@ async def reload(ctx, extension):
     client.unload_extension(f'cogs.{extension}')
     client.load_extension(f'cogs.{extension}')
     await ctx.send("Reload complete.")
-
-@reload.error
-async def reload_error(error, extension, ctx):
-    if isinstance(error, commands.ExtensionNotLoaded):
-        client.load_extension(f'cogs.{extension}')
-        await ctx.send("Reload Complete.")
 
 @client.command()
 @is_owner()

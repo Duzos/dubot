@@ -8,6 +8,7 @@ from discord.ext.commands.converter import MessageConverter
 from discord.ext.commands.core import has_permissions
 import requests
 from datetime import datetime
+import json
 
 # le cog of le other
 class Information(commands.Cog):
@@ -15,6 +16,42 @@ class Information(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(name='serversetup',description='Run this if you want to setup server information channels.')
+    @has_permissions(manage_channels=True)
+    async def _serversetup(self, ctx):
+        guild = ctx.message.guild
+        totalMemberCount = 0
+        botMemberCount = 0
+        memberCount = 0
+
+        with open('json/data.json','r') as f:
+            jsonStats = json.load(f)
+
+        jsonStats[f'{guild.id} stats'] = True
+
+        for member in guild.members:
+            totalMemberCount += 1
+            if member.bot == True:
+                botMemberCount += 1
+            else:
+                memberCount += 1
+
+        overwrites={
+            guild.default_role: discord.PermissionOverwrite(connect=False)
+        }
+        category = await guild.create_category(name="Server Stats",overwrites=overwrites,reason="Server Stats",position=0)
+        totalChannel = await guild.create_voice_channel(f"Total Members: {totalMemberCount}",category=category)
+        memberChannel = await guild.create_voice_channel(f"Members: {memberCount}",category=category)
+        botChannel = await guild.create_voice_channel(f"Bots: {botMemberCount}",category=category)
+
+        jsonStats[f'{guild.id} stats total'] = totalChannel.id
+        jsonStats[f'{guild.id} stats member'] = memberChannel.id
+        jsonStats[f'{guild.id} stats bot'] = botChannel.id    
+
+        with open('json/data.json','w') as f:
+            json.dump(jsonStats,f,indent=4)
+
+        await ctx.send("Setup Complete!")
 
     @commands.command(aliases=['bcoin','bitc'],name='bitcoin',description='Gets the current price of Bitcoin.')
     async def bitcoin(self, ctx,amount=1):
