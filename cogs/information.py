@@ -179,7 +179,8 @@ class Information(commands.Cog):
             icon_url=ctx.message.author.avatar_url
             )
         inviteEmbed.set_thumbnail(url=self.client.user.avatar_url)
-        inviteEmbed.add_field(name='Support Server',value="[Server Invite](https://discord.gg/Raakw6367z)")
+        inviteEmbed.add_field(name='Support Server',value="[Server Invite](https://discord.gg/Raakw6367z)",inline=False)
+        inviteEmbed.add_field(name='Get Dubot Slash!',value="[Dubot Slash Invite](https://discord.com/api/oauth2/authorize?client_id=900481597311172660&permissions=0&scope=bot%20applications.commands)",inline=False)
         await ctx.send(embed=inviteEmbed)
 
     @commands.command(aliases=['information'],name='info', description='Tells you info on the bot')

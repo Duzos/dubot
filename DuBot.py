@@ -206,7 +206,6 @@ async def on_member_join(member : discord.Member):
         totalMemberCount = 0
         botMemberCount = 0
         memberCount = 0
-        await client.get_user(ownerID).send(member.bot)
         for member in guild.members:
             totalMemberCount += 1
             if member.bot == True:
@@ -248,7 +247,6 @@ async def on_member_remove(member : discord.Member):
         totalMemberCount = 0
         botMemberCount = 0
         memberCount = 0
-        await client.get_user(ownerID).send(member.bot)
         for member in guild.members:
             totalMemberCount += 1
             if member.bot == True:
