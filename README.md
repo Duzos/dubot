@@ -2,6 +2,9 @@
 <a href="https://top.gg/bot/865190020179296267">
   <img src="https://top.gg/api/widget/865190020179296267.svg">
 </a>
+<br>
+<img src="https://discordapp.com/api/guilds/884845702662996068/widget.png?style=banner3" alt="Discord Banner"/>
+<br>
 This is the GitHub version of my discord bot, some features are missing but it is mostly there.
 To use this bot you will need Python and Discord.py
 
