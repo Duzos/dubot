@@ -54,18 +54,14 @@ client.remove_command('help')
 # When the bot is ready.
 @client.event
 async def on_ready():
-    statusChange.start()
-    client.start_time = datetime.utcnow()
-    print(f'{client.user.name} is ready')
-
-# Update the status every 30 minutes.
-@tasks.loop(minutes=30)
-async def statusChange():
     try:
         await client.change_presence(status=discord.Status.online, activity=discord.Game(f"in {len(client.guilds)} servers."))
     except Exception as e:
-        owner = await client.fetch_user(ownerID)
+        owner = client.get_user(ownerID)
         await owner.send('Failed to update status\n{}:{}'.format(type(e).__name__, e))
+    client.start_time = datetime.utcnow()
+    print(f'{client.user.name} is ready')
+
 
 # TopGG Stuff (Remove if you dont have TopGG)
 @tasks.loop(minutes=30)
@@ -282,6 +278,12 @@ async def on_guild_join(guild):
     with open('json/data.json', 'w') as f:
         json.dump(joinSetup, f, indent=4)
 
+    try:
+        await client.change_presence(status=discord.Status.online, activity=discord.Game(f"in {len(client.guilds)} servers."))
+    except Exception as e:
+        owner = client.get_user(ownerID)
+        await owner.send('Failed to update status\n{}:{}'.format(type(e).__name__, e))
+
 
 @client.event
 async def on_guild_remove(guild):
@@ -300,6 +302,12 @@ async def on_guild_remove(guild):
 
     with open('json/data.json', 'w') as f:
         json.dump(leave, f, indent=4)
+
+    try:
+        await client.change_presence(status=discord.Status.online, activity=discord.Game(f"in {len(client.guilds)} servers."))
+    except Exception as e:
+        owner = client.get_user(ownerID)
+        await owner.send('Failed to update status\n{}:{}'.format(type(e).__name__, e))
 
 # Owner only commands. 
 
