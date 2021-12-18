@@ -96,6 +96,18 @@ async def on_dbl_vote(data):
 # On Messages
 @client.event
 async def on_message(message):
+    # open that json
+    with open('json/data.json','r') as f:
+        jsonData = json.load(f)
+    # Anti Swearing
+    try:
+        if jsonData[f'{message.guild.id} antiswear'] == True:
+            swearList = jsonData[f'{message.guild.id} swearwords']
+            if message.content.lower() in swearList:
+                await message.delete()
+                return
+    except:
+        pass
     # Blocked users.
     with open('json/blocked.json','r') as bf:
         blocked = json.load(bf)
@@ -107,29 +119,26 @@ async def on_message(message):
     #run the command.    
     await client.process_commands(message)
 
-    with open('json/data.json', 'r') as f:
-        sayCheck = json.load(f)
-
     senderID = f'{message.author.id} say'
 
-    if senderID not in sayCheck:
-        with open('json/data.json', 'r') as nf:
-            sNew = json.load(nf)
+    if senderID not in jsonData:
+        jsonData[f'{message.author.id} say'] = False
 
-        sNew[f'{message.author.id} say'] = False
-
-        with open('json/data.json', 'w') as nf:
-            json.dump(sNew, nf, indent=4)
+        with open('json/data.json', 'w') as f:
+            json.dump(jsonData, f, indent=4)
         return
 
-    sayContent = sayCheck[f'{message.author.id} say']
+    sayContent = jsonData[f'{message.author.id} say']
 
     if sayContent == True:
         message_components = message.content.split()
         if "@everyone" in message_components or "@here" in message_components:
             await message.channel.send("You cannot have everyone or here in your message!")
             return
-        await message.delete()
+        try:
+            await message.delete()
+        except discord.Forbidden:
+            pass
         await message.channel.send(message.content)
         return
     if sayContent == False:
@@ -140,7 +149,7 @@ async def on_message(message):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound) or isinstance(error, commands.NotOwner) or isinstance(error, commands.NoPrivateMessage):
         return
-    elif isinstance(error, commands.BotMissingPermissions):
+    elif isinstance(error, discord.Forbidden):
         botPermEmbed = discord.Embed(title='ERROR',description='The Bot is missing the required permission(s).',color=0x992D22)
         permValues = ''
         for perm in error.missing_perms:
@@ -173,6 +182,7 @@ async def on_command_error(ctx, error):
             icon_url=ctx.message.author.avatar_url
         )
         errorEmbed.set_thumbnail(url=client.user.avatar_url)
+        errorEmbed.add_field(name="Bug?",value="Please report this error using d.bug if you think its a bug.")
         await ctx.send(embed=errorEmbed)
 
 # Guild Leaving and Welcoming Messages
@@ -185,8 +195,11 @@ async def on_member_join(member : discord.Member):
 
     idGuild = str(guild.id)
     welcomeChoiceGuild = jsonData[f"{idGuild} welcome"]
-    statsChoice = jsonData[f'{guild.id} stats']
-        
+    try:
+        statsChoice = jsonData[f'{guild.id} stats']
+    except:
+        pass
+    
 
     if welcomeChoiceGuild == True:
         welcomeChannel = jsonData[f"{idGuild} welcomeChannel"]
@@ -261,7 +274,7 @@ async def on_member_remove(member : discord.Member):
 
     
 
-# Json events
+# Json events   
 @client.event
 async def on_guild_join(guild):
     with open('json/data.json', 'r') as f:
@@ -274,6 +287,7 @@ async def on_guild_join(guild):
     joinSetup[f"{idGuild} welcome"] = False
     joinSetup[f"{idGuild} welcomeChannel"] = False
     joinSetup[f"{idGuild} prefix"] = prefix
+    joinSetup[f"{idGuild} antiswear"] = False
 
     with open('json/data.json', 'w') as f:
         json.dump(joinSetup, f, indent=4)
@@ -352,6 +366,7 @@ async def _datareset(ctx):
     add[f"{guildValue} welcome"] = False
     add[f"{guildValue} welcomeChannel"] = False
     add[f"{guildValue} prefix"] = prefix
+    add[f"{guildValue} antiswear"] = False
 
     with open("json/data.json","w") as f:
         json.dump(add,f,indent=4)
@@ -385,6 +400,7 @@ async def _dataresetall(ctx):
         add[f"{guildValue} welcome"] = False
         add[f"{guildValue} welcomeChannel"] = False
         add[f"{guildValue} prefix"] = prefix
+        add[f"{guildValue} antiswear"] = False
 
         with open("json/data.json","w") as f:
             json.dump(add,f,indent=4)

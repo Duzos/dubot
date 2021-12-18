@@ -19,7 +19,7 @@ with open('config.json','r') as f:
 redditID = config['redditID']
 redditSecret = config['redditSecret']
 redditAgent = config['redditAgent']
-reddit = praw.Reddit(client_id=redditID,client_secret=redditSecret,user_agent=redditAgent)
+reddit = praw.Reddit(client_id=redditID,client_secret=redditSecret,user_agent=redditAgent,check_for_async=False)
 
 
 
@@ -30,20 +30,63 @@ class Fun(commands.Cog):
 
     @commands.command(name='meme',description='Sends a random meme.')
     async def meme(self,ctx):
-
+        await ctx.trigger_typing()
         memes_submissions = reddit.subreddit('memes').hot()
-        post_to_pick = random.randint(1, 10)
+        post_to_pick = random.randint(1, 20)
         for i in range(0, post_to_pick):
             submission = next(x for x in memes_submissions if not x.stickied)
 
         memeEmbed = discord.Embed(title='Meme',color=discord.Colour.random(),type='image')
         memeEmbed.set_image(url=submission.url)
         memeEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-        await ctx.send(embed=memeEmbed)
+        await ctx.reply(embed=memeEmbed)
+
+    @commands.command(name='subreddit',description='Get posts from a subreddit.')
+    async def _subreddit(self, ctx, sbreddit):
+        await ctx.trigger_typing()
+        sb_submissions = reddit.subreddit(sbreddit).hot()
+        post_to_pick = random.randint(1,20)
+        for i in range(0,post_to_pick):
+            submission = next(x for x in sb_submissions if not x.stickied)
+
+
+        sb_extension = submission.url[len(submission.url) - 3 :].lower()
+        if sb_extension == "jpg" or sb_extension == "png" or sb_extension == "gif":
+            sbEmbed = discord.Embed(title=sbreddit,description=f'[{submission.title}]({submission.url})',color=discord.Colour.random(),type='image')
+            sbEmbed.set_image(url=submission.url)
+            sbEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            await ctx.reply(embed=sbEmbed)
+            return
+        sbEmbed = discord.Embed(title=sbreddit,description=f'[{submission.title}]({submission.url})',color=discord.Colour.random())
+        sbEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        await ctx.reply(embed=sbEmbed)
+        
+
+    @commands.command(name='randomreddit',description='Get posts from a random subreddit.')
+    async def _randomreddit(self, ctx):
+        await ctx.trigger_typing()
+        sb_random = reddit.random_subreddit()
+        sb_submissions=sb_random.hot()
+        post_to_pick = random.randint(1,20)
+        for i in range(0,post_to_pick):
+            submission = next(x for x in sb_submissions if not x.stickied)
+
+
+        sb_extension = submission.url[len(submission.url) - 3 :].lower()
+        if sb_extension == "jpg" or sb_extension == "png" or sb_extension == "gif":
+            sbEmbed = discord.Embed(title=sb_random.display_name,description=f'[{submission.title}]({submission.url})',color=discord.Colour.random(),type='image')
+            sbEmbed.set_image(url=submission.url)
+            sbEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            await ctx.reply(embed=sbEmbed)
+            return
+        sbEmbed = discord.Embed(title=sb_random.display_name,description=f'[{submission.title}]({submission.url})',color=discord.Colour.random())
+        sbEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        await ctx.reply(embed=sbEmbed)
+        
 
     @commands.command(aliases=['rname','randomn'],name='randomname',description='Gives you a random name.')
     async def randomname(self,ctx):
-
+        await ctx.trigger_typing()
         r = requests.get('http://api.randomuser.me/?format=json&?nat=gb')
         results = json.loads(r.text)
         results = results['results'][0]
@@ -64,10 +107,11 @@ class Fun(commands.Cog):
         nameEmbed.add_field(name='Age',value=f'{nameAge}\n{nameDate}')
         nameEmbed.add_field(name='Gender',value=results['gender'])
         nameEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-        await ctx.send(embed=nameEmbed)
+        await ctx.reply(embed=nameEmbed)
 
     @commands.command(name='fact',description='Gives you a random fact.')
     async def fact(self, ctx):
+        await ctx.trigger_typing()
         responseAPI = requests.get("https://uselessfacts.jsph.pl/random.json?language=en").json()   
         factID = responseAPI["id"]
         factResponse = responseAPI["text"]
@@ -77,12 +121,11 @@ class Fun(commands.Cog):
         factEmbed.set_footer(text=f"ID: {factID}")
         factEmbed.add_field(name='Link',value=f'[Click!]({factLink})')
         factEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)        
-        await ctx.send(embed=factEmbed)
+        await ctx.reply(embed=factEmbed)
 
     @commands.command(aliases=['cat','catrandom'],name='randomcat',description='Gives you a random cat picture.')
     async def randomcat(self, ctx):
-
-
+        await ctx.trigger_typing()
         for i in requests.get("https://api.thecatapi.com/v1/images/search").json():
             catURL = i["url"]
             catID = i["id"]
@@ -91,12 +134,12 @@ class Fun(commands.Cog):
         catEmbed.set_image(url=catURL)
         catEmbed.set_footer(text=f'ID: {catID}',icon_url=EmptyEmbed)
         catEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-        await ctx.send(embed=catEmbed)
+        await ctx.reply(embed=catEmbed)
 
     @commands.command(aliases=['bored'],name='activity',description='Gives you something to do.')
     async def activity(self, ctx):
 
-
+        await ctx.trigger_typing()
         response_API = requests.get("https://www.boredapi.com/api/activity/")
         data = response_API.text
         parse_json = json.loads(data)
@@ -114,12 +157,11 @@ class Fun(commands.Cog):
         activityEmbed.set_footer(text=f"ID: {activityKey}",icon_url=EmptyEmbed)
         activityEmbed.set_thumbnail(url=self.client.user.avatar_url)
         activityEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-        await ctx.send(embed=activityEmbed)   
+        await ctx.reply(embed=activityEmbed)   
 
     @commands.command(name='advice',description='Gives you a random piece of advice.')
     async def advice(self, ctx):
-
-
+        await ctx.trigger_typing()
         response_API = requests.get("https://api.adviceslip.com/advice")
         data = response_API.text
         parse_json = json.loads(data)
@@ -130,7 +172,7 @@ class Fun(commands.Cog):
         adviceEmbed.set_footer(text=f"ID: {currentAdviceID}",icon_url=EmptyEmbed)
         adviceEmbed.set_thumbnail(url=self.client.user.avatar_url)
         adviceEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-        await ctx.send(embed=adviceEmbed)
+        await ctx.reply(embed=adviceEmbed)
 
     @commands.command(name='e',description='e')
     async def e(self, ctx,eAmount=None):
@@ -141,16 +183,16 @@ class Fun(commands.Cog):
             eAmount = random.randint(1,100)
         elif eAmount > 2000:
             eAmount = 2000
-            await ctx.send("Limit is 2000.")
+            await ctx.reply("Limit is 2000.")
 
-        #await ctx.send(eAmount)
+        #await ctx.reply(eAmount)
         if ctx.message.author.id == 509436097835827210:
             eAmount = random.randint(100,2000)
         while 0 < eAmount:
             eList = eList + "e"
             eAmount = eAmount - 1
-        await ctx.send(eList)
-        #await ctx.send(eAmount)
+        await ctx.reply(eList)
+        #await ctx.reply(eAmount)
 
     @commands.command(aliases=['sayt','tsay','saytoggle'],name='togglesay',description='A version of say that can be toggled.')
     async def togglesay(self, ctx):
@@ -179,7 +221,7 @@ class Fun(commands.Cog):
             with open('json/data.json', 'w') as ff:
                 json.dump(sFalse, ff, indent=4)
 
-            await ctx.send("Repeating is now off.")
+            await ctx.reply("Repeating is now off.")
             return
 
         if sayCurrent == False:
@@ -190,38 +232,48 @@ class Fun(commands.Cog):
 
             with open('json/data.json', 'w') as tf:
                 json.dump(sTrue, tf, indent=4)
-            await ctx.send("Repeating is now on.")
+            await ctx.reply("Repeating is now on.")
             return
 
 
 
     @commands.command(aliases=['speak','saythis', 'copy', 'doasisayslave'], name='say', description='Makes the bot say what you want it to say')
     async def say(self, ctx, *, message=None):
+        try:
+            await ctx.message.delete()
+        except discord.Forbidden:
+            pass
         #with open('json/econ.json', 'r') as ef:
         #    econ = json.load(ef)
         #if econ[f"{ctx.message.author.id} say"] == False:
-        #    await ctx.send("You do not own this command!")
+        #    await ctx.reply("You do not own this command!")
         #    return
         message = message or "Please say something to use this command!"
         message_components = message.split()
         if "@everyone" in message_components or "@here" in message_components:
-            await ctx.send("You cannot have `@everyone` or `@here` in your message!")
+            await ctx.reply("You cannot have `@everyone` or `@here` in your message!")    
             return
-        await ctx.send(message)
+        try:
+            await ctx.reply(message)
+        except:
+            await ctx.send(message)
 
     @commands.command(name='reverse',description='Reverses a text.')
     async def reverse(self,ctx,*,message=None):
         if message == None:
             def check(ms):
                 return ms.channel == ctx.message.channel and ms.author == ctx.message.author
-            askMessage = await ctx.send("What's your messaage?")
+            askMessage = await ctx.reply("What's your messaage?")
             OtherMessage = await self.client.wait_for('message', check=check)
             message = OtherMessage.content
-            await askMessage.delete()
-            await OtherMessage.delete()
+            try:
+                await askMessage.delete()
+                await OtherMessage.delete()
+            except discord.Forbidden:
+                pass
 
         reverseMessage = message[::-1]
-        await ctx.send(reverseMessage)
+        await ctx.reply(reverseMessage)
 
     @commands.command(aliases=['coinflip','coin_flip'],name='flip',description='Flips a coin.')
     async def flip(self, ctx):
@@ -234,7 +286,7 @@ class Fun(commands.Cog):
             name=ctx.message.author.name,
             icon_url=ctx.message.author.avatar_url
         )
-        await ctx.send(embed=flipEmbed)
+        await ctx.reply(embed=flipEmbed)
 
     @commands.command(aliases=["roll"],name='dice',description='Rolls a dice from 1-6.')
     async def dice(self, ctx):
@@ -245,7 +297,7 @@ class Fun(commands.Cog):
             name=ctx.message.author.name,
             icon_url=ctx.message.author.avatar_url
         )
-        await ctx.send(embed=diceEmbed)
+        await ctx.reply(embed=diceEmbed)
 
     @commands.command(name='rps',description='Play Rock Paper Scissors against the bot.')
     async def rps(self, ctx, message):
@@ -253,8 +305,8 @@ class Fun(commands.Cog):
         choices = ["rock", "paper", "scissors"]
         computers_answer = random.choice(choices)
         if answer == "gun":
-            await ctx.send(f"I pick **{computers_answer}**, wait is that a gun?")
-            await ctx.send(f"You win.")
+            await ctx.reply(f"I pick **{computers_answer}**, wait is that a gun?")
+            await ctx.reply(f"You win.")
             return
         if answer not in choices:
             incorrectEmbed = discord.Embed(title="Invalid",description=f"'{answer}' is not valid. Please use one of the following: rock, paper, scissors.",color=discord.Colour.random())
@@ -263,7 +315,7 @@ class Fun(commands.Cog):
                 name=ctx.message.author.name,
                 icon_url=ctx.message.author.avatar_url
             )
-            await ctx.send(embed=incorrectEmbed)
+            await ctx.reply(embed=incorrectEmbed)
         else:
             if computers_answer == answer:
                 answerEmbed = discord.Embed(color=discord.Colour.random(),title="Tie",description=f"We both picked **{answer}**.")
@@ -272,7 +324,7 @@ class Fun(commands.Cog):
                     name=ctx.message.author.name,
                     icon_url=ctx.message.author.avatar_url
                 )
-                await ctx.send(embed=answerEmbed)
+                await ctx.reply(embed=answerEmbed)
             if computers_answer == "rock":
                 if answer == "paper":
                     answerEmbed = discord.Embed(color=discord.Colour.random(),title="You win",description=f"I picked **{computers_answer}**. :rock:")
@@ -281,7 +333,7 @@ class Fun(commands.Cog):
                         name=ctx.message.author.name,
                         icon_url=ctx.message.author.avatar_url
                     )
-                    await ctx.send(embed=answerEmbed) 
+                    await ctx.reply(embed=answerEmbed) 
                 if answer == "scissors":
                     answerEmbed = discord.Embed(color=discord.Colour.random(),title="I win",description=f"I picked **{computers_answer}**. :rock:")
                     answerEmbed.set_thumbnail(url=self.client.user.avatar_url)
@@ -289,7 +341,7 @@ class Fun(commands.Cog):
                         name=ctx.message.author.name,
                         icon_url=ctx.message.author.avatar_url
                     )
-                    await ctx.send(embed=answerEmbed) 
+                    await ctx.reply(embed=answerEmbed) 
             if computers_answer == "paper":
                 if answer == "rock":
                     answerEmbed = discord.Embed(color=discord.Colour.random(),title="I win",description=f"I picked **{computers_answer}**. :newspaper:")
@@ -298,7 +350,7 @@ class Fun(commands.Cog):
                         name=ctx.message.author.name,
                         icon_url=ctx.message.author.avatar_url
                     )
-                    await ctx.send(embed=answerEmbed) 
+                    await ctx.reply(embed=answerEmbed) 
                 if answer == "scissors":
                     answerEmbed = discord.Embed(color=discord.Colour.random(),title="You win",description=f"I picked **{computers_answer}**. :newspaper:")
                     answerEmbed.set_thumbnail(url=self.client.user.avatar_url)
@@ -306,7 +358,7 @@ class Fun(commands.Cog):
                         name=ctx.message.author.name,
                         icon_url=ctx.message.author.avatar_url
                     )
-                    await ctx.send(embed=answerEmbed) 
+                    await ctx.reply(embed=answerEmbed) 
             if computers_answer == "scissors":
                 if answer == "rock":
                     answerEmbed = discord.Embed(color=discord.Colour.random(),title="You win",description=f"I picked **{computers_answer}**. :scissors:")
@@ -315,7 +367,7 @@ class Fun(commands.Cog):
                         name=ctx.message.author.name,
                         icon_url=ctx.message.author.avatar_url
                     )
-                    await ctx.send(embed=answerEmbed) 
+                    await ctx.reply(embed=answerEmbed) 
                 if answer == "paper":
                     answerEmbed = discord.Embed(color=discord.Colour.random(),title="I win",description=f"I picked **{computers_answer}**. :scissors:")
                     answerEmbed.set_thumbnail(url=self.client.user.avatar_url)
@@ -323,7 +375,7 @@ class Fun(commands.Cog):
                         name=ctx.message.author.name,
                         icon_url=ctx.message.author.avatar_url
                     )
-                    await ctx.send(embed=answerEmbed) 
+                    await ctx.reply(embed=answerEmbed) 
 
     @commands.command(aliases=['ng','numberg','numberguess'], name='nguess', description='Guess the bots number.')
     async def nguess(self,ctx, *, number=0):
@@ -332,47 +384,47 @@ class Fun(commands.Cog):
         if number == correct_number:
             embedVar = discord.Embed(title=f'Your Number Is {number}', color=0x2ECC71)
             embedVar.add_field(name='You Picked The Correct Number! You Won', value=f"The correct number was {correct_number}.")
-            await ctx.send(embed=embedVar)
+            await ctx.reply(embed=embedVar)
         
         else:
             embedVar = discord.Embed(title=f'Your Number Is {number}', color=0xE74C3C)
             embedVar.add_field(name="Sorry, You Picked The Wrong Number", value=f"The correct number was {correct_number}.")
-            await ctx.send(embed=embedVar)
+            await ctx.reply(embed=embedVar)
     
 
 
 
 #    @commands.command(name='dm', description='Sends a DM to the user you @')
 #    async def dm(self, ctx, user: discord.Member):
-#        await ctx.send(f"sliding into {user.mention}'s DMs")
+#        await ctx.reply(f"sliding into {user.mention}'s DMs")
 #        responses = ['hows it goin bb', '*slides into your DMs* wassup baby girl', 'hey', 'uwu *pounces on you* rawr x3 owo? whats this? *notices your buldge*', 'you just got ***botted***  :sunglasses:', 'get DMed punk', 'Duzo is my God', '0portalboy0 is my God']
 #        choice = random.choice(responses)
 #        await user.send(f"{choice}")
-#        await ctx.send(f'i DMed them and said "{choice}"')
+#        await ctx.reply(f'i DMed them and said "{choice}"')
 
     #@commands.command(aliases=['trick or treat', 'trickortreat', 'trick-or-treat', 'trick_or_treat'], name='Trick or Treat', description='A command that only works on Halloween')
     #async def tricktreat(self, ctx):
     #    responses = ['Trick! Muhahaha :ghost:', "Treat! Here's some candy  :candy:", "Treat! Here's some sweets  :candy:"]
-    #    await ctx.send(f'{random.choice(responses)}')
+    #    await ctx.reply(f'{random.choice(responses)}')
 
 
 #    @commands.command(name='datetime', description='Gives the date and time (in the UK)')
 #    async def datetime(self, ctx):
 #        now = datetime.now()
 #        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-#        await ctx.send(f"It is {dt_string} right now in the UK.")
+#        await ctx.reply(f"It is {dt_string} right now in the UK.")
 
 #    @commands.command(name='time', description='Gives the current time (in the UK)')
 #    async def time(self, ctx):
 #        now = datetime.now()
 #        dt_string = now.strftime("%H:%M:%S")
-#        await ctx.send(f"The time in the UK is {dt_string}.")
+#        await ctx.reply(f"The time in the UK is {dt_string}.")
 
 #    @commands.command(name='date', description='Gives the date (in the UK)')
 #    async def date(self, ctx):
 #        today = date.today()
 #        datenow = today.strftime("%B %d, %Y")
-#        await ctx.send(f"The date in the UK is {datenow}.") 
+#        await ctx.reply(f"The date in the UK is {datenow}.") 
 
     @commands.command(aliases=["gay"], name='howgay', description='Gives a value from 1-100 depending on how gay you are')
     async def howgay(self, ctx, user : commands.MemberConverter=None):
@@ -389,14 +441,14 @@ class Fun(commands.Cog):
             name=ctx.message.author.name,
             icon_url=ctx.message.author.avatar_url
         )
-        await ctx.send(embed=gayembed)
+        await ctx.reply(embed=gayembed)
 
 
 
 
     #@commands.command(name='ping', description='Gets the bots ping')
     #async def ping(self, ctx):
-    #    await ctx.send('Why do you want this from me. Please leave me alone.')
+    #    await ctx.reply('Why do you want this from me. Please leave me alone.')
 
     @commands.command(name='hug', description='Lets you hug a user you @')
     async def hug(self, ctx, user: commands.MemberConverter):   
@@ -408,7 +460,7 @@ class Fun(commands.Cog):
             name=ctx.message.author.name,
             icon_url=ctx.message.author.avatar_url
         )
-        await ctx.send(embed=hugembed)
+        await ctx.reply(embed=hugembed)
     @commands.command(name='kiss', description='Lets you kiss a user you @')
     async def kiss(self, ctx, user: commands.MemberConverter):
         kisslist = ['https://media1.tenor.com/images/ef9687b36e36605b375b4e9b0cde51db/tenor.gif?itemid=12498627','https://media1.tenor.com/images/e673b68b323f14ee902cfdb2da5ca65e/tenor.gif?itemid=16000723','https://media1.tenor.com/images/293d18ad6ab994d9b9d18aed8a010f73/tenor.gif?itemid=13001030','https://media1.tenor.com/images/015c71df440861e567364cf44e5d00fe/tenor.gif?itemid=16851922','https://media1.tenor.com/images/eb7502a33cbeca31c2e97af07d1c4285/tenor.gif?itemid=14270726','https://media1.tenor.com/images/45e529c116a1758fd09bdb27e2172eca/tenor.gif?itemid=11674749']
@@ -419,7 +471,7 @@ class Fun(commands.Cog):
             name=ctx.message.author.name,
             icon_url=ctx.message.author.avatar_url
         )
-        await ctx.send(embed=kissembed)
+        await ctx.reply(embed=kissembed)
     @commands.command(name='slap', description='Lets you slap a user you @')
     async def slap(self, ctx, user: commands.MemberConverter):
         slaplist = ['https://media1.tenor.com/images/49de17c6f21172b3abfaf5972fddf6d6/tenor.gif?itemid=10206784','https://media1.tenor.com/images/42621cf33b44ca6a717d448b1223bccc/tenor.gif?itemid=15696850','https://media1.tenor.com/images/73adef04dadf613cb96ed3b2c8a192b4/tenor.gif?itemid=9631495','https://media1.tenor.com/images/e29671457384a94a7e19fea26029b937/tenor.gif?itemid=10048943','https://media.tenor.com/images/f26f807e70ee677f8e3aaee51779fc6f/tenor.gif','https://media1.tenor.com/images/b7a844cc66ca1c6a4f06c266646d070f/tenor.gif?itemid=17423278']
@@ -430,8 +482,8 @@ class Fun(commands.Cog):
             name=ctx.message.author.name,
             icon_url=ctx.message.author.avatar_url
         )
-        await ctx.send(embed=slapembed)
-        #await ctx.send(f'{ctx.author.mention} slaps {user.mention} {slapgif}')
+        await ctx.reply(embed=slapembed)
+        #await ctx.reply(f'{ctx.author.mention} slaps {user.mention} {slapgif}')
 
     @commands.command(
         name='embed',
@@ -445,23 +497,29 @@ class Fun(commands.Cog):
             return ms.channel == ctx.message.channel and ms.author == ctx.message.author
 
         # First ask the user for the title
-        mesg = await ctx.send(content='What would you like the title to be?')
+        mesg = await ctx.reply(content='What would you like the title to be?')
 
         # Wait for a response and get the title
         msg = await self.client.wait_for('message', check=check)
         title = msg.content # Set the title
-        await msg.delete()
-        await mesg.delete()
+        try:
+            await msg.delete()
+            await mesg.delete()
+        except discord.Forbidden:
+            pass
 
         # Next, ask for the content
-        mesg = await ctx.send(content='What would you like the Description to be?')
+        mesg = await ctx.reply(content='What would you like the Description to be?')
         msg = await self.client.wait_for('message', check=check)
         desc = msg.content
-        await msg.delete()
-        await mesg.delete()
+        try:
+            await msg.delete()
+            await mesg.delete()
+        except discord.Forbidden:
+            pass
 
         # Finally make the embed and send it
-        msg = await ctx.send(content='Now generating the embed...')
+        msg = await ctx.reply(content='Now generating the embed...')
 
         # Convert the colors into a list
         # To be able to use random.choice on it
@@ -492,11 +550,11 @@ class Fun(commands.Cog):
 
 #    @commands.command(name='whyareyougay', description='The question we are all asking')
 #    async def whyareyougay(self, ctx):
-#        await ctx.send('im not gay you are')
+#        await ctx.reply('im not gay you are')
 
 #    @commands.command(name='fightclub', description='We dont talk about fight club')
 #    async def fightclub(self, ctx):
-#        await ctx.send("We dont talk about fight club here. No fight clubs in this server, Officer.")
+#        await ctx.reply("We dont talk about fight club here. No fight clubs in this server, Officer.")
 
     @commands.command(name='yn',description='Gives you a yes or no answer.')
     async def yn(self, ctx, *, question):
@@ -508,7 +566,7 @@ class Fun(commands.Cog):
             icon_url=ctx.message.author.avatar_url
         )
         ynEmbed.set_thumbnail(url=self.client.user.avatar_url)
-        await ctx.send(embed=ynEmbed)
+        await ctx.reply(embed=ynEmbed)
 
     @commands.command(aliases=['8ball', 'eightball'], name='ball', description='Gives you advice')
     async def _8ball (self, ctx, *, question):
@@ -540,7 +598,7 @@ class Fun(commands.Cog):
             icon_url=ctx.message.author.avatar_url
         )
         ballembed.set_thumbnail(url=self.client.user.avatar_url)
-        await ctx.send(embed=ballembed)
+        await ctx.reply(embed=ballembed)
 
 
 

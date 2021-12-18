@@ -16,6 +16,7 @@ class Information(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+
     @commands.command(name='serversetup',description='Run this if you want to setup server information channels.')
     @has_permissions(manage_channels=True)
     async def _serversetup(self, ctx):
@@ -51,13 +52,11 @@ class Information(commands.Cog):
         with open('json/data.json','w') as f:
             json.dump(jsonStats,f,indent=4)
 
-        await ctx.send("Setup Complete!")
+        await ctx.reply("Setup Complete!")
 
     @commands.command(aliases=['bcoin','bitc'],name='bitcoin',description='Gets the current price of Bitcoin.')
     async def bitcoin(self, ctx,amount=1):
-        
-        
-
+        await ctx.trigger_typing()
         response_API = requests.get('https://api.coindesk.com/v1/bpi/currentprice.json')
         data = response_API.text
         parse_json = json.loads(data)
@@ -72,7 +71,7 @@ class Information(commands.Cog):
         bitcoinEmbed.add_field(name='($)USD',value=round(bitcoinUSD*amount),inline=True)
         bitcoinEmbed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/64px-Bitcoin.svg.png")
         bitcoinEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-        await ctx.send(embed=bitcoinEmbed)
+        await ctx.reply(embed=bitcoinEmbed)
 
     @commands.command(name='uptime',description='Tells you how long the bot has been online.')
     async def uptime(self,ctx):
@@ -85,7 +84,7 @@ class Information(commands.Cog):
         uptimeEmbed = discord.Embed(title='Uptime',description=f"{days}d, {hours}h, {minutes}m, {seconds}s",color=discord.Color.random())
         uptimeEmbed.set_thumbnail(url=self.client.user.avatar_url)
         uptimeEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-        await ctx.send(embed=uptimeEmbed)
+        await ctx.reply(embed=uptimeEmbed)
 
 
     @commands.command(aliases=['test'],name='ping',description='Tells you the bots ping.')
@@ -95,7 +94,7 @@ class Information(commands.Cog):
         pingEmbed = discord.Embed(title=f'Ping of {self.client.user.name}',description=f':stopwatch:  {round(self.client.latency * 1000)}ms',color=discord.Colour.random())
         pingEmbed.set_thumbnail(url=self.client.user.avatar_url)
         pingEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-        await ctx.send(embed=pingEmbed)
+        await ctx.reply(embed=pingEmbed)
 
     @commands.command(name='avatar', description='Gets you the avatar of someone.')
     async def avatar(self, ctx, user: commands.MemberConverter=None):
@@ -109,7 +108,7 @@ class Information(commands.Cog):
             name=ctx.message.author.name,
             icon_url=ctx.message.author.avatar_url
         )
-        await ctx.send(embed=avatarembed)
+        await ctx.reply(embed=avatarembed)
 
     @commands.command(aliases=['channelinfo','cinfo'],name='channel_info',description='Gives info on a channel.')
     async def channel_info(self, ctx, channel: commands.TextChannelConverter=None):
@@ -120,17 +119,17 @@ class Information(commands.Cog):
 
         cinfoEmbed = discord.Embed(title=f'Info on {channel.name}',description=f'**Topic:**\n```{channel.topic}```\n**ID:**\n```{channel.id}```\n**Type:**\n```{channel.type}```\n**Category:**\n```{channel.category}```\n**Channel Created On:**\n```{channel.created_at.strftime(date_format)}```',color=discord.Colour.random())
         cinfoEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-        await ctx.send(embed=cinfoEmbed)
+        await ctx.reply(embed=cinfoEmbed)
 
     @commands.command(aliases=['roleinfo','rinfo'],name='role_info',description='Gives info on a role.')
     async def role_info(self, ctx, role: commands.RoleConverter):
-        
         date_format = "%a, %d %b %Y %I:%M %p"
         memberList = ", ".join([str(m.name) for m in role.members])
+        permissionList = ', '.join([perm[0] for perm in role.permissions if perm[1]])
 
-        rinfoEmbed = discord.Embed(title=f'Info on {role.name}',description=f'**ID:**\n```{role.id}```\n**Can be Mentioned:**\n```{role.mentionable}```\n**Position:**\n```{role.position}```\n**Role Created On:**\n```{role.created_at.strftime(date_format)}```\n**Colour:**\n```{role.colour}```\n**Members:**\n```{memberList}```',color=role.colour)
+        rinfoEmbed = discord.Embed(title=f'Info on {role.name}',description=f'**ID:**\n```{role.id}```\n**Can be Mentioned:**\n```{role.mentionable}```\n**Position:**\n```{role.position}```\n**Role Created On:**\n```{role.created_at.strftime(date_format)}```\n**Colour:**\n```{role.colour}```\n**Permissions:**\n```{permissionList}```\n**Members:**\n```{memberList}```',color=role.colour)
         rinfoEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-        await ctx.send(embed=rinfoEmbed)
+        await ctx.reply(embed=rinfoEmbed)
 
     @commands.command(aliases=['guildinfo','ginfo','serverinfo','server_info','sinfo'],name='guild_info',description='Gives info on the guild.')
     async def guild_info(self, ctx):
@@ -143,32 +142,26 @@ class Information(commands.Cog):
         ginfoEmbed = discord.Embed(title=f'Info on {guild.name}',description=f'**Description:**\n```{guild.description}```\n**Member Count:**\n```{guild.member_count}```\n**Owner:**\n```{guild.owner}```\n**Roles:**\n```{roleList}```\n**Boost Level:**\n```{guild.premium_tier}```\n**Boost Count:**\n```{guild.premium_subscription_count}```\n**ID:**\n```{guild.id}```\n**Guild Created On:**\n```{guild.created_at.strftime(date_format)}```\n**Region:**\n```{guild.region}```',color=discord.Colour.random())
         ginfoEmbed.set_thumbnail(url=guild.icon_url)
         ginfoEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-        await ctx.send(embed=ginfoEmbed)
+        await ctx.reply(embed=ginfoEmbed)
 
 
 
     @commands.command(aliases=['userinfo','uinfo'],name='user_info',description='Gives info on a user.')
     async def user_info(self, ctx, member: commands.MemberConverter=None):
         member = member or ctx.message.author
-        
+        permissionList = ', '.join([perm[0] for perm in member.guild_permissions if perm[1]])
         rolelist = [r.name for r in member.roles if r != ctx.guild.default_role]
         roles = ", ".join(rolelist)
         if roles == "":
             roles=None
         date_format = "%a, %d %b %Y %I:%M %p"
-        #await ctx.send(hasattr(member.activities[0],"details"))
-        # if hasattr(member.activities[0],"details") == False:
-        #     setattr(member.activities[0],"details",False)
-        #     await ctx.send(hasattr(member.activities[0],"details"))
-        # \n**Status:**\n```{member.status}\n{member.activities[0].name}\n{member.activities[0].details}```
-
-        uinfoEmbed = discord.Embed(title=f'Info on {member.name}#{member.discriminator}', description=f'**ID:**\n`{member.id}`\n**Roles:**\n`{roles}`\n**Account Created On:**\n`{member.created_at.strftime(date_format)}`\n**Account Joined Guild On:**\n`{member.joined_at.strftime(date_format)}`\n**Nickname:**\n`{member.nick}`\n**Is Bot:**\n`{member.bot}`',color=discord.Colour.random())
+        uinfoEmbed = discord.Embed(title=f'Info on {member.name}#{member.discriminator}', description=f'**ID:**\n`{member.id}`\n**Roles:**\n`{roles}`\n**Account Created On:**\n`{member.created_at.strftime(date_format)}`\n**Account Joined Guild On:**\n`{member.joined_at.strftime(date_format)}`\n**Nickname:**\n`{member.nick}`\n**Is Bot:**\n`{member.bot}`\n**Permissions:**\n`{permissionList}`',color=discord.Colour.random())
         uinfoEmbed.set_thumbnail(url=member.avatar_url)
         uinfoEmbed.set_author(
             name=ctx.message.author.name,
             icon_url=ctx.message.author.avatar_url
         )
-        await ctx.send(embed=uinfoEmbed)
+        await ctx.reply(embed=uinfoEmbed)
             
     @commands.command(name='invite', description='Sends the bots invite link')
     async def invite(self, ctx):
@@ -181,7 +174,7 @@ class Information(commands.Cog):
         inviteEmbed.set_thumbnail(url=self.client.user.avatar_url)
         inviteEmbed.add_field(name='Support Server',value="[Server Invite](https://discord.gg/Raakw6367z)",inline=False)
         inviteEmbed.add_field(name='Get Dubot Slash!',value="[Dubot Slash Invite](https://discord.com/api/oauth2/authorize?client_id=900481597311172660&permissions=0&scope=bot%20applications.commands)",inline=False)
-        await ctx.send(embed=inviteEmbed)
+        await ctx.reply(embed=inviteEmbed)
 
     @commands.command(aliases=['information'],name='info', description='Tells you info on the bot')
     async def info(self, ctx):
@@ -200,7 +193,7 @@ class Information(commands.Cog):
             icon_url=ctx.message.author.avatar_url
             )
             
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     @commands.command(name='prefixes',description='Gives you the prefixes.')
     async def prefixes(self,ctx):
@@ -213,7 +206,7 @@ class Information(commands.Cog):
         prefixEmbed = discord.Embed(title='Prefixes',description=currentPrefixes,color=discord.Colour.random())
         prefixEmbed.set_thumbnail(url=ctx.guild.icon_url)
         prefixEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)                            
-        await ctx.send(embed=prefixEmbed)
+        await ctx.reply(embed=prefixEmbed)
         
 
 def setup(client):
