@@ -34,9 +34,12 @@ class Other(commands.Cog):
 
     @commands.command(aliases=['rule34'],name='nsfw',description='Finds a nsfw image of what you request.')
     @is_nsfw()
-    async def _nsfw(self, ctx, request):
+    async def _nsfw(self, ctx, request=None):
         await ctx.trigger_typing()
-        nsfwJson = requests.get("http://api.rule34.xxx//index.php?page=dapi&s=post&q=index&json=1&tags="+request).json()
+        if request == None:
+            nsfwJson = requests.get("http://api.rule34.xxx//index.php?page=dapi&s=post&q=index&json=1").json()
+        else:
+            nsfwJson = requests.get("http://api.rule34.xxx//index.php?page=dapi&s=post&q=index&json=1&tags="+request).json()
         chosenKey = random.choice(nsfwJson)
         nsfwFile = chosenKey["file_url"]
         nsfwID = chosenKey["id"]

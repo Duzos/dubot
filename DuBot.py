@@ -98,11 +98,7 @@ async def on_dbl_vote(data):
 async def on_message(message):
     # if the message is the bot, dont work.
     if message.author.id == client.user.id:
-        return
-    # owner = client.get_user(ownerID)
-    # spyEmbed = discord.Embed(title=f'{message.author.name}#{message.author.discriminator}',description=message.content)
-    # spyEmbed.set_author(name='avatar',icon_url=message.author.avatar_url)
-    # await owner.send(embed=spyEmbed)    
+        return   
 
     # open that json
     with open('json/data.json','r') as f:
@@ -332,14 +328,6 @@ async def on_guild_remove(guild):
 
 # Owner only commands. 
 
-@client.command(name='owner_help',description='The owner commands')
-@is_owner()
-async def _owner_help(ctx):
-    oEmbed = discord.Embed(title='Owner Help',color=discord.Colour.random())
-    oEmbed.set_thumbnail(url=client.user.avatar_url)
-    oEmbed.set_footer(text=f'Requested by {ctx.message.author.name}',icon_url=client.user.avatar_url)
-    oEmbed.add_field(name="Commands:",value="**Owner_Hel|p** - This command\n**DataReset** - Resets the data for a specific server\n**DataResetAll** - Resets all the data for every server.\n**Online** - Sets the bots status to online\n**Idle** - Sets the bots status to idle\n**Offline** - Sets the bots status to offline\n**DND** - Sets the bots status to DND\n**PauseBot** - Pauses the bot in the console\n**Shutdown** - Shuts the bot down\n**Restart** - Restarts the bot\n**Load** - Loads an unloaded cog\n**Unload** - Unloads a loaded cog\n**Reload** - Reloads a loaded cog\n**server_list** - DMs the owner with a list of servers the bot is in\n**server_info_owner** - DMs the owner with info on a server\n**server_invite_owner** - DMs the owner with an invite to a server\n**startStatus** - Restarts the auto-status\n**WIPLoad** - Loads a WIP cog\n**WIPUnload** - Unloads a WIP cog\n**WIPReload** - Reloads a WIP cog\n**IdeaApprove** - Approve an idea\n**IdeaDeny** - Deny an Idea\n")
-    await ctx.send(embed=oEmbed)
 
 @client.command(name='datareset',description='Resets the data for a specific server.')
 @is_owner()
@@ -546,40 +534,6 @@ async def blocked(ctx):
 
     with open('json/blocked.json','w') as f:
         json.dump(blockList, f, indent=4)
-
-@client.command()
-@commands.is_owner()
-async def server_list(ctx):
-    duzo = await client.fetch_user(ownerID)
-    message = ""
-    for guild in client.guilds:
-        message += f"{guild.name}: {guild.id}\n"
-    await duzo.send(f"I am in **{len(client.guilds)}** servers.")
-    await duzo.send(message)
-
-@client.command()
-@commands.is_owner()
-async def server_info_owner(ctx,guild: commands.GuildConverter=None):
-    duzo = await client.fetch_user(ownerID)
-    guild = guild or ctx.guild
-
-    date_format = "%a, %d %b %Y %I:%M %p"
-
-    roleList = ", ".join([str(r.name) for r in guild.roles])
-
-    ginfoEmbed = discord.Embed(title=f'Info on {guild.name}',description=f'**Description:**\n```{guild.description}```\n**Member Count:**\n```{guild.member_count}```\n**Owner:**\n```{guild.owner}```\n**Roles:**\n```{roleList}```\n**Boost Level:**\n```{guild.premium_tier}```\n**Boost Count:**\n```{guild.premium_subscription_count}```\n**ID:**\n```{guild.id}```\n**Guild Created On:**\n```{guild.created_at.strftime(date_format)}```\n**Region:**\n```{guild.region}```',color=discord.Colour.random())
-    ginfoEmbed.set_thumbnail(url=guild.icon_url)
-    ginfoEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-    await duzo.send(embed=ginfoEmbed)
-
-@client.command()
-@commands.is_owner()
-async def server_invite_owner(ctx, guild: commands.GuildConverter=None):
-    duzo = await client.fetch_user(ownerID)
-    guild = guild or ctx.guild
-    guildChannel = guild.text_channels[0]
-    invite = await guildChannel.create_invite(unique=False)
-    await duzo.send(f"Here's the invite: {invite}")
 
 @client.command(aliases=['iapprove','ia','iaccept'])
 @commands.is_owner()
