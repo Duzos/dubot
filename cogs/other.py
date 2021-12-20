@@ -14,6 +14,7 @@ import json
 from discord.ext.commands.converter import MessageConverter
 from discord.ext.commands.core import has_permissions, is_nsfw
 import praw
+import requests
 
 # Getting items from config.json
 with open('config.json','r') as cf:
@@ -30,6 +31,38 @@ class Other(commands.Cog):
 
     def __init__(self, client):
         self.client = client
+
+    @commands.command(aliases=['rule34'],name='nsfw',description='Finds a nsfw image of what you request.')
+    @is_nsfw()
+    async def _nsfw(self, ctx, request):
+        await ctx.trigger_typing()
+        nsfwJson = requests.get("http://api.rule34.xxx//index.php?page=dapi&s=post&q=index&json=1&tags="+request).json()
+        chosenKey = random.choice(nsfwJson)
+        nsfwFile = chosenKey["file_url"]
+        nsfwID = chosenKey["id"]
+        nsfwTags = chosenKey["tags"].split()
+
+        nsfw_extension = nsfwFile[len(nsfwFile) - 3 :].lower()
+        if nsfw_extension == "mp4":
+            nsfwPreview = chosenKey["preview_url"]
+            nsfwEmbed = discord.Embed(title=f"[{request}]({nsfwFile})",description='Click title for full video.',color=discord.Colour.random(),type='image')
+            nsfwEmbed.set_image(url=nsfwPreview)
+            nsfwEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            nsfwEmbed.set_footer(text=f"ID: {nsfwID} | API by api.rule34.xxx")
+            await ctx.reply(embed=nsfwEmbed)
+            return
+        if nsfw_extension == "jpg" or nsfw_extension == "peg" or nsfw_extension == "png":
+            nsfwEmbed = discord.Embed(title="NSFW",description=f'[{request}]({nsfwFile})',color=discord.Colour.random(),type='image')
+            nsfwEmbed.set_image(url=nsfwFile)
+            nsfwEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            nsfwEmbed.set_footer(text=f"ID: {nsfwID} | API by api.rule34.xxx")
+            await ctx.reply(embed=nsfwEmbed)
+            return
+        await ctx.reply("An error occured while trying to get data from the API.")
+            
+    
+
+
 
     @commands.command(name='nsfwreddit',description='Get posts from a random nsfw subreddit.')
     @is_nsfw()

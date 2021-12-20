@@ -5,6 +5,7 @@ import math
 import random
 
 import discord
+from discord.ext.commands.core import has_permissions
 import youtube_dl
 from async_timeout import timeout
 from discord.ext import commands
@@ -370,6 +371,15 @@ class Music(commands.Cog):
             ctx.voice_state.voice.stop()
             await ctx.message.add_reaction('⏹')
 
+    @commands.command(aliases=['fs'],name='forceskip',description='Force skips a song')
+    @has_permissions(manage_messages=True)
+    async def _forceskip(self, ctx: commands.Context):
+        if not ctx.voice_state.is_playing:
+            return await ctx.send('Not playing any music.')
+        
+        await ctx.message.add_reaction('⏭')
+        ctx.voice_state.skip()
+
     @commands.command(name='skip',description='Vote to skip')
     async def _skip(self, ctx: commands.Context):
         """Vote to skip a song. The requester can automatically skip.
@@ -377,7 +387,7 @@ class Music(commands.Cog):
         """
 
         if not ctx.voice_state.is_playing:
-            return await ctx.send('Not playing any music right now...')
+            return await ctx.send('Not playing any music right now.')
 
         voter = ctx.message.author
         if voter == ctx.voice_state.current.requester:

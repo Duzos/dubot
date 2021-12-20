@@ -96,6 +96,14 @@ async def on_dbl_vote(data):
 # On Messages
 @client.event
 async def on_message(message):
+    # if the message is the bot, dont work.
+    if message.author.id == client.user.id:
+        return
+    # owner = client.get_user(ownerID)
+    # spyEmbed = discord.Embed(title=f'{message.author.name}#{message.author.discriminator}',description=message.content)
+    # spyEmbed.set_author(name='avatar',icon_url=message.author.avatar_url)
+    # await owner.send(embed=spyEmbed)    
+
     # open that json
     with open('json/data.json','r') as f:
         jsonData = json.load(f)
@@ -103,18 +111,17 @@ async def on_message(message):
     try:
         if jsonData[f'{message.guild.id} antiswear'] == True:
             swearList = jsonData[f'{message.guild.id} swearwords']
-            if message.content.lower() in swearList:
-                await message.delete()
-                return
+            splitmessage = message.content.split()
+            for value in splitmessage:
+                if value in swearList:   
+                    await message.delete()
+                    return
     except:
         pass
     # Blocked users.
     with open('json/blocked.json','r') as bf:
         blocked = json.load(bf)
     if f"{message.author.id}" in blocked:
-        return
-    # if the message is the bot, dont work.
-    if message.author.id == client.user.id:
         return
     #run the command.    
     await client.process_commands(message)
@@ -618,6 +625,11 @@ async def rawavatar(ctx, user: discord.Member):
 @client.command()
 async def d(ctx):
     await ctx.send("d <@!597102599694712844>")
+
+@client.command(name='kys')
+async def _kys(ctx, user: commands.MemberConverter=None):
+    user = user or ctx.message.author
+    await ctx.reply(f"{user.mention} should commit death")
 
 # Running Cogs.
 for filename in os.listdir('./cogs'):
