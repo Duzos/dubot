@@ -42,19 +42,26 @@ class Other(commands.Cog):
         nsfwID = chosenKey["id"]
         nsfwTags = chosenKey["tags"].split()
 
+        tagMessage = ""
+        for i in nsfwTags:
+            tagMessage = tagMessage + f"`{i}` "
+
+
         nsfw_extension = nsfwFile[len(nsfwFile) - 3 :].lower()
         if nsfw_extension == "mp4":
             nsfwPreview = chosenKey["preview_url"]
-            nsfwEmbed = discord.Embed(title=f"[{request}]({nsfwFile})",description='Click title for full video.',color=discord.Colour.random(),type='image')
+            nsfwEmbed = discord.Embed(title="Click description for full video.",description=f"[{request}]({nsfwFile})",color=discord.Colour.random(),type='image')
             nsfwEmbed.set_image(url=nsfwPreview)
             nsfwEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            nsfwEmbed.add_field(name='Tags:',value=tagMessage)
             nsfwEmbed.set_footer(text=f"ID: {nsfwID} | API by api.rule34.xxx")
             await ctx.reply(embed=nsfwEmbed)
             return
-        if nsfw_extension == "jpg" or nsfw_extension == "peg" or nsfw_extension == "png":
+        if nsfw_extension == "jpg" or nsfw_extension == "peg" or nsfw_extension == "png" or nsfw_extension == "gif":
             nsfwEmbed = discord.Embed(title="NSFW",description=f'[{request}]({nsfwFile})',color=discord.Colour.random(),type='image')
             nsfwEmbed.set_image(url=nsfwFile)
             nsfwEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            nsfwEmbed.add_field(name='Tags:',value=tagMessage)
             nsfwEmbed.set_footer(text=f"ID: {nsfwID} | API by api.rule34.xxx")
             await ctx.reply(embed=nsfwEmbed)
             return
