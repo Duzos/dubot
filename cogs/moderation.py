@@ -485,7 +485,7 @@ class Moderation(commands.Cog):
 
 
         def check(reaction, user):
-            return str(reaction) == "🔒" and user == ctx.message.author
+            return str(reaction) == "🔒" and user != self.client.user
 
         guild = ctx.message.guild
         overwrites={
