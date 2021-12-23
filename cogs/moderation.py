@@ -81,10 +81,10 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             botPermEmbed = discord.Embed(title='ERROR',description=f'{self.client.user.name} is missing the required permission(s) to run this command.',color=0x992D22)
             botPermEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
-            botPermEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            botPermEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             try:
                 await ctx.reply(embed=botPermEmbed)
             except:
@@ -112,10 +112,10 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             botPermEmbed = discord.Embed(title='ERROR',description=f'{self.client.user.name} is missing the required permission(s) to run this command.',color=0x992D22)
             botPermEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
-            botPermEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            botPermEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             try:
                 await ctx.reply(embed=botPermEmbed)
             except:
@@ -146,20 +146,20 @@ class Moderation(commands.Cog):
                 except discord.Forbidden:
                     botPermEmbed = discord.Embed(title='ERROR',description=f'{self.client.user.name} is missing the required permission(s) to run this command.',color=0x992D22)
                     botPermEmbed.set_author(
-                        name=ctx.message.author.name,
-                        icon_url=ctx.message.author.avatar_url
+                        name=ctx.message.author.display_name,
+                        icon_url=ctx.message.author.display_avatar.url
                     )
-                    botPermEmbed.set_thumbnail(url=self.client.user.avatar_url)
+                    botPermEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
                     try:
                         await ctx.reply(embed=botPermEmbed)
                     except:
                         await ctx.send(embed=botPermEmbed)
                     return
                 muteEmbed = discord.Embed(title='Mute',description=f'Muted {user.mention}.',color=discord.Colour.random())
-                muteEmbed.set_thumbnail(url=user.avatar_url)
+                muteEmbed.set_thumbnail(url=user.display_avatar.url)
                 muteEmbed.set_author(
-                        name=ctx.message.author.name,
-                        icon_url=ctx.message.author.avatar_url
+                        name=ctx.message.author.display_name,
+                        icon_url=ctx.message.author.display_avatar.url
                     )
                 muteEmbed.add_field(name='Reason:',value=reason)
                 try:
@@ -169,8 +169,8 @@ class Moderation(commands.Cog):
                 muteEmbed = discord.Embed(title='Mute',description=f'Muted {user.mention}.',color=discord.Colour.random())
                 muteEmbed.set_thumbnail(url=ctx.guild.icon_url)
                 muteEmbed.set_author(
-                        name=ctx.message.author.name,
-                        icon_url=ctx.message.author.avatar_url
+                        name=ctx.message.author.display_name,
+                        icon_url=ctx.message.author.display_avatar.url
                     )
                 muteEmbed.add_field(name='Reason:',value=reason)
                 muteEmbed.add_field(name='Server:',value=ctx.guild.name)
@@ -182,10 +182,10 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             botPermEmbed = discord.Embed(title='ERROR',description=f'{self.client.user.name} is missing the required permission(s) to run this command.',color=0x992D22)
             botPermEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
-            botPermEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            botPermEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             try:
                 await ctx.reply(embed=botPermEmbed)
             except:
@@ -208,20 +208,20 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             botPermEmbed = discord.Embed(title='ERROR',description=f'{self.client.user.name} is missing the required permission(s) to run this command.',color=0x992D22)
             botPermEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
-            botPermEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            botPermEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             try:
                 await ctx.reply(embed=botPermEmbed)
             except:
                 await ctx.send(embed=botPermEmbed)
             return
         muteEmbed = discord.Embed(title='Mute',description=f'Muted {user.mention}.',color=discord.Colour.random())
-        muteEmbed.set_thumbnail(url=user.avatar_url)
+        muteEmbed.set_thumbnail(url=user.display_avatar.url)
         muteEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
         muteEmbed.add_field(name='Reason:',value=reason)
         try:
@@ -231,8 +231,8 @@ class Moderation(commands.Cog):
         muteEmbed = discord.Embed(title='Mute',description=f'Muted {user.mention}.',color=discord.Colour.random())
         muteEmbed.set_thumbnail(url=ctx.guild.icon_url)
         muteEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
         muteEmbed.add_field(name='Reason:',value=reason)
         muteEmbed.add_field(name='Server:',value=ctx.guild.name)
@@ -256,20 +256,20 @@ class Moderation(commands.Cog):
                 except discord.Forbidden:
                     botPermEmbed = discord.Embed(title='ERROR',description=f'{self.client.user.name} is missing the required permission(s) to run this command.',color=0x992D22)
                     botPermEmbed.set_author(
-                        name=ctx.message.author.name,
-                        icon_url=ctx.message.author.avatar_url
+                        name=ctx.message.author.display_name,
+                        icon_url=ctx.message.author.display_avatar.url
                     )
-                    botPermEmbed.set_thumbnail(url=self.client.user.avatar_url)
+                    botPermEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
                     try:
                         await ctx.reply(embed=botPermEmbed)
                     except:
                         await ctx.send(embed=botPermEmbed)
                     return
                 unmuteEmbed = discord.Embed(title='Unmute',description=f'Unmuted {user.mention}',color=discord.Colour.random())
-                unmuteEmbed.set_thumbnail(url=user.avatar_url)
+                unmuteEmbed.set_thumbnail(url=user.display_avatar.url)
                 unmuteEmbed.set_author(
-                        name=ctx.message.author.name,
-                        icon_url=ctx.message.author.avatar_url
+                        name=ctx.message.author.display_name,
+                        icon_url=ctx.message.author.display_avatar.url
                     )
                 try:
                     await ctx.reply(embed=unmuteEmbed)
@@ -278,8 +278,8 @@ class Moderation(commands.Cog):
                 unmuteEmbed = discord.Embed(title='Unmute',description=f'Unmuted {user.mention}',color=discord.Colour.random())
                 unmuteEmbed.set_thumbnail(url=ctx.guild.icon_url)
                 unmuteEmbed.set_author(
-                        name=ctx.message.author.name,
-                        icon_url=ctx.message.author.avatar_url
+                        name=ctx.message.author.display_name,
+                        icon_url=ctx.message.author.display_avatar.url
                     )
                 unmuteEmbed.add_field(name='Server:',value=ctx.guild.name)
                 await user.send(embed=unmuteEmbed)
@@ -312,10 +312,10 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             botPermEmbed = discord.Embed(title='ERROR',description=f'{self.client.user.name} is missing the required permission(s) to run this command.',color=0x992D22)
             botPermEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
-            botPermEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            botPermEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             try:
                 await ctx.reply(embed=botPermEmbed)
             except:
@@ -334,10 +334,10 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             pass
         unbanEmbed = discord.Embed(title='Unban',description=f'{user.mention} has been unbanned.',color=discord.Colour.random())
-        unbanEmbed.set_thumbnail(url=user.avatar_url)
+        unbanEmbed.set_thumbnail(url=user.display_avatar.url)
         unbanEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
         try:
             await ctx.reply(embed=unbanEmbed)
@@ -346,8 +346,8 @@ class Moderation(commands.Cog):
         unbanEmbed = discord.Embed(title='Unban',description=f'{user.mention} has been unbanned.',color=discord.Colour.random())
         unbanEmbed.set_thumbnail(url=ctx.guild.icon_url)
         unbanEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
         unbanEmbed.add_field(name='Server:',value=ctx.guild.name)
         await user.send(embed=unbanEmbed)
@@ -366,10 +366,10 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             botPermEmbed = discord.Embed(title='ERROR',description=f'{self.client.user.name} is missing the required permission(s) to run this command.',color=0x992D22)
             botPermEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
-            botPermEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            botPermEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             try:
                 await ctx.reply(embed=botPermEmbed)
             except:
@@ -377,10 +377,10 @@ class Moderation(commands.Cog):
             return
         banEmbed = discord.Embed(title='Ban',description=f'{member.mention} has been banned.', color=discord.Colour.random())
         banEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
-        banEmbed.set_thumbnail(url=member.avatar_url)
+        banEmbed.set_thumbnail(url=member.display_avatar.url)
         banEmbed.add_field(name='Reason:',value=reason)
         try:
             await ctx.reply(embed=banEmbed)
@@ -388,8 +388,8 @@ class Moderation(commands.Cog):
             await ctx.send(embed=banEmbed)
         banEmbed = discord.Embed(title='Ban',description=f'{member.mention} has been banned.', color=discord.Colour.random())
         banEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
         banEmbed.set_thumbnail(url=ctx.guild.icon_url)
         banEmbed.add_field(name='Reason:',value=reason)
@@ -409,24 +409,24 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             botPermEmbed = discord.Embed(title='ERROR',description=f'{self.client.user.name} is missing the required permission(s) to run this command.',color=0x992D22)
             botPermEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
-            botPermEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            botPermEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             await ctx.send(embed=botPermEmbed)
             return
         kickEmbed = discord.Embed(title='Kick',description=f'{member.mention} has been kicked.',color=discord.Colour.random())
         kickEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
-        kickEmbed.set_thumbnail(url=member.avatar_url)
+        kickEmbed.set_thumbnail(url=member.display_avatar.url)
         kickEmbed.add_field(name='Reason:',value=reason)
         await ctx.reply(embed=kickEmbed)
         kickEmbed = discord.Embed(title='Kick',description=f'{member.mention} has been kicked.',color=discord.Colour.random())
         kickEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
         kickEmbed.set_thumbnail(url=ctx.guild.icon_url)
         kickEmbed.add_field(name='Reason:',value=reason)
@@ -499,10 +499,10 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             botPermEmbed = discord.Embed(title='ERROR',description=f'{self.client.user.name} is missing the required permission(s) to run this command.',color=0x992D22)
             botPermEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
-            botPermEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            botPermEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             try:
                 await ctx.reply(embed=botPermEmbed)
             except:
@@ -529,10 +529,10 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             botPermEmbed = discord.Embed(title='ERROR',description=f'{self.client.user.name} is missing the required permission(s) to run this command.',color=0x992D22)
             botPermEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
-            botPermEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            botPermEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             try:
                 await ctx.reply(embed=botPermEmbed)
             except:
@@ -560,10 +560,10 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             botPermEmbed = discord.Embed(title='ERROR',description=f'{self.client.user.name} is missing the required permission(s) to run this command.',color=0x992D22)
             botPermEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
-            botPermEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            botPermEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             try:
                 await ctx.reply(embed=botPermEmbed)
             except:
@@ -571,10 +571,10 @@ class Moderation(commands.Cog):
             return
         slowEmbed = discord.Embed(title='Slowmode',description=f'Slowmode is now on **{seconds}** seconds.',color=discord.Colour.random())
         slowEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
-        slowEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        slowEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
         try:
             await ctx.reply(embed=slowEmbed)
         except:
@@ -589,10 +589,10 @@ class Moderation(commands.Cog):
         except discord.Forbidden:
             botPermEmbed = discord.Embed(title='ERROR',description=f'{self.client.user.name} is missing the required permission(s) to run this command.',color=0x992D22)
             botPermEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
-            botPermEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            botPermEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             try:
                 await ctx.reply(embed=botPermEmbed)
             except:

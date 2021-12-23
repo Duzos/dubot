@@ -159,10 +159,10 @@ async def on_command_error(ctx, error):
             permValues = permValues+ f"{perm}\n"
         botPermEmbed.add_field(name="Missing Permission(s):",value=permValues,inline=False)
         botPermEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
-        botPermEmbed.set_thumbnail(url=client.user.avatar_url)
+        botPermEmbed.set_thumbnail(url=client.user.display_avatar.url)
         await ctx.send(embed=botPermEmbed)
         return
     elif isinstance(error, commands.MissingPermissions):
@@ -172,19 +172,19 @@ async def on_command_error(ctx, error):
             permValues = permValues+ f"{perm}\n"
         botPermEmbed.add_field(name="Missing Permission(s):",value=permValues,inline=False)
         botPermEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
-        botPermEmbed.set_thumbnail(url=client.user.avatar_url)
+        botPermEmbed.set_thumbnail(url=client.user.display_avatar.url)
         await ctx.send(embed=botPermEmbed)
         return
     else:
         errorEmbed = discord.Embed(title='ERROR',description=error,color=0x992D22)
         errorEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
-        errorEmbed.set_thumbnail(url=client.user.avatar_url)
+        errorEmbed.set_thumbnail(url=client.user.display_avatar.url)
         errorEmbed.add_field(name="Bug?",value="Please report this error using d.bug if you think its a bug.")
         await ctx.send(embed=errorEmbed)
 
@@ -207,10 +207,10 @@ async def on_member_join(member : discord.Member):
     if welcomeChoiceGuild == True:
         welcomeChannel = jsonData[f"{idGuild} welcomeChannel"]
         welcomeEmbed = discord.Embed(title='New Member', description=f'{member.mention} joined!',color=discord.Colour.random())
-        welcomeEmbed.set_thumbnail(url=member.avatar_url)
+        welcomeEmbed.set_thumbnail(url=member.display_avatar.url)
         welcomeEmbed.set_author(
             name=client.user.display_name,
-            icon_url=client.user.avatar_url
+            icon_url=client.user.display_avatar.url
             )
         await client.get_channel(welcomeChannel).send(embed=welcomeEmbed)
 
@@ -249,10 +249,10 @@ async def on_member_remove(member : discord.Member):
     if leaveChoiceGuild == True:
         leaveChannel = jsonData[f"{idGuild} leaveChannel"]
         leaveEmbed = discord.Embed(title='Member Left', description=f'**{member.mention}** left.',color=discord.Colour.random())
-        leaveEmbed.set_thumbnail(url=member.avatar_url)
+        leaveEmbed.set_thumbnail(url=member.display_avatar.url)
         leaveEmbed.set_author(
             name=client.user.display_name,
-            icon_url=client.user.avatar_url
+            icon_url=client.user.display_avatar.url
             )
         await client.get_channel(leaveChannel).send(embed=leaveEmbed)
     if statsChoice == True:
@@ -574,7 +574,9 @@ async def ideaDeny(ctx, idea=None):
 # Other commands.
 @client.command()
 async def rawavatar(ctx, user: discord.Member):
-    await ctx.send(user.avatar_url)
+    await ctx.send(user.display_avatar.url)
+    await ctx.send(user.avatar.url)
+    await ctx.send(user.banner)
 
 @client.command()
 async def d(ctx):
@@ -611,8 +613,8 @@ client.run(token)
 #     fardembed = discord.Embed(title=f'{ctx.author.name} farded',description=f'{fdescription}',color=discord.Colour.random(),type='gifv')
 #     fardembed.set_image(url=fardchoice)
 #     fardembed.set_author(
-#         name=ctx.message.author.name,
-#         icon_url=ctx.message.author.avatar_url
+#         name=ctx.message.author.display_name,
+#         icon_url=ctx.message.author.display_avatar.url
 #     )
 #     await ctx.send(embed=fardembed)
 
@@ -647,8 +649,8 @@ client.run(token)
 #     mzstyembed = discord.Embed(title='secret mzsty command',description='',color=discord.Colour.random(),type='gifv')
 #     mzstyembed.set_image(url=mzstygif)
 #     mzstyembed.set_author(
-#         name=ctx.message.author.name,
-#         icon_url=ctx.message.author.avatar_url
+#         name=ctx.message.author.display_name,
+#         icon_url=ctx.message.author.display_avatar.url
 #     )
 #     await ctx.send(embed=mzstyembed)
 
@@ -658,8 +660,8 @@ client.run(token)
 #     beanEmbed = discord.Embed(title='omg its mr bean',color=discord.Colour.random(),type='gifv')
 #     beanEmbed.set_image(url=beangif)
 #     beanEmbed.set_author(
-#         name=ctx.message.author.name,
-#         icon_url=ctx.message.author.avatar_url
+#         name=ctx.message.author.display_name,
+#         icon_url=ctx.message.author.display_avatar.url
 #     )
 #     await ctx.send(embed=beanEmbed)
 

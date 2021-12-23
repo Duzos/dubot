@@ -38,7 +38,7 @@ class Fun(commands.Cog):
 
         memeEmbed = discord.Embed(title='Meme',color=discord.Colour.random(),type='image')
         memeEmbed.set_image(url=submission.url)
-        memeEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        memeEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=memeEmbed)
 
     @commands.command(name='subreddit',description='Get posts from a subreddit.')
@@ -54,11 +54,11 @@ class Fun(commands.Cog):
         if sb_extension == "jpg" or sb_extension == "png" or sb_extension == "gif":
             sbEmbed = discord.Embed(title=sbreddit,description=f'[{submission.title}]({submission.url})',color=discord.Colour.random(),type='image')
             sbEmbed.set_image(url=submission.url)
-            sbEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            sbEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
             await ctx.reply(embed=sbEmbed)
             return
         sbEmbed = discord.Embed(title=sbreddit,description=f'[{submission.title}]({submission.url})',color=discord.Colour.random())
-        sbEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        sbEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=sbEmbed)
         
 
@@ -76,11 +76,11 @@ class Fun(commands.Cog):
         if sb_extension == "jpg" or sb_extension == "png" or sb_extension == "gif":
             sbEmbed = discord.Embed(title=sb_random.display_name,description=f'[{submission.title}]({submission.url})',color=discord.Colour.random(),type='image')
             sbEmbed.set_image(url=submission.url)
-            sbEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            sbEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
             await ctx.reply(embed=sbEmbed)
             return
         sbEmbed = discord.Embed(title=sb_random.display_name,description=f'[{submission.title}]({submission.url})',color=discord.Colour.random())
-        sbEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        sbEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=sbEmbed)
         
 
@@ -106,7 +106,7 @@ class Fun(commands.Cog):
         nameEmbed.add_field(name='Name',value=f"{nameTitle} {firstName} {lastName}",inline=False)
         nameEmbed.add_field(name='Age',value=f'{nameAge}\n{nameDate}')
         nameEmbed.add_field(name='Gender',value=results['gender'])
-        nameEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        nameEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=nameEmbed)
 
     @commands.command(name='fact',description='Gives you a random fact.')
@@ -120,7 +120,7 @@ class Fun(commands.Cog):
         factEmbed = discord.Embed(title='Fact',description=f'{factResponse}',color=discord.Colour.random())
         factEmbed.set_footer(text=f"ID: {factID}")
         factEmbed.add_field(name='Link',value=f'[Click!]({factLink})')
-        factEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)        
+        factEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)        
         await ctx.reply(embed=factEmbed)
 
     @commands.command(aliases=['cat','catrandom'],name='randomcat',description='Gives you a random cat picture.')
@@ -133,7 +133,7 @@ class Fun(commands.Cog):
         catEmbed = discord.Embed(title='Cat',color=discord.Colour.random(),type='image')
         catEmbed.set_image(url=catURL)
         catEmbed.set_footer(text=f'ID: {catID}',icon_url=EmptyEmbed)
-        catEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        catEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=catEmbed)
 
     @commands.command(aliases=['bored'],name='activity',description='Gives you something to do.')
@@ -155,8 +155,8 @@ class Fun(commands.Cog):
         activityEmbed.add_field(name='Number of People:',value=activityPeople,inline=False)
         #activityEmbed.add_field(name="",value=activityLink,inline=True)
         activityEmbed.set_footer(text=f"ID: {activityKey}",icon_url=EmptyEmbed)
-        activityEmbed.set_thumbnail(url=self.client.user.avatar_url)
-        activityEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        activityEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+        activityEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=activityEmbed)   
 
     @commands.command(name='advice',description='Gives you a random piece of advice.')
@@ -170,8 +170,8 @@ class Fun(commands.Cog):
 
         adviceEmbed = discord.Embed(title='Advice',description=currentAdvice,color=discord.Colour.random())
         adviceEmbed.set_footer(text=f"ID: {currentAdviceID}",icon_url=EmptyEmbed)
-        adviceEmbed.set_thumbnail(url=self.client.user.avatar_url)
-        adviceEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        adviceEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+        adviceEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=adviceEmbed)
 
     @commands.command(name='e',description='e')
@@ -281,10 +281,10 @@ class Fun(commands.Cog):
         result = random.choice(coin)
         
         flipEmbed = discord.Embed(title=':coin:',description=f'The coin landed on **{result}**.',color=discord.Colour.random())
-        flipEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        flipEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
         flipEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
         await ctx.reply(embed=flipEmbed)
 
@@ -292,10 +292,10 @@ class Fun(commands.Cog):
     async def dice(self, ctx):
         roll = randint(1,6)
         diceEmbed = discord.Embed(title=":game_die:",description=f'The dice rolled a **{roll}**.',color=discord.Colour.random())
-        diceEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        diceEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
         diceEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
         await ctx.reply(embed=diceEmbed)
 
@@ -310,70 +310,70 @@ class Fun(commands.Cog):
             return
         if answer not in choices:
             incorrectEmbed = discord.Embed(title="Invalid",description=f"'{answer}' is not valid. Please use one of the following: rock, paper, scissors.",color=discord.Colour.random())
-            incorrectEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            incorrectEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             incorrectEmbed.set_author(
-                name=ctx.message.author.name,
-                icon_url=ctx.message.author.avatar_url
+                name=ctx.message.author.display_name,
+                icon_url=ctx.message.author.display_avatar.url
             )
             await ctx.reply(embed=incorrectEmbed)
         else:
             if computers_answer == answer:
                 answerEmbed = discord.Embed(color=discord.Colour.random(),title="Tie",description=f"We both picked **{answer}**.")
-                answerEmbed.set_thumbnail(url=self.client.user.avatar_url)
+                answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
                 answerEmbed.set_author(
-                    name=ctx.message.author.name,
-                    icon_url=ctx.message.author.avatar_url
+                    name=ctx.message.author.display_name,
+                    icon_url=ctx.message.author.display_avatar.url
                 )
                 await ctx.reply(embed=answerEmbed)
             if computers_answer == "rock":
                 if answer == "paper":
                     answerEmbed = discord.Embed(color=discord.Colour.random(),title="You win",description=f"I picked **{computers_answer}**. :rock:")
-                    answerEmbed.set_thumbnail(url=self.client.user.avatar_url)
+                    answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
                     answerEmbed.set_author(
-                        name=ctx.message.author.name,
-                        icon_url=ctx.message.author.avatar_url
+                        name=ctx.message.author.display_name,
+                        icon_url=ctx.message.author.display_avatar.url
                     )
                     await ctx.reply(embed=answerEmbed) 
                 if answer == "scissors":
                     answerEmbed = discord.Embed(color=discord.Colour.random(),title="I win",description=f"I picked **{computers_answer}**. :rock:")
-                    answerEmbed.set_thumbnail(url=self.client.user.avatar_url)
+                    answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
                     answerEmbed.set_author(
-                        name=ctx.message.author.name,
-                        icon_url=ctx.message.author.avatar_url
+                        name=ctx.message.author.display_name,
+                        icon_url=ctx.message.author.display_avatar.url
                     )
                     await ctx.reply(embed=answerEmbed) 
             if computers_answer == "paper":
                 if answer == "rock":
                     answerEmbed = discord.Embed(color=discord.Colour.random(),title="I win",description=f"I picked **{computers_answer}**. :newspaper:")
-                    answerEmbed.set_thumbnail(url=self.client.user.avatar_url)
+                    answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
                     answerEmbed.set_author(
-                        name=ctx.message.author.name,
-                        icon_url=ctx.message.author.avatar_url
+                        name=ctx.message.author.display_name,
+                        icon_url=ctx.message.author.display_avatar.url
                     )
                     await ctx.reply(embed=answerEmbed) 
                 if answer == "scissors":
                     answerEmbed = discord.Embed(color=discord.Colour.random(),title="You win",description=f"I picked **{computers_answer}**. :newspaper:")
-                    answerEmbed.set_thumbnail(url=self.client.user.avatar_url)
+                    answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
                     answerEmbed.set_author(
-                        name=ctx.message.author.name,
-                        icon_url=ctx.message.author.avatar_url
+                        name=ctx.message.author.display_name,
+                        icon_url=ctx.message.author.display_avatar.url
                     )
                     await ctx.reply(embed=answerEmbed) 
             if computers_answer == "scissors":
                 if answer == "rock":
                     answerEmbed = discord.Embed(color=discord.Colour.random(),title="You win",description=f"I picked **{computers_answer}**. :scissors:")
-                    answerEmbed.set_thumbnail(url=self.client.user.avatar_url)
+                    answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
                     answerEmbed.set_author(
-                        name=ctx.message.author.name,
-                        icon_url=ctx.message.author.avatar_url
+                        name=ctx.message.author.display_name,
+                        icon_url=ctx.message.author.display_avatar.url
                     )
                     await ctx.reply(embed=answerEmbed) 
                 if answer == "paper":
                     answerEmbed = discord.Embed(color=discord.Colour.random(),title="I win",description=f"I picked **{computers_answer}**. :scissors:")
-                    answerEmbed.set_thumbnail(url=self.client.user.avatar_url)
+                    answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
                     answerEmbed.set_author(
-                        name=ctx.message.author.name,
-                        icon_url=ctx.message.author.avatar_url
+                        name=ctx.message.author.display_name,
+                        icon_url=ctx.message.author.display_avatar.url
                     )
                     await ctx.reply(embed=answerEmbed) 
 
@@ -438,8 +438,8 @@ class Fun(commands.Cog):
         gayembed = discord.Embed(title=f'How gay is {user.display_name}?', description=f'{user.mention} is **{randomgay}%** gay.',color=discord.Colour.random(),type='image')
         gayembed.set_image(url='https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Gay_Pride_Flag.svg/383px-Gay_Pride_Flag.svg.png')
         gayembed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
         await ctx.reply(embed=gayembed)
 
@@ -457,8 +457,8 @@ class Fun(commands.Cog):
         hugembed = discord.Embed(description=f'{ctx.author.mention} hugs {user.mention}',color=discord.Colour.random())
         hugembed.set_image(url=huggif)
         hugembed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
         await ctx.reply(embed=hugembed)
     @commands.command(name='kiss', description='Lets you kiss a user you @')
@@ -468,8 +468,8 @@ class Fun(commands.Cog):
         kissembed = discord.Embed(description=f'{ctx.author.mention} kisses {user.mention}',color=discord.Colour.random(),type='gifv')
         kissembed.set_image(url=kissgif)
         kissembed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
         await ctx.reply(embed=kissembed)
     @commands.command(name='slap', description='Lets you slap a user you @')
@@ -479,8 +479,8 @@ class Fun(commands.Cog):
         slapembed = discord.Embed(description=f'{ctx.author.mention} slaps {user.mention}',color=discord.Colour.random(),type='gifv')
         slapembed.set_image(url=slapgif)
         slapembed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
         await ctx.reply(embed=slapembed)
         #await ctx.reply(f'{ctx.author.mention} slaps {user.mention} {slapgif}')
@@ -530,12 +530,12 @@ class Fun(commands.Cog):
             color=discord.Colour.random()
         )
         # Also set the thumbnail to be the bot's pfp
-        embed.set_thumbnail(url=self.client.user.avatar_url)
+        embed.set_thumbnail(url=self.client.user.display_avatar.url)
 
         # Also set the embed author to the command user
         embed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
 
         await msg.edit(
@@ -562,10 +562,10 @@ class Fun(commands.Cog):
         answer = random.choice(responses)
         ynEmbed = discord.Embed(title=question,description=answer,color=discord.Colour.random())
         ynEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
-        ynEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        ynEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
         await ctx.reply(embed=ynEmbed)
 
     @commands.command(aliases=['8ball', 'eightball'], name='ball', description='Gives you advice')
@@ -594,10 +594,10 @@ class Fun(commands.Cog):
         answer = random.choice(responses)
         ballembed = discord.Embed(title=question,description=answer,color=discord.Colour.random())
         ballembed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
-        ballembed.set_thumbnail(url=self.client.user.avatar_url)
+        ballembed.set_thumbnail(url=self.client.user.display_avatar.url)
         await ctx.reply(embed=ballembed)
 
 

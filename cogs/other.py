@@ -55,7 +55,7 @@ class Other(commands.Cog):
             nsfwPreview = chosenKey["preview_url"]
             nsfwEmbed = discord.Embed(title="Click description for full video.",description=f"[{request}]({nsfwFile})",color=discord.Colour.random(),type='image')
             nsfwEmbed.set_image(url=nsfwPreview)
-            nsfwEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            nsfwEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
             nsfwEmbed.add_field(name='Tags:',value=tagMessage)
             nsfwEmbed.set_footer(text=f"ID: {nsfwID} | API by api.rule34.xxx")
             await ctx.reply(embed=nsfwEmbed)
@@ -63,7 +63,7 @@ class Other(commands.Cog):
         if nsfw_extension == "jpg" or nsfw_extension == "peg" or nsfw_extension == "png" or nsfw_extension == "gif":
             nsfwEmbed = discord.Embed(title="NSFW",description=f'[{request}]({nsfwFile})',color=discord.Colour.random(),type='image')
             nsfwEmbed.set_image(url=nsfwFile)
-            nsfwEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            nsfwEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
             nsfwEmbed.add_field(name='Tags:',value=tagMessage)
             nsfwEmbed.set_footer(text=f"ID: {nsfwID} | API by api.rule34.xxx")
             await ctx.reply(embed=nsfwEmbed)
@@ -89,18 +89,18 @@ class Other(commands.Cog):
         if sb_extension == "jpg" or sb_extension == "png" or sb_extension == "gif":
             sbEmbed = discord.Embed(title=sb_random.display_name,description=f'[{submission.title}]({submission.url})',color=discord.Colour.random(),type='image')
             sbEmbed.set_image(url=submission.url)
-            sbEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+            sbEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
             await ctx.reply(embed=sbEmbed)
             return
         sbEmbed = discord.Embed(title=sb_random.display_name,description=f'[{submission.title}]({submission.url})',color=discord.Colour.random())
-        sbEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        sbEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=sbEmbed)
 
     @commands.command(name='vote',description='Vote for the bot.')
     async def _vote(self, ctx):
         voteEmbed = discord.Embed(title=f'Vote',description=f'[top.gg](https://top.gg/bot/{self.client.user.id}/vote)',color=discord.Colour.random())
-        voteEmbed.set_thumbnail(url=self.client.user.avatar_url)
-        voteEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        voteEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+        voteEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=voteEmbed)
 
 
@@ -139,26 +139,26 @@ class Other(commands.Cog):
 
         if numberOperator == "+":
             numberEmbed = discord.Embed(title=f'{numberOne} {numberOperator} {numberTwo}',description=numberOne+numberTwo,color=discord.Color.random())
-            numberEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-            numberEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            numberEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+            numberEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             await ctx.reply(embed=numberEmbed)
             return
         elif numberOperator == "-":
             numberEmbed = discord.Embed(title=f'{numberOne} {numberOperator} {numberTwo}',description=numberOne-numberTwo,color=discord.Color.random())
-            numberEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-            numberEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            numberEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+            numberEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             await ctx.reply(embed=numberEmbed)
             return
         elif numberOperator == "/":
             numberEmbed = discord.Embed(title=f'{numberOne} {numberOperator} {numberTwo}',description=numberOne/numberTwo,color=discord.Color.random())
-            numberEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-            numberEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            numberEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+            numberEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             await ctx.reply(embed=numberEmbed)
             return
         elif numberOperator == "*":
             numberEmbed = discord.Embed(title=f'{numberOne} {numberOperator} {numberTwo}',description=numberOne*numberTwo,color=discord.Color.random())
-            numberEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-            numberEmbed.set_thumbnail(url=self.client.user.avatar_url)
+            numberEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+            numberEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
             await ctx.reply(embed=numberEmbed)
             return
         else:
@@ -174,8 +174,8 @@ class Other(commands.Cog):
         wordDictLong=wordDict.getMeanings()
 
         searchEmbed=discord.Embed(title=f'{word}',description=f'{wordDictLong}',color=discord.Colour.random())
-        searchEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-        searchEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        searchEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        searchEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
         await ctx.reply(embed=searchEmbed)
 
 
@@ -188,8 +188,8 @@ class Other(commands.Cog):
     #    if wordDefSearch:
     #        wordDef=wordDefSearch.group(1)
         wordEmbed=discord.Embed(title=f'{word}',description=f'{wordDefLong}',color=discord.Colour.random())
-        wordEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
-        wordEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        wordEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        wordEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
         await ctx.reply(embed=wordEmbed)
     
     @commands.command(aliases=['rcolour','rcolor','randomcolor'],name='randomcolour',description='Gives you a random colour.')
@@ -197,10 +197,10 @@ class Other(commands.Cog):
         colour=discord.Color.random()
         colourEmbed=discord.Embed(title=colour,description='The colour is the colour of this embed.',color=colour)
         colourEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
             )
-        colourEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        colourEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
         await ctx.reply(embed=colourEmbed)
 
         
@@ -223,7 +223,7 @@ class Other(commands.Cog):
         duzo = await self.client.fetch_user(ownerID)
         duzoChannel = self.client.get_channel(899683973356204126)
         duzoBug = discord.Embed(title='New Bug:',color=discord.Colour.random())
-        duzoBug.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        duzoBug.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         duzoBug.add_field(name='Bug:',value=message)
         duzoBug.add_field(name='Reported By:',value=f'<@!{ctx.message.author.id}>')
         await duzo.send(embed=duzoBug)
@@ -231,7 +231,7 @@ class Other(commands.Cog):
 
         confirmEmbed = discord.Embed(title='Bug Recieved.',color=discord.Colour.random())
         confirmEmbed.add_field(name='Bug:',value=message)
-        confirmEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        confirmEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.message.author.send(embed=confirmEmbed) 
 
     @commands.command(aliases=['suggest', 'suggestion'],name='idea', description='give me ideas')
@@ -255,7 +255,7 @@ class Other(commands.Cog):
         duzo = await self.client.fetch_user(ownerID)
         duzoChannel = self.client.get_channel(899683961117237268)
         duzoIdea = discord.Embed(title='New Idea:',color=discord.Colour.random())
-        duzoIdea.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        duzoIdea.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         duzoIdea.add_field(name='Idea:',value=f'{message}')
         duzoIdea.add_field(name='Author:',value=f'<@!{ctx.message.author.id}>')
         duzoIdea.set_footer(text=f"ID: {IDNumber}")
@@ -264,7 +264,7 @@ class Other(commands.Cog):
 
         confirmEmbed = discord.Embed(title='Idea Recieved.',color=discord.Colour.random())
         confirmEmbed.add_field(name='Your Idea:',value=message)
-        confirmEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        confirmEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         confirmEmbed.set_footer(text=f'ID: {IDNumber}')
         await ctx.message.author.send(embed=confirmEmbed)        
     
@@ -413,8 +413,8 @@ class Other(commands.Cog):
     async def help(self,ctx,cog='all'):
 
         help_embed = discord.Embed(title='Help',color=discord.Colour.random())
-        help_embed.set_thumbnail(url=self.client.user.avatar_url)
-        help_embed.set_footer(text=f'Requested by {ctx.message.author.name}',icon_url=ctx.message.author.avatar_url)
+        help_embed.set_thumbnail(url=self.client.user.display_avatar.url)
+        help_embed.set_footer(text=f'Requested by {ctx.message.author.display_name}',icon_url=ctx.message.author.display_avatar.url)
         
         cogs = [c for c in self.client.cogs.keys()]
 

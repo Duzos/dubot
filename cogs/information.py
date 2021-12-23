@@ -70,7 +70,7 @@ class Information(commands.Cog):
         bitcoinEmbed.add_field(name='(£)GBP',value=round(bitcoinGBP*amount),inline=True)
         bitcoinEmbed.add_field(name='($)USD',value=round(bitcoinUSD*amount),inline=True)
         bitcoinEmbed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/64px-Bitcoin.svg.png")
-        bitcoinEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        bitcoinEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=bitcoinEmbed)
 
     @commands.command(name='uptime',description='Tells you how long the bot has been online.')
@@ -82,8 +82,8 @@ class Information(commands.Cog):
         days, hours = divmod(hours, 24)
 
         uptimeEmbed = discord.Embed(title='Uptime',description=f"{days}d, {hours}h, {minutes}m, {seconds}s",color=discord.Color.random())
-        uptimeEmbed.set_thumbnail(url=self.client.user.avatar_url)
-        uptimeEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        uptimeEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+        uptimeEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=uptimeEmbed)
 
 
@@ -92,21 +92,21 @@ class Information(commands.Cog):
         
 
         pingEmbed = discord.Embed(title=f'Ping of {self.client.user.name}',description=f':stopwatch:  {round(self.client.latency * 1000)}ms',color=discord.Colour.random())
-        pingEmbed.set_thumbnail(url=self.client.user.avatar_url)
-        pingEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        pingEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+        pingEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=pingEmbed)
 
     @commands.command(name='avatar', description='Gets you the avatar of someone.')
     async def avatar(self, ctx, user: commands.MemberConverter=None):
         user = user or ctx.message.author
         
-        avatar = user.avatar_url
+        avatar = user.display_avatar.url
 
         avatarembed = discord.Embed(description=f'Avatar of {user.mention}',color=discord.Colour.random(),type='image')
         avatarembed.set_image(url=avatar)
         avatarembed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
         await ctx.reply(embed=avatarembed)
 
@@ -118,7 +118,7 @@ class Information(commands.Cog):
 
 
         cinfoEmbed = discord.Embed(title=f'Info on {channel.name}',description=f'**Topic:**\n```{channel.topic}```\n**ID:**\n```{channel.id}```\n**Type:**\n```{channel.type}```\n**Category:**\n```{channel.category}```\n**Channel Created On:**\n```{channel.created_at.strftime(date_format)}```',color=discord.Colour.random())
-        cinfoEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        cinfoEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=cinfoEmbed)
 
     @commands.command(aliases=['roleinfo','rinfo'],name='role_info',description='Gives info on a role.')
@@ -128,7 +128,7 @@ class Information(commands.Cog):
         permissionList = ', '.join([perm[0] for perm in role.permissions if perm[1]])
 
         rinfoEmbed = discord.Embed(title=f'Info on {role.name}',description=f'**ID:**\n```{role.id}```\n**Can be Mentioned:**\n```{role.mentionable}```\n**Position:**\n```{role.position}```\n**Role Created On:**\n```{role.created_at.strftime(date_format)}```\n**Colour:**\n```{role.colour}```\n**Permissions:**\n```{permissionList}```\n**Members:**\n```{memberList}```',color=role.colour)
-        rinfoEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        rinfoEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=rinfoEmbed)
 
     @commands.command(aliases=['guildinfo','ginfo','serverinfo','server_info','sinfo'],name='guild_info',description='Gives info on the guild.')
@@ -141,7 +141,7 @@ class Information(commands.Cog):
 
         ginfoEmbed = discord.Embed(title=f'Info on {guild.name}',description=f'**Description:**\n```{guild.description}```\n**Member Count:**\n```{guild.member_count}```\n**Owner:**\n```{guild.owner}```\n**Roles:**\n```{roleList}```\n**Boost Level:**\n```{guild.premium_tier}```\n**Boost Count:**\n```{guild.premium_subscription_count}```\n**ID:**\n```{guild.id}```\n**Guild Created On:**\n```{guild.created_at.strftime(date_format)}```\n**Region:**\n```{guild.region}```',color=discord.Colour.random())
         ginfoEmbed.set_thumbnail(url=guild.icon_url)
-        ginfoEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)
+        ginfoEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=ginfoEmbed)
 
 
@@ -156,10 +156,11 @@ class Information(commands.Cog):
             roles=None
         date_format = "%a, %d %b %Y %I:%M %p"
         uinfoEmbed = discord.Embed(title=f'Info on {member.name}#{member.discriminator}', description=f'**ID:**\n`{member.id}`\n**Roles:**\n`{roles}`\n**Account Created On:**\n`{member.created_at.strftime(date_format)}`\n**Account Joined Guild On:**\n`{member.joined_at.strftime(date_format)}`\n**Nickname:**\n`{member.nick}`\n**Is Bot:**\n`{member.bot}`\n**Permissions:**\n`{permissionList}`',color=discord.Colour.random())
-        uinfoEmbed.set_thumbnail(url=member.avatar_url)
+        uinfoEmbed.set_thumbnail(url=member.display_avatar.url)
+        uinfoEmbed.add_field(name='Main Avatar:',value=member.avatar.url)
         uinfoEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
         )
         await ctx.reply(embed=uinfoEmbed)
             
@@ -168,10 +169,10 @@ class Information(commands.Cog):
         
         inviteEmbed = discord.Embed(title="Invite Link",description="[Bot Invite](https://discord.com/api/oauth2/authorize?client_id=865190020179296267&permissions=0&scope=bot%20applications.commands)",color=discord.Colour.random())
         inviteEmbed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
             )
-        inviteEmbed.set_thumbnail(url=self.client.user.avatar_url)
+        inviteEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
         inviteEmbed.add_field(name='Support Server',value="[Server Invite](https://discord.gg/Raakw6367z)",inline=False)
         inviteEmbed.add_field(name='Get Dubot Slash!',value="[Dubot Slash Invite](https://discord.com/api/oauth2/authorize?client_id=900481597311172660&permissions=0&scope=bot%20applications.commands)",inline=False)
         await ctx.reply(embed=inviteEmbed)
@@ -189,8 +190,8 @@ class Information(commands.Cog):
         )
         embed.set_thumbnail(url="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/768px-Python-logo-notext.svg.png")
         embed.set_author(
-            name=ctx.message.author.name,
-            icon_url=ctx.message.author.avatar_url
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
             )
             
         await ctx.reply(embed=embed)
@@ -205,7 +206,7 @@ class Information(commands.Cog):
 
         prefixEmbed = discord.Embed(title='Prefixes',description=currentPrefixes,color=discord.Colour.random())
         prefixEmbed.set_thumbnail(url=ctx.guild.icon_url)
-        prefixEmbed.set_author(name=ctx.message.author.name,icon_url=ctx.message.author.avatar_url)                            
+        prefixEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)                            
         await ctx.reply(embed=prefixEmbed)
         
 
