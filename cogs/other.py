@@ -98,7 +98,7 @@ class Other(commands.Cog):
 
     @commands.command(name='vote',description='Vote for the bot.')
     async def _vote(self, ctx):
-        voteEmbed = discord.Embed(title=f'Vote',description=f'[top.gg](https://top.gg/bot/{self.client.user.id}/vote)',color=discord.Colour.random())
+        voteEmbed = discord.Embed(title=f'Vote',description=f'[top.gg](https://top.gg/bot/{self.client.user.id}/vote)\n[discordbotlist.com](https://discordbotlist.com/bots/dubot/upvote)',color=discord.Colour.random())
         voteEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
         voteEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=voteEmbed)

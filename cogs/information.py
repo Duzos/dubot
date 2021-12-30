@@ -140,7 +140,7 @@ class Information(commands.Cog):
         roleList = ", ".join([str(r.name) for r in guild.roles])
 
         ginfoEmbed = discord.Embed(title=f'Info on {guild.name}',description=f'**Description:**\n```{guild.description}```\n**Member Count:**\n```{guild.member_count}```\n**Owner:**\n```{guild.owner}```\n**Roles:**\n```{roleList}```\n**Boost Level:**\n```{guild.premium_tier}```\n**Boost Count:**\n```{guild.premium_subscription_count}```\n**ID:**\n```{guild.id}```\n**Guild Created On:**\n```{guild.created_at.strftime(date_format)}```\n**Region:**\n```{guild.region}```',color=discord.Colour.random())
-        ginfoEmbed.set_thumbnail(url=guild.icon_url)
+        ginfoEmbed.set_thumbnail(url=guild.icon)
         ginfoEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=ginfoEmbed)
 
@@ -205,7 +205,7 @@ class Information(commands.Cog):
         currentPrefixes = jsonPrefix[f"{guildID} prefix"] 
 
         prefixEmbed = discord.Embed(title='Prefixes',description=currentPrefixes,color=discord.Colour.random())
-        prefixEmbed.set_thumbnail(url=ctx.guild.icon_url)
+        prefixEmbed.set_thumbnail(url=ctx.guild.icon)
         prefixEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)                            
         await ctx.reply(embed=prefixEmbed)
         

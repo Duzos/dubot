@@ -167,7 +167,7 @@ class Moderation(commands.Cog):
                 except:
                     await ctx.send(embed=muteEmbed)
                 muteEmbed = discord.Embed(title='Mute',description=f'Muted {user.mention}.',color=discord.Colour.random())
-                muteEmbed.set_thumbnail(url=ctx.guild.icon_url)
+                muteEmbed.set_thumbnail(url=ctx.guild.icon)
                 muteEmbed.set_author(
                         name=ctx.message.author.display_name,
                         icon_url=ctx.message.author.display_avatar.url
@@ -229,7 +229,7 @@ class Moderation(commands.Cog):
         except:
             await ctx.send(embed=muteEmbed)
         muteEmbed = discord.Embed(title='Mute',description=f'Muted {user.mention}.',color=discord.Colour.random())
-        muteEmbed.set_thumbnail(url=ctx.guild.icon_url)
+        muteEmbed.set_thumbnail(url=ctx.guild.icon)
         muteEmbed.set_author(
                 name=ctx.message.author.display_name,
                 icon_url=ctx.message.author.display_avatar.url
@@ -276,7 +276,7 @@ class Moderation(commands.Cog):
                 except:
                     await ctx.send(embed=unmuteEmbed)
                 unmuteEmbed = discord.Embed(title='Unmute',description=f'Unmuted {user.mention}',color=discord.Colour.random())
-                unmuteEmbed.set_thumbnail(url=ctx.guild.icon_url)
+                unmuteEmbed.set_thumbnail(url=ctx.guild.icon)
                 unmuteEmbed.set_author(
                         name=ctx.message.author.display_name,
                         icon_url=ctx.message.author.display_avatar.url
@@ -344,7 +344,7 @@ class Moderation(commands.Cog):
         except:
             await ctx.send(embed=unbanEmbed)
         unbanEmbed = discord.Embed(title='Unban',description=f'{user.mention} has been unbanned.',color=discord.Colour.random())
-        unbanEmbed.set_thumbnail(url=ctx.guild.icon_url)
+        unbanEmbed.set_thumbnail(url=ctx.guild.icon)
         unbanEmbed.set_author(
                 name=ctx.message.author.display_name,
                 icon_url=ctx.message.author.display_avatar.url
@@ -391,7 +391,7 @@ class Moderation(commands.Cog):
             name=ctx.message.author.display_name,
             icon_url=ctx.message.author.display_avatar.url
         )
-        banEmbed.set_thumbnail(url=ctx.guild.icon_url)
+        banEmbed.set_thumbnail(url=ctx.guild.icon)
         banEmbed.add_field(name='Reason:',value=reason)
         banEmbed.add_field(name='Server:',value=ctx.guild.name)
         await member.send(embed=banEmbed)
@@ -428,7 +428,7 @@ class Moderation(commands.Cog):
             name=ctx.message.author.display_name,
             icon_url=ctx.message.author.display_avatar.url
         )
-        kickEmbed.set_thumbnail(url=ctx.guild.icon_url)
+        kickEmbed.set_thumbnail(url=ctx.guild.icon)
         kickEmbed.add_field(name='Reason:',value=reason)
         kickEmbed.add_field(name='Server:',value=ctx.guild.name)
         await member.send(embed=kickEmbed)
