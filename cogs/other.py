@@ -336,15 +336,20 @@ class Other(commands.Cog):
             elif msg2.content.upper() == "NO":
                 prefixLoop = False
             else:
-                await ctx.reply("Invalid choice please choose between Yes or No.")
-
+                try:
+                    await ctx.reply("Invalid choice please choose between Yes or No.")
+                except:
+                    await ctx.send("Invalid choice please choose between Yes or No")
         guildID = str(ctx.guild.id)
         prefixes[f"{guildID} prefix"] = prefixList
 
         with open('json/data.json', 'w') as f:
             json.dump(prefixes, f, indent=4)
-        await ctx.reply(f'Changed the Prefixes to **{prefixList}**')
-     
+        try:
+            await ctx.reply(f'Changed the Prefixes to **{prefixList}**')
+        except:
+            await ctx.send(f'Changed the Prefixes to **{prefixList}**')
+
     @commands.command(name='help',description='This command.',aliases=['commands','command'],usage='cog')
     async def help(self,ctx,cog='all'):
 
@@ -372,12 +377,17 @@ class Other(commands.Cog):
                     help_text+= f'`{command.name}` - {command.description}\n'
                 help_embed.description = help_text
             else:
-                await ctx.reply('Invalid cog specified.\nUse `help` command to list all cogs.')
+                try:
+                    await ctx.reply('Invalid cog specified.\nUse `help` command to list all cogs.')
+                except:
+                    await ctx.send('Invalid cog specified.\nUse `help` command to list all cogs.')
                 return
 
+        try:
+            await ctx.reply(embed=help_embed)
+        except:
+            await ctx.send(embed=help_embed)
 
-        await ctx.reply(embed=help_embed)
-        
         return
 
 def setup(client):

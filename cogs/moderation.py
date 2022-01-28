@@ -9,6 +9,81 @@ class Moderation(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(name='warn',description='Warn somebody.')
+    @has_permissions(manage_roles=True)
+    async def _warn(self, ctx, user: commands.MemberConverter=None,*,reason=None):
+        if user == None:
+            await ctx.reply("Please provide a user!")
+            return
+        
+        with open('json/data.json','r') as f:
+            data = json.load(f)
+
+        try:
+            data[f'{ctx.guild.id}-{user.id} warns'].append(reason)
+        except KeyError:
+            data[f'{ctx.guild.id}-{user.id} warns'] = [reason]
+        
+        with open('json/data.json','w') as f:
+            json.dump(data,f,indent=4)
+
+        embed = discord.Embed(title='Warn',description=f'Warned {user.mention}',color=discord.Colour.random())
+        embed.add_field(name='Reason:',value=reason)
+        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed.set_thumbnail(url=user.display_avatar.url)
+        await ctx.reply(embed=embed)
+        embed.set_thumbnail(url=ctx.guild.icon)
+        embed.add_field(name='Server',value=ctx.guild.name)
+        embed.add_field(name='By:',value=ctx.message.author.mention)
+        try:
+            await user.send(embed=embed)
+        except discord.Forbidden:
+            pass
+
+    @commands.command(aliases=['warns'],name='warnings',description='Check someones warnings')
+    @has_permissions(manage_roles=True)
+    async def _warnings(self, ctx, user: commands.MemberConverter=None):
+        if user == None:
+            await ctx.reply("Please provide a user!")
+            return
+        
+        with open('json/data.json','r') as f:
+            data = json.load(f)
+        
+        try:
+            warnReasons = ""
+            for val in data[f'{ctx.guild.id}-{user.id} warns']:
+                warnReasons = warnReasons + f"{val}\n"
+        except KeyError:
+            warnReasons = "This user has no warnings."
+
+        embed = discord.Embed(title='Warnings',description=f'Warnings for {user.mention}',color=discord.Colour.random())
+        embed.add_field(name='Warnings:',value=warnReasons)
+        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed.set_thumbnail(url=user.display_avatar.url)
+        await ctx.reply(embed=embed)
+        
+
+    @commands.command(aliases=["clearwarning","clearwarnings","cwarnings","cwarning"],name='clear_warnings',description='Clear all of someones warnings.')
+    @has_permissions(manage_roles=True)
+    async def _clearwarnings(self, ctx, user: commands.MemberConverter=None):
+        if user == None:
+            await ctx.reply("Please provide a user!")
+            return
+        
+        with open('json/data.json','r') as f:
+            data = json.load(f)
+
+        try:
+            del data[f'{ctx.guild.id}-{user.id} warns']
+            with open('json/data.json','w') as f:
+                json.dump(data,f,indent=4)
+        except KeyError:
+            await ctx.reply(f"{user.mention} has no warnings.")
+            return
+
+        await ctx.reply(f"Cleared {user.mention} of all their warnings.")
+
     @commands.command(name='antiswear',description='Automatic anti swearing system')
     @has_permissions(manage_messages=True)
     async def _antiswear(self,ctx, choice=None):
@@ -67,10 +142,6 @@ class Moderation(commands.Cog):
     @commands.command(aliases=['lockchannel','lockc','clock','lc'],name='channellock',description='Locks the channel.')
     @has_permissions(manage_channels=True)
     async def channellock(self, ctx, channel: discord.TextChannel=None):
-        try:
-            await ctx.message.delete()
-        except discord.Forbidden:
-            pass
         
         #This bit of code came from https://stackoverflow.com/questions/62706813/how-do-i-lock-a-channel-that-is-mentioned-discord-py 
         channel = channel or ctx.channel
@@ -98,10 +169,6 @@ class Moderation(commands.Cog):
     @commands.command(aliases=['unlockchannel','unlockc','cunlock','ulc'],name='channelunlock',description='Unlocks a channel.')
     @has_permissions(manage_channels=True)
     async def channelunlock(self,ctx, channel: discord.TextChannel=None):
-        try:
-            await ctx.message.delete()
-        except discord.Forbidden:
-            pass
         
         #This bit of code came from https://stackoverflow.com/questions/62706813/how-do-i-lock-a-channel-that-is-mentioned-discord-py 
         channel = channel or ctx.channel
@@ -132,10 +199,6 @@ class Moderation(commands.Cog):
         if user == None:
             await ctx.reply("Please provide a user!")
             return
-        try:
-            await ctx.message.delete()
-        except discord.Forbidden:
-            pass
         guild = ctx.message.guild 
         roles = await guild.fetch_roles()
         channels = await guild.fetch_channels()
@@ -244,10 +307,6 @@ class Moderation(commands.Cog):
         if user == None:
             await ctx.reply("Please provide a user!")
             return
-        try:
-            await ctx.message.delete()
-        except discord.Forbidden:
-            pass
         roles = user.roles
         for discord.Role in roles:
             if discord.Role.name.upper() == "MUTED":
@@ -329,10 +388,6 @@ class Moderation(commands.Cog):
                 await ctx.send("Unbanning failed!")
             return
     
-        try:
-            await ctx.message.delete()
-        except discord.Forbidden:
-            pass
         unbanEmbed = discord.Embed(title='Unban',description=f'{user.mention} has been unbanned.',color=discord.Colour.random())
         unbanEmbed.set_thumbnail(url=user.display_avatar.url)
         unbanEmbed.set_author(
@@ -357,10 +412,6 @@ class Moderation(commands.Cog):
     @commands.command(aliases=['goawayforever'], name='ban', description='Bans a user')
     @has_permissions(ban_members=True)
     async def ban(self, ctx, member : commands.MemberConverter, *, reason=None):
-        try:
-            await ctx.message.delete()
-        except discord.Forbidden:
-            pass
         try:
             await member.ban(reason=reason)
         except discord.Forbidden:
@@ -400,10 +451,6 @@ class Moderation(commands.Cog):
     @has_permissions(kick_members=True)
     async def kick(self, ctx, member : commands.MemberConverter, *, reason=None):
         
-        try:
-            await ctx.message.delete()
-        except discord.Forbidden:
-            pass
         try:
             await member.kick(reason=reason)
         except discord.Forbidden:
@@ -518,10 +565,6 @@ class Moderation(commands.Cog):
         await channel.send(embed=infoEmbed)
         message = await channel.send("React with :lock: to close the ticket.")
         await message.add_reaction("🔒")
-        try:
-            await ctx.message.delete()
-        except discord.Forbidden:
-            pass
 
         await self.client.wait_for("reaction_add", check=check)
         try:
@@ -550,10 +593,6 @@ class Moderation(commands.Cog):
     @commands.command(name='slowmode', description='Adds slowmode to a channel, limit is 21600')
     @has_permissions(manage_channels=True)
     async def slowmode(self, ctx, seconds: int):
-        try:
-            await ctx.message.delete()
-        except discord.Forbidden:
-            pass
         
         try:
             await ctx.channel.edit(slowmode_delay=seconds)

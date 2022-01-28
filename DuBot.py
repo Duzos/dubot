@@ -94,6 +94,14 @@ async def on_dbl_vote(data):
 
 
 # On Messages
+
+# @client.event
+# async def on_command(ctx):
+#     try:
+#         await ctx.message.delete()
+#     except:
+#         pass
+
 @client.event
 async def on_message(message):
     # if the message is the bot, dont work.
@@ -214,25 +222,28 @@ async def on_member_join(member : discord.Member):
             )
         await client.get_channel(welcomeChannel).send(embed=welcomeEmbed)
 
-    if statsChoice == True:
-        totalMemberCount = 0
-        botMemberCount = 0
-        memberCount = 0
-        for member in guild.members:
-            totalMemberCount += 1
+    try:
+        if statsChoice == True:
+            totalMemberCount = 0
+            botMemberCount = 0
+            memberCount = 0
+            for member in guild.members:
+                totalMemberCount += 1
+                if member.bot == True:
+                    botMemberCount += 1
+                else:
+                    memberCount += 1
             if member.bot == True:
-                botMemberCount += 1
+                botChannel = jsonData[f'{guild.id} stats bot']
+                await client.get_channel(botChannel).edit(name=f'Bots: {botMemberCount}')
             else:
-                memberCount += 1
-        if member.bot == True:
-            botChannel = jsonData[f'{guild.id} stats bot']
-            await client.get_channel(botChannel).edit(name=f'Bots: {botMemberCount}')
-        else:
-            memberChannel = jsonData[f'{guild.id} stats member']
-            await client.get_channel(memberChannel).edit(name=f'Members: {memberCount}')
-        
-        totalChannel = jsonData[f'{guild.id} stats total']
-        await client.get_channel(totalChannel).edit(name=f'Total Members: {totalMemberCount}')
+                memberChannel = jsonData[f'{guild.id} stats member']
+                await client.get_channel(memberChannel).edit(name=f'Members: {memberCount}')
+            
+            totalChannel = jsonData[f'{guild.id} stats total']
+            await client.get_channel(totalChannel).edit(name=f'Total Members: {totalMemberCount}')
+    except:
+        pass
 
 @client.event
 async def on_member_remove(member : discord.Member):
@@ -243,7 +254,10 @@ async def on_member_remove(member : discord.Member):
     
     idGuild = str(guild.id)
     leaveChoiceGuild = jsonData[f"{idGuild} leave"]
-    statsChoice = jsonData[f'{guild.id} stats']
+    try:
+        statsChoice = jsonData[f'{guild.id} stats']
+    except:
+        pass
 
 
     if leaveChoiceGuild == True:
@@ -255,26 +269,28 @@ async def on_member_remove(member : discord.Member):
             icon_url=client.user.display_avatar.url
             )
         await client.get_channel(leaveChannel).send(embed=leaveEmbed)
-    if statsChoice == True:
-        totalMemberCount = 0
-        botMemberCount = 0
-        memberCount = 0
-        for member in guild.members:
-            totalMemberCount += 1
+    try:
+        if statsChoice == True:
+            totalMemberCount = 0
+            botMemberCount = 0
+            memberCount = 0
+            for member in guild.members:
+                totalMemberCount += 1
+                if member.bot == True:
+                    botMemberCount += 1
+                else:
+                    memberCount += 1
             if member.bot == True:
-                botMemberCount += 1
+                botChannel = jsonData[f'{guild.id} stats bot']
+                await client.get_channel(botChannel).edit(name=f'Bots: {botMemberCount}')
             else:
-                memberCount += 1
-        if member.bot == True:
-            botChannel = jsonData[f'{guild.id} stats bot']
-            await client.get_channel(botChannel).edit(name=f'Bots: {botMemberCount}')
-        else:
-            memberChannel = jsonData[f'{guild.id} stats member']
-            await client.get_channel(memberChannel).edit(name=f'Members: {memberCount}')
-        
-        totalChannel = jsonData[f'{guild.id} stats total']
-        await client.get_channel(totalChannel).edit(name=f'Total Members: {totalMemberCount}')
-
+                memberChannel = jsonData[f'{guild.id} stats member']
+                await client.get_channel(memberChannel).edit(name=f'Members: {memberCount}')
+            
+            totalChannel = jsonData[f'{guild.id} stats total']
+            await client.get_channel(totalChannel).edit(name=f'Total Members: {totalMemberCount}')
+    except:
+        pass
     
 
 # Json events   
@@ -291,6 +307,7 @@ async def on_guild_join(guild):
     joinSetup[f"{idGuild} welcomeChannel"] = False
     joinSetup[f"{idGuild} prefix"] = prefix
     joinSetup[f"{idGuild} antiswear"] = False
+    
 
     with open('json/data.json', 'w') as f:
         json.dump(joinSetup, f, indent=4)
