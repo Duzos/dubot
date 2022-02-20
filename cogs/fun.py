@@ -1,4 +1,6 @@
 from gettext import npgettext
+import re
+from urllib import response
 import discord
 from discord import activity
 from discord.embeds import EmptyEmbed
@@ -28,6 +30,7 @@ class Fun(commands.Cog):
 
     def __init__(self, client):
         self.client = client
+
 
     @commands.command(name='meme',description='Sends a random meme.')
     async def meme(self,ctx):
@@ -123,6 +126,48 @@ class Fun(commands.Cog):
         factEmbed.add_field(name='Link',value=f'[Click!]({factLink})')
         factEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)        
         await ctx.reply(embed=factEmbed)
+
+    @commands.command(name='trivia',description='Play a trivia game.')
+    async def _trivia(self, ctx, difficulty=None):
+        if difficulty == None:
+            url = 'https://opentdb.com/api.php?amount=1&type=boolean'
+        else:
+            url = f'https://opentdb.com/api.php?amount=1&type=boolean&difficulty={difficulty}'
+            difficulty = difficulty.lower()
+            allowedChoices = ['easy','medium','hard']
+            if difficulty not in allowedChoices:
+                return await ctx.reply('Please choose a difficulty of easy, medium or hard')
+        
+        responseAPI = requests.get(url).json()
+        for i in responseAPI['results']:
+            triviaCat = i['category']
+            triviaDiff = i['difficulty']
+            triviaQuestion = i['question']
+            triviaQuestion = triviaQuestion.replace('&quot;','')
+            triviaAnswer = i['correct_answer']
+            triviaAnswer = triviaAnswer.lower()
+
+        questionEmbed = discord.Embed(title='Trivia Question',description=triviaQuestion,color=discord.Colour.random())
+        questionEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        questionEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+        questionEmbed.set_footer(text=f'Category: {triviaCat} | Difficulty: {triviaDiff}')
+        await ctx.reply(embed=questionEmbed)
+
+        def check(ms):
+            return ms.channel == ctx.message.channel and ms.author == ctx.message.author
+        playerMessage = await self.client.wait_for('message',check=check)
+        playerAnswer = playerMessage.content.lower()
+
+        if playerAnswer == triviaAnswer:
+            embed = discord.Embed(title='Trivia Question',description='You won!',color=discord.Colour.green())
+            embed.set_thumbnail(url=self.client.user.display_avatar.url)
+            embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+            await playerMessage.reply(embed=embed)
+        else:
+            embed = discord.Embed(title='Trivia Question',description=f'You Lost!\nThe correct answer was: **{triviaAnswer}**',color=discord.Colour.red())
+            embed.set_thumbnail(url=self.client.user.display_avatar.url)
+            embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+            await playerMessage.reply(embed=embed)
 
     @commands.command(aliases=['cat','catrandom'],name='randomcat',description='Gives you a random cat picture.')
     async def randomcat(self, ctx):
@@ -434,7 +479,7 @@ class Fun(commands.Cog):
         randomgay = randint(0,100)
         if user.id == 709763530232168560:
             randomgay = 100
-        if user.id == 327807253052653569 or user.id == 578844127878184961:
+        if user.id == 327807253052653569 or user.id == 578844127878184961 or user.id == 595358806389555201:
             randomgay = 0
         gayembed = discord.Embed(title=f'How gay is {user.display_name}?', description=f'{user.mention} is **{randomgay}%** gay.',color=discord.Colour.random(),type='image')
         gayembed.set_image(url='https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Gay_Pride_Flag.svg/383px-Gay_Pride_Flag.svg.png')
