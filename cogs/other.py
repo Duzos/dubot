@@ -364,7 +364,7 @@ class Other(commands.Cog):
             for cog in cogs:
                 values = values + f"**{cog}**\n"
             pass
-            help_embed.add_field(name='Cogs',value=values,inline=True)
+            help_embed.add_field(name='Categories',value=values,inline=True)
         else:
             lower_cogs = [c.lower() for c in cogs]
 

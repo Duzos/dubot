@@ -37,6 +37,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         'no_warnings': True,
         'default_search': 'auto',
         'source_address': '0.0.0.0',
+        'cachedir': False
     }
 
     FFMPEG_OPTIONS = {
@@ -463,7 +464,7 @@ class Music(commands.Cog):
         ctx.voice_state.loop = not ctx.voice_state.loop
         await ctx.message.add_reaction('✅')
 
-    @commands.command(name='play',description='Plays a song')
+    @commands.command(name='play',description='Plays a song ( Please do not use large playlists )')
     async def _play(self, ctx: commands.Context, *, search: str):
         """Plays a song.
         If there are songs in the queue, this will be queued until the
@@ -474,6 +475,28 @@ class Music(commands.Cog):
 
         if not ctx.voice_state.voice:
             await ctx.invoke(self._join)
+        
+        if "/playlist?list=" in search:
+
+            msg = await ctx.send("Please wait while I go through the playlist. The time this will take depends on the length of the playlist.")
+            async with ctx.typing():
+                result = YTDLSource.ytdl.extract_info(search, download=False)
+                for video in result["entries"]:
+                    if not video:
+                        continue
+                    video = video["webpage_url"]
+                    try:
+                        source = await YTDLSource.create_source(ctx, video, loop=self.client.loop)
+                    except YTDLError as e:
+                        await msg.edit('An error occurred while processing this request: {}'.format(str(e)))
+                    else:
+                        song = Song(source)
+                        await ctx.voice_state.songs.put(song)
+                        # await msg.edit('Enqueued {}'.format(str(source)))
+                await ctx.send("Fully enqueued playlist.")
+            return
+            # await ctx.send("Enqueued {}".format(str(search)))
+            
 
         async with ctx.typing():
             try:

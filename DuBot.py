@@ -1,25 +1,23 @@
 # Made by Duzo
 # ================
 
+
 # Importing
-import discord
 import json
-import random
 import os
+import random
 import sys
-from discord import guild
-from discord import permissions
-from discord.ext import commands
+import time
+from datetime import datetime
+from itertools import cycle
+import discord
+import topgg
+from discord import Member, guild, permissions
+from discord.ext import commands, tasks
 from discord.ext.commands.core import has_permissions, is_owner
 from discord.ext.commands.errors import MissingPermissions
 from discord.message import Message
 from discord.utils import get
-from discord import Member
-from discord.ext import tasks
-from itertools import cycle
-import time
-from datetime import datetime
-import topgg
 
 # Getting the prefix for the server
 
@@ -603,6 +601,17 @@ async def d(ctx):
 async def _kys(ctx, user: commands.MemberConverter=None):
     user = user or ctx.message.author
     await ctx.reply(f"{user.mention} should commit death")
+
+@client.command(name='listservers')
+@is_owner()
+async def _listservers(ctx):
+    await ctx.send("Found {} servers\nServer List:".format(len(client.guilds)))
+    
+    message = ""
+    for guild in client.guilds:
+        message = message + f"{guild.name} | {guild.id} | {guild.member_count} Members\n"
+    await ctx.send(message)
+
 
 # Running Cogs.
 for filename in os.listdir('./cogs'):

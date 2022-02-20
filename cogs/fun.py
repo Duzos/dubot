@@ -1,3 +1,4 @@
+from gettext import npgettext
 import discord
 from discord import activity
 from discord.embeds import EmptyEmbed
@@ -443,7 +444,18 @@ class Fun(commands.Cog):
         )
         await ctx.reply(embed=gayembed)
 
-
+    @commands.command(name='love',description='Sees how compatible two people are.')
+    async def _love(self, ctx, user1: commands.MemberConverter=None,user2: commands.MemberConverter=None):
+        if user1 == None or user2 == None:
+            return await ctx.send("Please define both people.")
+        
+        loveEmbed = discord.Embed(title=f'How compatible are {user1.display_name} and {user2.display_name}?',description=f'{user1.display_name} and {user2.display_name} are {randint(1,100)}% compatible',color=discord.Colour.random(),type='image')
+        loveEmbed.set_image(url='https://upload.wikimedia.org/wikipedia/commons/f/f1/Heart_coraz%C3%B3n.svg')
+        loveEmbed.set_author(
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
+        )
+        await ctx.reply(embed=loveEmbed)
 
 
     #@commands.command(name='ping', description='Gets the bots ping')
