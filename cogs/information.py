@@ -1,3 +1,4 @@
+from http import client
 from operator import truediv
 import discord
 from discord import guild
@@ -16,6 +17,54 @@ class Information(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(name='poll',description='Run a poll')
+    @has_permissions(manage_messages=True)
+    async def _poll(self, ctx, question=None,channel=None):
+        def check(ms):
+            return ms.channel == ctx.message.channel and ms.author == ctx.message.author
+        if question == None:
+            msg = await ctx.reply("What do you want to ask?")
+            Msg = await self.client.wait_for('message', check=check)
+            question = Msg.content
+            await msg.delete()
+            await Msg.delete()
+        if channel == None:
+            msg = await ctx.reply("What is the channel you want the message to be sent in?")
+            ChannelMsg = await self.client.wait_for('message',check=check)
+            channel = await commands.TextChannelConverter().convert(ctx, ChannelMsg.content)
+            await msg.delete()
+            await ChannelMsg.delete()
+        else:
+            channel = await commands.TextChannelConverter().convert(ctx, channel)
+        
+
+        pollEmbed = discord.Embed(title='Poll',description=question,color=discord.Colour.random())
+        pollEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+        pollmsg = await channel.send(embed=pollEmbed)
+        await pollmsg.add_reaction("👍")
+        await pollmsg.add_reaction("👎")
+
+        def reactcheck(reaction, user):
+            return str(reaction) == "🔒" and user == ctx.message.author
+
+        msg = await ctx.reply(f"Question asked, check {channel.mention}\nReact with :lock: to close the poll.")
+        await msg.add_reaction("🔒")
+
+        await self.client.wait_for("reaction_add", check=reactcheck)
+        resultsMsg = "Here are the results:\n"
+        pollmsg = await channel.fetch_message(pollmsg.id)
+        highest_reaction = ""
+        highest_reaction_number = 0
+        for reaction in pollmsg.reactions:
+            if reaction.emoji != "👎" and reaction.emoji != "👍":
+                return
+            if (reaction.count-1) > highest_reaction_number:
+                highest_reaction = reaction.emoji
+                highest_reaction_number = reaction.count-1
+            
+            resultsMsg = resultsMsg + f"{reaction.emoji}: {reaction.count-1}\n"
+        await ctx.reply(resultsMsg)
+        await pollmsg.reply(f"This poll has finished.\n{highest_reaction} won with {highest_reaction_number} votes")
 
     @commands.command(name='serversetup',description='Run this if you want to setup server information channels.')
     @has_permissions(manage_channels=True)
