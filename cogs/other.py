@@ -246,12 +246,32 @@ class Other(commands.Cog):
 
         welcomeChannelID = welcomeChannel.id
 
+        msg = await ctx.reply("Do you want to DM the user with a welcome message? (on or off, if you dont put on or off i assume off.)")
+        ChannelMsg = await self.client.wait_for('message',check=check)
+        welcomeMessageChoice = ChannelMsg.content.lower()
+        await msg.delete()
+        await ChannelMsg.delete()
+        if welcomeMessageChoice == "on":
+            welcomeMessageChoice = True
+        elif welcomeMessageChoice == "off":
+            welcomeMessageChoice = False
+
+        if welcomeMessageChoice == True:
+            msg = await ctx.reply("What is the welcome message?")
+            ChannelMsg = await self.client.wait_for('message',check=check)
+            welcomeMessage = ChannelMsg.content
+            welcomeMessage = welcomeMessage + f"\n**Message from {ctx.guild.name}**"
+            await msg.delete()
+            await ChannelMsg.delete()
+        else:
+            welcomeMessage = ""
 
         welcome[f"{idGuild} welcome"] = welcomeChoice
         welcome[f"{idGuild} welcomeChannel"] = welcomeChannelID
+        welcome[f"{idGuild} welcomeMessageChoice"] = welcomeMessageChoice
+        welcome[f'{idGuild} welcomeMessage'] = welcomeMessage
 
         msg = await ctx.reply("Done.")
-        await msg.delete()
 
         with open('json/data.json', 'w') as f:
             json.dump(welcome, f , indent=4)

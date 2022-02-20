@@ -211,6 +211,10 @@ async def on_member_join(member : discord.Member):
     
 
     if welcomeChoiceGuild == True:
+        try:
+            welcomeMessageChoice = jsonData[f"{idGuild} welcomeMessageChoice"]
+        except:
+            pass
         welcomeChannel = jsonData[f"{idGuild} welcomeChannel"]
         welcomeEmbed = discord.Embed(title='New Member', description=f'{member.mention} joined!',color=discord.Colour.random())
         welcomeEmbed.set_thumbnail(url=member.display_avatar.url)
@@ -218,7 +222,17 @@ async def on_member_join(member : discord.Member):
             name=client.user.display_name,
             icon_url=client.user.display_avatar.url
             )
-        await client.get_channel(welcomeChannel).send(embed=welcomeEmbed)
+        try:
+            await client.get_channel(welcomeChannel).send(embed=welcomeEmbed)
+        except:
+            pass
+        
+        try:
+            if welcomeMessageChoice == True:
+                welcomeMessage = jsonData[f"{idGuild} welcomeMessage"]
+                await member.send(welcomeMessage)
+        except:
+            pass
 
     try:
         if statsChoice == True:
