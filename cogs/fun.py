@@ -31,6 +31,43 @@ class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(name='spaceweights',description='Get your weight on other planets.')
+    async def _spaceweights(self, ctx, weight, planet):
+        planet = planet.lower()
+        weight = int(weight)
+        if planet == None or weight == None:
+            return ctx.reply("Please provide a weight in kg and a planet.")
+                
+        planets = {
+        "sun": 27.01,
+        "mercury": 0.38,
+        "venus": 0.91,
+        "moon": 0.166,
+        "mars": 0.38,
+        "jupiter": 2.34,
+        "saturn": 1.06,
+        "uranus": 0.92,
+        "neptune": 1.19,
+        "pluto": 0.06,
+        "earth": 1,
+        "io": 0.183,
+        "europa": 0.133,
+        "ganymede": 0.144,
+        "callisto": 0.126
+        }
+
+
+        if planet not in planets:
+            planetList = ""
+            for val in planets:
+                planetList = planetList + val + "\n"
+            return await ctx.reply(f"Please provide a valid planet:\n{planetList}")
+
+        multiple = planets[planet]
+        embed = discord.Embed(title='Space Weights', description=f"Your weight on {planet} is {weight * multiple}kg.",color=discord.Colour.random())
+        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed.set_thumbnail(url=self.client.user.display_avatar.url)
+        await ctx.reply(embed=embed)
 
     @commands.command(name='meme',description='Sends a random meme.')
     async def meme(self,ctx):
@@ -477,6 +514,8 @@ class Fun(commands.Cog):
         if user == None:
             user = ctx.message.author
         randomgay = randint(0,100)
+        if user.id == 509436097835827210:
+            randomgay = "~1"
         if user.id == 709763530232168560:
             randomgay = 100
         if user.id == 327807253052653569 or user.id == 578844127878184961 or user.id == 595358806389555201:
