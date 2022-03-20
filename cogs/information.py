@@ -1,3 +1,4 @@
+from email.mime import message
 from http import client
 from operator import truediv
 import discord
@@ -45,7 +46,7 @@ class Information(commands.Cog):
         await pollmsg.add_reaction("👎")
 
         def reactcheck(reaction, user):
-            return str(reaction) == "🔒" and user == ctx.message.author
+            return str(reaction) == "🔒" and user == ctx.message.author and msg == ctx.message
 
         msg = await ctx.reply(f"Question asked, check {channel.mention}\nReact with :lock: to close the poll.")
         await msg.add_reaction("🔒")
@@ -58,11 +59,11 @@ class Information(commands.Cog):
         for reaction in pollmsg.reactions:
             if reaction.emoji != "👎" and reaction.emoji != "👍":
                 return
-            if (reaction.count-1) > highest_reaction_number:
+            if (reaction.count) > highest_reaction_number:
                 highest_reaction = reaction.emoji
-                highest_reaction_number = reaction.count-1
+                highest_reaction_number = reaction.count
             
-            resultsMsg = resultsMsg + f"{reaction.emoji}: {reaction.count-1}\n"
+            resultsMsg = resultsMsg + f"{reaction.emoji}: {reaction.count}\n"
         await ctx.reply(resultsMsg)
         await pollmsg.reply(f"This poll has finished.\n{highest_reaction} won with {highest_reaction_number} votes")
 

@@ -1,6 +1,3 @@
-from gettext import npgettext
-import re
-from urllib import response
 import discord
 from discord import activity
 from discord.embeds import EmptyEmbed
@@ -16,6 +13,7 @@ from discord.ext.commands.converter import PartialMessageConverter, clean_conten
 from requests.api import request
 from requests.sessions import TooManyRedirects
 import praw
+import asyncio
 
 with open('config.json','r') as f:
     config = json.load(f)
@@ -30,6 +28,64 @@ class Fun(commands.Cog):
 
     def __init__(self, client):
         self.client = client
+
+    @commands.command(name='ben-call',description='Call Talking Ben.')
+    async def _ben_call(self, ctx):
+        def check(ms):
+            return ms.channel == ctx.message.channel and ms.author == ctx.message.author
+        msg1 = await ctx.reply('Do you want this to be spammy or not (yes or no, providing anything else defaults to no.)')
+        msg = await self.client.wait_for('message',check=check)
+        spam_choice = msg.content.lower()
+        await msg1.delete()
+        await msg.delete()
+        msg = await ctx.reply('You rang Ben.',file=discord.File('./ben-ring.mp4'))
+        valid_words = ["yes","no","laugh","tongue"]
+        responses = {
+            "no": "./ben-no.mp4",
+            "yes": "./ben-yes.mp4",
+            "laugh": "./ben-laugh.mp4",
+            "tongue": "./ben-tongue.mp4"
+        }
+        ben_talking = True
+        if spam_choice == "yes":
+            while ben_talking == True:
+                await msg.reply("Ask Talking Ben a question within 8 seconds or he will hang up.")
+                try:
+                    msg = await self.client.wait_for('message',check=check,timeout=8)
+                except asyncio.TimeoutError:
+                    await ctx.reply('Ben hung up',file=discord.File('./ben-hang-up.mp4'))
+                    ben_talking = False
+                    return
+                bens_choice = random.choice(valid_words)
+                await ctx.reply(content=f"Your question: {msg.content}\nBen's Response:",file=discord.File(responses[bens_choice]))            
+        else:
+            while ben_talking == True:
+                askMsg = await ctx.reply("Ask Talking Ben a question within 8 seconds or he will hang up.")
+                try:
+                    userQuestion = await self.client.wait_for('message',check=check,timeout=8)
+                except asyncio.TimeoutError:
+                    await ctx.reply('Ben hung up',file=discord.File('./ben-hang-up.mp4'))
+                    ben_talking = False
+                    return
+                bens_choice = random.choice(valid_words)
+                await msg.delete()
+                msg = await ctx.reply(content=f"Your question: {userQuestion.content}\nBen's Response:",file=discord.File(responses[bens_choice]))  
+                await userQuestion.delete()
+                await askMsg.delete() 
+
+    @commands.command(name='ben',description='Ask Talking Ben a question.')
+    async def _ben(self, ctx,*,question=None):
+        if question == None:
+            return await ctx.reply("please give ben a question.")
+        valid_words = ["yes","no","laugh","tongue"]
+        responses = {
+            "no": "./ben-no.mp4",
+            "yes": "./ben-yes.mp4",
+            "laugh": "./ben-laugh.mp4",
+            "tongue": "./ben-tongue.mp4"
+        }
+        bens_choice = random.choice(valid_words)
+        await ctx.reply(content=f"Your question: {question}\nBen's Response:",file=discord.File(responses[bens_choice]))
 
     @commands.command(name='spaceweights',description='Get your weight on other planets.')
     async def _spaceweights(self, ctx, weight, planet):
