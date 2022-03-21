@@ -29,6 +29,66 @@ class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(name='truth',description='Pick a truth')
+    async def _truth(self, ctx):
+        url = 'https://gist.githubusercontent.com/deepakshrma/9498a19a3ed460fc662c536d138c29b1/raw/f29d323b9b3f0a82f66ed58c7117fb9b599fb8d5/truth-n-dare.json'
+        responseApi = requests.get(url).json()
+        truth_list = [
+            item
+            for item in responseApi
+            if item["type"] == "Truth"
+        ]
+
+        choice = random.choice(truth_list)
+        choiceType = choice['type']
+        choiceID = choice['id']
+        choiceLevel = choice['level']
+        choiceSum = choice['summary']
+
+        embed = discord.Embed(title=choiceType,description=choiceSum,color=discord.Colour.random())
+        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed.set_thumbnail(url=self.client.user.display_avatar.url)
+        embed.set_footer(text=f'ID: {choiceID} | Level: {choiceLevel}')
+        await ctx.reply(embed=embed)
+
+    @commands.command(name='dare',description='Pick a dare')
+    async def _dare(self, ctx):
+        url = 'https://gist.githubusercontent.com/deepakshrma/9498a19a3ed460fc662c536d138c29b1/raw/f29d323b9b3f0a82f66ed58c7117fb9b599fb8d5/truth-n-dare.json'
+        responseApi = requests.get(url).json()
+        dare_list = [
+            item
+            for item in responseApi
+            if item["type"] == "Dare"
+        ]
+
+        choice = random.choice(dare_list)
+        choiceType = choice['type']
+        choiceID = choice['id']
+        choiceLevel = choice['level']
+        choiceSum = choice['summary']
+        embed = discord.Embed(title=choiceType,description=choiceSum,color=discord.Colour.random())
+        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed.set_thumbnail(url=self.client.user.display_avatar.url)
+        embed.set_footer(text=f'ID: {choiceID} | Level: {choiceLevel}')
+        await ctx.reply(embed=embed)
+
+    @commands.command(aliases=['tod'],name='truthordare',description='Play truth or dare')
+    async def _tod(self, ctx):
+        url = 'https://gist.githubusercontent.com/deepakshrma/9498a19a3ed460fc662c536d138c29b1/raw/f29d323b9b3f0a82f66ed58c7117fb9b599fb8d5/truth-n-dare.json'
+        responseApi = requests.get(url).json()
+        choice = random.choice(responseApi)
+        choiceID = choice['id']
+        choiceLevel = choice['level']
+        choiceType = choice['type']
+        choiceSum = choice['summary']
+
+        embed = discord.Embed(title=choiceType,description=choiceSum,color=discord.Colour.random())
+        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed.set_thumbnail(url=self.client.user.display_avatar.url)
+        embed.set_footer(text=f'ID: {choiceID} | Level: {choiceLevel}')
+        await ctx.reply(embed=embed)
+
+
     @commands.command(name='ben-call',description='Call Talking Ben.')
     async def _ben_call(self, ctx):
         def check(ms):
