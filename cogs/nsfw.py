@@ -21,6 +21,30 @@ class NSFW(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(aliases=['nsfwtod'],name='nsfwtruthordare',description='Play nsfw truth or dare')
+    @is_nsfw()
+    async def _tod(self, ctx):
+        url = 'https://gist.githubusercontent.com/deepakshrma/9498a19a3ed460fc662c536d138c29b1/raw/f29d323b9b3f0a82f66ed58c7117fb9b599fb8d5/truth-n-dare.json'
+        responseApi = requests.get(url).json()
+        nsfw_list = [
+            item
+            for item in responseApi
+            if int(item['level']) > 3
+        ]
+        choice = random.choice(nsfw_list)
+        choiceID = choice['id']
+        choiceLevel = choice['level']
+        choiceType = choice['type']
+        choiceSum = choice['summary']
+
+
+        embed = discord.Embed(title=choiceType,description=choiceSum,color=discord.Colour.random())
+        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed.set_thumbnail(url=self.client.user.display_avatar.url)
+        embed.set_footer(text=f'ID: {choiceID} | Level: {choiceLevel}')
+        await ctx.reply(embed=embed)
+
+
     @commands.command(aliases=['rule34'],name='nsfw',description='Finds a nsfw image of what you request.')
     @is_nsfw()
     async def _nsfw(self, ctx, request=None):
@@ -38,11 +62,12 @@ class NSFW(commands.Cog):
         for i in nsfwTags:
             tagMessage = tagMessage + f"`{i}` "
 
+        tagMessage = tagMessage[:1024]
 
         nsfw_extension = nsfwFile[len(nsfwFile) - 3 :].lower()
         if nsfw_extension == "mp4":
             nsfwPreview = chosenKey["preview_url"]
-            nsfwEmbed = discord.Embed(title="Click description for full video.",description=f"[{request}]({nsfwFile})",color=discord.Colour.random(),type='image')
+            nsfwEmbed = discord.Embed(title="NSFW",description=f"[Click me for the video!]({nsfwFile})",color=discord.Colour.random(),type='image')
             nsfwEmbed.set_image(url=nsfwPreview)
             nsfwEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
             nsfwEmbed.add_field(name='Tags:',value=tagMessage)

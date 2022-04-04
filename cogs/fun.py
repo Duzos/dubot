@@ -72,15 +72,22 @@ class Fun(commands.Cog):
         embed.set_footer(text=f'ID: {choiceID} | Level: {choiceLevel}')
         await ctx.reply(embed=embed)
 
+
     @commands.command(aliases=['tod'],name='truthordare',description='Play truth or dare')
     async def _tod(self, ctx):
         url = 'https://gist.githubusercontent.com/deepakshrma/9498a19a3ed460fc662c536d138c29b1/raw/f29d323b9b3f0a82f66ed58c7117fb9b599fb8d5/truth-n-dare.json'
         responseApi = requests.get(url).json()
-        choice = random.choice(responseApi)
+        sfw_list = [
+            item
+            for item in responseApi
+            if int(item['level']) < 4
+        ]
+        choice = random.choice(sfw_list)
         choiceID = choice['id']
         choiceLevel = choice['level']
         choiceType = choice['type']
         choiceSum = choice['summary']
+
 
         embed = discord.Embed(title=choiceType,description=choiceSum,color=discord.Colour.random())
         embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
