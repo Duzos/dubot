@@ -29,6 +29,19 @@ class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(name='insult',description='Produces an insult for you')
+    async def _insult(self, ctx):
+        url = 'https://insult.mattbas.org/api/insult.json'
+        responseApi = requests.get(url).json()
+        insult = responseApi['insult']
+
+        embed = discord.Embed(title='Insult',description=insult,color=0xED1C06)
+        embed.set_footer(text=f'API: {url}')
+        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed.set_thumbnail(url=self.client.user.display_avatar.url)
+        await ctx.reply(embed=embed)
+
+
     @commands.command(name='truth',description='Pick a truth')
     async def _truth(self, ctx):
         url = 'https://gist.githubusercontent.com/deepakshrma/9498a19a3ed460fc662c536d138c29b1/raw/f29d323b9b3f0a82f66ed58c7117fb9b599fb8d5/truth-n-dare.json'
@@ -671,38 +684,47 @@ class Fun(commands.Cog):
 
     @commands.command(name='hug', description='Lets you hug a user you @')
     async def hug(self, ctx, user: commands.MemberConverter):   
-        huglist = ['https://media1.tenor.com/images/cef4ae44dfe06872eb0661dddf26f207/tenor.gif?itemid=13829297']
-        huggif = random.choice(huglist)
-        hugembed = discord.Embed(description=f'{ctx.author.mention} hugs {user.mention}',color=discord.Colour.random())
-        hugembed.set_image(url=huggif)
-        hugembed.set_author(
-            name=ctx.message.author.display_name,
-            icon_url=ctx.message.author.display_avatar.url
-        )
-        await ctx.reply(embed=hugembed)
+        url = 'https://api.tenor.com/v1/random?key=LIVDSRZULELA&q=anime+hug&limit=1'
+        responseApi = requests.get(url).json()
+        gif = responseApi['results'][0]['media'][0]['gif']['url']
+
+        embed = discord.Embed(title=f'{ctx.author.display_name} hugs {user.display_name}',description=f'{ctx.author.mention} hugs {user.mention}',color=0xF8C8DC,type='gifv')
+        embed.set_image(url=gif)
+        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        await ctx.reply(embed=embed)
+
     @commands.command(name='kiss', description='Lets you kiss a user you @')
-    async def kiss(self, ctx, user: commands.MemberConverter):
-        kisslist = ['https://media1.tenor.com/images/ef9687b36e36605b375b4e9b0cde51db/tenor.gif?itemid=12498627','https://media1.tenor.com/images/e673b68b323f14ee902cfdb2da5ca65e/tenor.gif?itemid=16000723','https://media1.tenor.com/images/293d18ad6ab994d9b9d18aed8a010f73/tenor.gif?itemid=13001030','https://media1.tenor.com/images/015c71df440861e567364cf44e5d00fe/tenor.gif?itemid=16851922','https://media1.tenor.com/images/eb7502a33cbeca31c2e97af07d1c4285/tenor.gif?itemid=14270726','https://media1.tenor.com/images/45e529c116a1758fd09bdb27e2172eca/tenor.gif?itemid=11674749']
-        kissgif = random.choice(kisslist)
-        kissembed = discord.Embed(description=f'{ctx.author.mention} kisses {user.mention}',color=discord.Colour.random(),type='gifv')
-        kissembed.set_image(url=kissgif)
-        kissembed.set_author(
-            name=ctx.message.author.display_name,
-            icon_url=ctx.message.author.display_avatar.url
-        )
-        await ctx.reply(embed=kissembed)
+    async def _kiss(self, ctx, user: commands.MemberConverter):
+        url = 'https://api.tenor.com/v1/random?key=LIVDSRZULELA&q=anime+kiss&limit=1'
+        responseApi = requests.get(url).json()
+        gif = responseApi['results'][0]['media'][0]['gif']['url']
+
+        embed = discord.Embed(title=f'{ctx.author.display_name} kisses {user.display_name}',description=f'{ctx.author.mention} kisses {user.mention}',color=0xF8C8DC,type='gifv')
+        embed.set_image(url=gif)
+        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        await ctx.reply(embed=embed)
+
     @commands.command(name='slap', description='Lets you slap a user you @')
     async def slap(self, ctx, user: commands.MemberConverter):
-        slaplist = ['https://media1.tenor.com/images/49de17c6f21172b3abfaf5972fddf6d6/tenor.gif?itemid=10206784','https://media1.tenor.com/images/42621cf33b44ca6a717d448b1223bccc/tenor.gif?itemid=15696850','https://media1.tenor.com/images/73adef04dadf613cb96ed3b2c8a192b4/tenor.gif?itemid=9631495','https://media1.tenor.com/images/e29671457384a94a7e19fea26029b937/tenor.gif?itemid=10048943','https://media.tenor.com/images/f26f807e70ee677f8e3aaee51779fc6f/tenor.gif','https://media1.tenor.com/images/b7a844cc66ca1c6a4f06c266646d070f/tenor.gif?itemid=17423278']
-        slapgif = random.choice(slaplist)
-        slapembed = discord.Embed(description=f'{ctx.author.mention} slaps {user.mention}',color=discord.Colour.random(),type='gifv')
-        slapembed.set_image(url=slapgif)
-        slapembed.set_author(
-            name=ctx.message.author.display_name,
-            icon_url=ctx.message.author.display_avatar.url
-        )
-        await ctx.reply(embed=slapembed)
-        #await ctx.reply(f'{ctx.author.mention} slaps {user.mention} {slapgif}')
+        url = 'https://api.tenor.com/v1/random?key=LIVDSRZULELA&q=anime+slap&limit=1'
+        responseApi = requests.get(url).json()
+        gif = responseApi['results'][0]['media'][0]['gif']['url']
+
+        embed = discord.Embed(title=f'{ctx.author.display_name} slaps {user.display_name}',description=f'{ctx.author.mention} slaps {user.mention}',color=0xa91834,type='gifv')
+        embed.set_image(url=gif)
+        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        await ctx.reply(embed=embed)
+
+    @commands.command(name='kill', description='Lets you kill a user you @')
+    async def kill(self, ctx, user: commands.MemberConverter):
+        url = 'https://api.tenor.com/v1/random?key=LIVDSRZULELA&q=anime+kill&limit=1'
+        responseApi = requests.get(url).json()
+        gif = responseApi['results'][0]['media'][0]['gif']['url']
+
+        embed = discord.Embed(title=f'{ctx.author.display_name} kills {user.display_name}',description=f'{ctx.author.mention} kills {user.mention}',color=0xa91834,type='gifv')
+        embed.set_image(url=gif)
+        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        await ctx.reply(embed=embed)
 
     @commands.command(
         name='embed',

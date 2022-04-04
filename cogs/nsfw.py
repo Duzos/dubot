@@ -21,6 +21,19 @@ class NSFW(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(aliases=['sex'],name='fuck', description='Lets you do that with a user you @')
+    @is_nsfw()
+    async def fuck(self, ctx, user: commands.MemberConverter):
+        url = 'https://api.tenor.com/v1/random?key=LIVDSRZULELA&q=anime+sex&limit=1'
+        responseApi = requests.get(url).json()
+        gif = responseApi['results'][0]['media'][0]['gif']['url']
+
+        embed = discord.Embed(title=f'{ctx.author.display_name} fuck {user.display_name}',description=f'{ctx.author.mention} fucks {user.mention}',color=0xF8C8DC,type='gifv')
+        embed.set_image(url=gif)
+        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        await ctx.reply(embed=embed)
+
+
     @commands.command(aliases=['nsfwtod'],name='nsfwtruthordare',description='Play nsfw truth or dare')
     @is_nsfw()
     async def _tod(self, ctx):
