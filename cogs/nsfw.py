@@ -6,6 +6,9 @@ import requests
 import praw
 import json 
 
+def embed_set_author(ctx, embed: discord.Embed):
+    return embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+
 # Getting items from config.json
 with open('config.json','r') as cf:
     config = json.load(cf)

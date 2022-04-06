@@ -3,6 +3,8 @@ from discord.ext import commands
 from discord.ext.commands.core import has_permissions, is_owner
 import json
 
+def embed_set_author(ctx, embed: discord.Embed):
+    return embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
 
 class Moderation(commands.Cog):
 

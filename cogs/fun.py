@@ -22,8 +22,9 @@ redditSecret = config['redditSecret']
 redditAgent = config['redditAgent']
 reddit = praw.Reddit(client_id=redditID,client_secret=redditSecret,user_agent=redditAgent,check_for_async=False)
 
-
-
+def embed_set_author(ctx, embed: discord.Embed):
+    return embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+    
 class Fun(commands.Cog):
 
     def __init__(self, client):
@@ -38,7 +39,7 @@ class Fun(commands.Cog):
 
         embed = discord.Embed(title='Insult',description=insult,color=0xED1C06)
         embed.set_footer(text=f'API: {url}')
-        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed_set_author(ctx, embed)
         embed.set_thumbnail(url=self.client.user.display_avatar.url)
         await ctx.reply(embed=embed)
 
@@ -60,7 +61,7 @@ class Fun(commands.Cog):
         choiceSum = choice['summary']
 
         embed = discord.Embed(title=choiceType,description=choiceSum,color=discord.Colour.random())
-        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed_set_author(ctx, embed)
         embed.set_thumbnail(url=self.client.user.display_avatar.url)
         embed.set_footer(text=f'ID: {choiceID} | Level: {choiceLevel}')
         await ctx.reply(embed=embed)
@@ -81,7 +82,7 @@ class Fun(commands.Cog):
         choiceLevel = choice['level']
         choiceSum = choice['summary']
         embed = discord.Embed(title=choiceType,description=choiceSum,color=discord.Colour.random())
-        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed_set_author(ctx, embed)
         embed.set_thumbnail(url=self.client.user.display_avatar.url)
         embed.set_footer(text=f'ID: {choiceID} | Level: {choiceLevel}')
         await ctx.reply(embed=embed)
@@ -104,7 +105,7 @@ class Fun(commands.Cog):
 
 
         embed = discord.Embed(title=choiceType,description=choiceSum,color=discord.Colour.random())
-        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed_set_author(ctx, embed)
         embed.set_thumbnail(url=self.client.user.display_avatar.url)
         embed.set_footer(text=f'ID: {choiceID} | Level: {choiceLevel}')
         await ctx.reply(embed=embed)
@@ -202,7 +203,7 @@ class Fun(commands.Cog):
 
         multiple = planets[planet]
         embed = discord.Embed(title='Space Weights', description=f"Your weight on {planet} is {weight * multiple}kg.",color=discord.Colour.random())
-        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed_set_author(ctx, embed)
         embed.set_thumbnail(url=self.client.user.display_avatar.url)
         await ctx.reply(embed=embed)
 
@@ -335,12 +336,12 @@ class Fun(commands.Cog):
         if playerAnswer == triviaAnswer:
             embed = discord.Embed(title='Trivia Question',description='You won!',color=discord.Colour.green())
             embed.set_thumbnail(url=self.client.user.display_avatar.url)
-            embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+            embed_set_author(ctx, embed)
             await playerMessage.reply(embed=embed)
         else:
             embed = discord.Embed(title='Trivia Question',description=f'You Lost!\nThe correct answer was: **{triviaAnswer}**',color=discord.Colour.red())
             embed.set_thumbnail(url=self.client.user.display_avatar.url)
-            embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+            embed_set_author(ctx, embed)
             await playerMessage.reply(embed=embed)
 
     @commands.command(aliases=['cat','catrandom'],name='randomcat',description='Gives you a random cat picture.')
@@ -689,7 +690,7 @@ class Fun(commands.Cog):
 
         embed = discord.Embed(title=f'{ctx.author.display_name} meth',description=f'meth {ctx.author.mention}',color=0xA7C7E7,type='gifv')
         embed.set_image(url=gif)
-        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed_set_author(ctx, embed)
         await ctx.reply(embed=embed)
 
     @commands.command(name='hug', description='Lets you hug a user you @')
@@ -700,7 +701,7 @@ class Fun(commands.Cog):
 
         embed = discord.Embed(title=f'{ctx.author.display_name} hugs {user.display_name}',description=f'{ctx.author.mention} hugs {user.mention}',color=0xF8C8DC,type='gifv')
         embed.set_image(url=gif)
-        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed_set_author(ctx, embed)
         await ctx.reply(embed=embed)
 
     @commands.command(name='kiss', description='Lets you kiss a user you @')
@@ -711,7 +712,7 @@ class Fun(commands.Cog):
 
         embed = discord.Embed(title=f'{ctx.author.display_name} kisses {user.display_name}',description=f'{ctx.author.mention} kisses {user.mention}',color=0xF8C8DC,type='gifv')
         embed.set_image(url=gif)
-        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed_set_author(ctx, embed)
         await ctx.reply(embed=embed)
 
     @commands.command(name='slap', description='Lets you slap a user you @')
@@ -722,7 +723,7 @@ class Fun(commands.Cog):
 
         embed = discord.Embed(title=f'{ctx.author.display_name} slaps {user.display_name}',description=f'{ctx.author.mention} slaps {user.mention}',color=0xa91834,type='gifv')
         embed.set_image(url=gif)
-        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed_set_author(ctx, embed)
         await ctx.reply(embed=embed)
 
     @commands.command(name='kill', description='Lets you kill a user you @')
@@ -733,7 +734,7 @@ class Fun(commands.Cog):
 
         embed = discord.Embed(title=f'{ctx.author.display_name} kills {user.display_name}',description=f'{ctx.author.mention} kills {user.mention}',color=0xa91834,type='gifv')
         embed.set_image(url=gif)
-        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        embed_set_author(ctx, embed)
         await ctx.reply(embed=embed)
 
     @commands.command(

@@ -12,6 +12,9 @@ import requests
 from datetime import datetime
 import json
 
+def embed_set_author(ctx, embed: discord.Embed):
+    return embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+
 # le cog of le other
 class Information(commands.Cog):
 

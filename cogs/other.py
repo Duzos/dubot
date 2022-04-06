@@ -16,6 +16,9 @@ from discord.ext.commands.core import has_permissions, is_nsfw
 import praw
 import requests
 
+def embed_set_author(ctx, embed: discord.Embed):
+    return embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+
 # Getting items from config.json
 with open('config.json','r') as cf:
     config = json.load(cf)

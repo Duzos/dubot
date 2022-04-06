@@ -60,6 +60,8 @@ async def on_ready():
     client.start_time = datetime.utcnow()
     print(f'{client.user.name} is ready')
 
+def embed_set_author(ctx, embed: discord.Embed):
+    return embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
 
 # TopGG Stuff (Remove if you dont have TopGG)
 @tasks.loop(minutes=30)
