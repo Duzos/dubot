@@ -86,6 +86,7 @@ class NSFW(commands.Cog):
             nsfwEmbed.add_field(name='Tags:',value=tagMessage)
             nsfwEmbed.set_footer(text=f"ID: {nsfwID} | API by api.rule34.xxx")
             await ctx.reply(embed=nsfwEmbed)
+            await ctx.reply(nsfwFile)
             return
         if nsfw_extension == "jpg" or nsfw_extension == "peg" or nsfw_extension == "png" or nsfw_extension == "gif":
             nsfwEmbed = discord.Embed(title="NSFW",description=f'[{request}]({nsfwFile})',color=discord.Colour.random(),type='image')

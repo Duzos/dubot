@@ -29,6 +29,7 @@ class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+
     @commands.command(name='insult',description='Produces an insult for you')
     async def _insult(self, ctx):
         url = 'https://insult.mattbas.org/api/insult.json'
@@ -681,6 +682,15 @@ class Fun(commands.Cog):
     #@commands.command(name='ping', description='Gets the bots ping')
     #async def ping(self, ctx):
     #    await ctx.reply('Why do you want this from me. Please leave me alone.')
+
+    @commands.command(name='meth', description='meth')
+    async def _meth(self, ctx):
+        gif = 'https://media.tenor.com/images/b4ff5850dbdc71b5f9da4c87d132be0d/tenor.gif'
+
+        embed = discord.Embed(title=f'{ctx.author.display_name} meth',description=f'meth {ctx.author.mention}',color=0xA7C7E7,type='gifv')
+        embed.set_image(url=gif)
+        embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        await ctx.reply(embed=embed)
 
     @commands.command(name='hug', description='Lets you hug a user you @')
     async def hug(self, ctx, user: commands.MemberConverter):   
