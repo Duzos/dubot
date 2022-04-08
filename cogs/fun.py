@@ -1,6 +1,6 @@
 import discord
 from discord import activity
-from discord.embeds import EmptyEmbed
+from discord.embeds import Embed, EmptyEmbed
 from discord.ext import commands
 import random
 from random import Random, randint
@@ -33,6 +33,7 @@ class Fun(commands.Cog):
 
     @commands.command(name='insult',description='Produces an insult for you')
     async def _insult(self, ctx):
+        await ctx.trigger_typing()
         url = 'https://insult.mattbas.org/api/insult.json'
         responseApi = requests.get(url).json()
         insult = responseApi['insult']
@@ -46,6 +47,7 @@ class Fun(commands.Cog):
 
     @commands.command(name='truth',description='Pick a truth')
     async def _truth(self, ctx):
+        await ctx.trigger_typing()
         url = 'https://gist.githubusercontent.com/deepakshrma/9498a19a3ed460fc662c536d138c29b1/raw/f29d323b9b3f0a82f66ed58c7117fb9b599fb8d5/truth-n-dare.json'
         responseApi = requests.get(url).json()
         truth_list = [
@@ -68,6 +70,7 @@ class Fun(commands.Cog):
 
     @commands.command(name='dare',description='Pick a dare')
     async def _dare(self, ctx):
+        await ctx.trigger_typing()
         url = 'https://gist.githubusercontent.com/deepakshrma/9498a19a3ed460fc662c536d138c29b1/raw/f29d323b9b3f0a82f66ed58c7117fb9b599fb8d5/truth-n-dare.json'
         responseApi = requests.get(url).json()
         dare_list = [
@@ -90,6 +93,7 @@ class Fun(commands.Cog):
 
     @commands.command(aliases=['tod'],name='truthordare',description='Play truth or dare')
     async def _tod(self, ctx):
+        await ctx.trigger_typing()
         url = 'https://gist.githubusercontent.com/deepakshrma/9498a19a3ed460fc662c536d138c29b1/raw/f29d323b9b3f0a82f66ed58c7117fb9b599fb8d5/truth-n-dare.json'
         responseApi = requests.get(url).json()
         sfw_list = [
@@ -343,6 +347,19 @@ class Fun(commands.Cog):
             embed.set_thumbnail(url=self.client.user.display_avatar.url)
             embed_set_author(ctx, embed)
             await playerMessage.reply(embed=embed)
+
+    @commands.command(name='dog',description='Sends a random dog.')
+    async def _dog(self, ctx):
+        await ctx.trigger_typing()
+        url = 'https://dog.ceo/api/breeds/image/random'
+        responseAPI = requests.get(url).json()
+        dogPicture = responseAPI['message']
+
+        embed = discord.Embed(title='Dog',description=dogPicture,color=discord.Colour.random(),type='image')
+        embed.set_image(url=dogPicture)
+        embed.set_footer(text=f'API: {url}')
+        embed_set_author(ctx, embed)
+        await ctx.reply(embed=embed)
 
     @commands.command(aliases=['cat','catrandom'],name='randomcat',description='Gives you a random cat picture.')
     async def randomcat(self, ctx):
@@ -689,6 +706,17 @@ class Fun(commands.Cog):
         gif = 'https://media.tenor.com/images/b4ff5850dbdc71b5f9da4c87d132be0d/tenor.gif'
 
         embed = discord.Embed(title=f'{ctx.author.display_name} meth',description=f'meth {ctx.author.mention}',color=0xA7C7E7,type='gifv')
+        embed.set_image(url=gif)
+        embed_set_author(ctx, embed)
+        await ctx.reply(embed=embed)
+
+    @commands.command(name='headpat', description='Lets you headpat a user you @')
+    async def _headpat(self, ctx, user: commands.MemberConverter):   
+        url = 'https://api.tenor.com/v1/random?key=LIVDSRZULELA&q=anime+headpat&limit=1'
+        responseApi = requests.get(url).json()
+        gif = responseApi['results'][0]['media'][0]['gif']['url']
+
+        embed = discord.Embed(title=f'{ctx.author.display_name} headpats {user.display_name}',description=f'{ctx.author.mention} headpats {user.mention}',color=0xF8C8DC,type='gifv')
         embed.set_image(url=gif)
         embed_set_author(ctx, embed)
         await ctx.reply(embed=embed)

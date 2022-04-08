@@ -37,6 +37,7 @@ class Other(commands.Cog):
 
     @commands.command(name='neko',description='Sends a neko (wtf is a neko)')
     async def _neko(self, ctx):
+        await ctx.trigger_typing()
         url = 'https://nekos.life/api/v2/img/neko'
         responseApi = requests.get(url).json()
         nekoImagery = responseApi['url']
@@ -391,7 +392,7 @@ class Other(commands.Cog):
 
         help_embed = discord.Embed(title='Help',color=discord.Colour.random())
         help_embed.set_thumbnail(url=self.client.user.display_avatar.url)
-        help_embed.set_footer(text=f'Requested by {ctx.message.author.display_name}',icon_url=ctx.message.author.display_avatar.url)
+        help_embed.set_footer(text=f'Requested by {ctx.message.author.display_name} | do help <category>',icon_url=ctx.message.author.display_avatar.url)
         
         cogs = [c for c in self.client.cogs.keys()]
 

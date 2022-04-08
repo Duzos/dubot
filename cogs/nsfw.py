@@ -27,6 +27,7 @@ class NSFW(commands.Cog):
     @commands.command(name='lewdneko',description='Sends a lewd neko (wtf is a neko)')
     @is_nsfw()
     async def _lewdneko(self, ctx):
+        await ctx.trigger_typing()
         url = 'https://nekos.life/api/v2/img/nsfw_neko_gif'
         responseApi = requests.get(url).json()
         nekoImagery = responseApi['url']
@@ -40,6 +41,7 @@ class NSFW(commands.Cog):
     @commands.command(aliases=['sex'],name='fuck', description='Lets you do that with a user you @')
     @is_nsfw()
     async def fuck(self, ctx, user: commands.MemberConverter):
+        await ctx.trigger_typing()
         url = 'https://api.tenor.com/v1/random?key=LIVDSRZULELA&q=anime+sex&limit=1'
         responseApi = requests.get(url).json()
         gif = responseApi['results'][0]['media'][0]['gif']['url']
@@ -53,6 +55,7 @@ class NSFW(commands.Cog):
     @commands.command(aliases=['nsfwtod'],name='nsfwtruthordare',description='Play nsfw truth or dare')
     @is_nsfw()
     async def _tod(self, ctx):
+        await ctx.trigger_typing()
         url = 'https://gist.githubusercontent.com/deepakshrma/9498a19a3ed460fc662c536d138c29b1/raw/f29d323b9b3f0a82f66ed58c7117fb9b599fb8d5/truth-n-dare.json'
         responseApi = requests.get(url).json()
         nsfw_list = [
