@@ -35,6 +35,19 @@ class Other(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(name='neko',description='Sends a neko (wtf is a neko)')
+    async def _neko(self, ctx):
+        url = 'https://nekos.life/api/v2/img/neko'
+        responseApi = requests.get(url).json()
+        nekoImagery = responseApi['url']
+
+        embed = discord.Embed(title='Neko',description=nekoImagery,color=0xC3B1E1,type='image')
+        embed.set_footer(text=f'API: {url}')
+        embed.set_image(url=nekoImagery)
+        embed_set_author(ctx, embed)
+        await ctx.reply(embed=embed)
+
+
     @commands.command(name='vote',description='Vote for the bot.')
     async def _vote(self, ctx):
         voteEmbed = discord.Embed(title=f'Vote',description=f'[top.gg](https://top.gg/bot/{self.client.user.id}/vote)\n[discordbotlist.com](https://discordbotlist.com/bots/dubot/upvote)',color=discord.Colour.random())

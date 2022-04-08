@@ -23,6 +23,19 @@ class NSFW(commands.Cog):
 
     def __init__(self, client):
         self.client = client
+        
+    @commands.command(name='lewdneko',description='Sends a lewd neko (wtf is a neko)')
+    @is_nsfw()
+    async def _lewdneko(self, ctx):
+        url = 'https://nekos.life/api/v2/img/nsfw_neko_gif'
+        responseApi = requests.get(url).json()
+        nekoImagery = responseApi['url']
+
+        embed = discord.Embed(title='Neko',description=nekoImagery,color=0xC3B1E1,type='image')
+        embed.set_footer(text=f'API: {url}')
+        embed.set_image(url=nekoImagery)
+        embed_set_author(ctx, embed)
+        await ctx.reply(embed=embed)
 
     @commands.command(aliases=['sex'],name='fuck', description='Lets you do that with a user you @')
     @is_nsfw()
