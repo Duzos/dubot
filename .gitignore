@@ -6,3 +6,5 @@ WinSCP.Ink
 ./json/data.json
 ./json/blocked.json
 ./alternate
+./__pycache__
+./.vs
