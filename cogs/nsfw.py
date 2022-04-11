@@ -42,7 +42,7 @@ class NSFW(commands.Cog):
     @is_nsfw()
     async def fuck(self, ctx, user: commands.MemberConverter):
         await ctx.trigger_typing()
-        url = 'https://api.tenor.com/v1/random?key=LIVDSRZULELA&q=anime+sex&limit=1'
+        url = 'https://api.tenor.com/v1/random?key=LIVDSRZULELA&q=sex&limit=1'
         responseApi = requests.get(url).json()
         gif = responseApi['results'][0]['media'][0]['gif']['url']
 

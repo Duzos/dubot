@@ -554,7 +554,7 @@ class Fun(commands.Cog):
         await ctx.send(f'{user.mention}\n{ctx.message.author.mention} has challenged you to a game of Rock Paper Scissors, do you accept?\n(yes or no)')
         msg = await self.client.wait_for('message',check=check)
         if msg.content.lower() != 'yes':
-            return await ctx.reply('{user.mention} denied the rock paper scissors challenge.')
+            return await ctx.reply(f'{user.mention} denied the rock paper scissors challenge.')
         await ctx.reply(f'{user.mention} accepted the challenge! I will DM {ctx.message.author.mention} first then {user.mention}')
 
         await ctx.message.author.send('Your turn! Rock, Paper or Scissors?')
