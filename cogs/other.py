@@ -35,7 +35,7 @@ class Other(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(name='neko',description='Sends a neko (wtf is a neko)')
+    @commands.command(name='nekomimi',description='Sends a neko (wtf is a neko)')
     async def _neko(self, ctx):
         await ctx.trigger_typing()
         url = 'https://nekos.life/api/v2/img/neko'

@@ -361,7 +361,7 @@ class Fun(commands.Cog):
         embed_set_author(ctx, embed)
         await ctx.reply(embed=embed)
 
-    @commands.command(aliases=['cat','catrandom'],name='randomcat',description='Gives you a random cat picture.')
+    @commands.command(aliases=['cat','catrandom','neko'],name='randomcat',description='Gives you a random cat picture.')
     async def randomcat(self, ctx):
         await ctx.trigger_typing()
         for i in requests.get("https://api.thecatapi.com/v1/images/search").json():
@@ -537,83 +537,148 @@ class Fun(commands.Cog):
         )
         await ctx.reply(embed=diceEmbed)
 
-    @commands.command(name='rps',description='Play Rock Paper Scissors against the bot.')
-    async def rps(self, ctx, message):
-        answer = message.lower()
-        choices = ["rock", "paper", "scissors"]
-        computers_answer = random.choice(choices)
-        if answer == "gun":
-            await ctx.reply(f"I pick **{computers_answer}**, wait is that a gun?")
-            await ctx.reply(f"You win.")
-            return
-        if answer not in choices:
-            incorrectEmbed = discord.Embed(title="Invalid",description=f"'{answer}' is not valid. Please use one of the following: rock, paper, scissors.",color=discord.Colour.random())
-            incorrectEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
-            incorrectEmbed.set_author(
-                name=ctx.message.author.display_name,
-                icon_url=ctx.message.author.display_avatar.url
-            )
-            await ctx.reply(embed=incorrectEmbed)
-        else:
-            if computers_answer == answer:
-                answerEmbed = discord.Embed(color=discord.Colour.random(),title="Tie",description=f"We both picked **{answer}**.")
-                answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
-                answerEmbed.set_author(
-                    name=ctx.message.author.display_name,
-                    icon_url=ctx.message.author.display_avatar.url
-                )
-                await ctx.reply(embed=answerEmbed)
-            if computers_answer == "rock":
-                if answer == "paper":
-                    answerEmbed = discord.Embed(color=discord.Colour.random(),title="You win",description=f"I picked **{computers_answer}**. :rock:")
-                    answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
-                    answerEmbed.set_author(
-                        name=ctx.message.author.display_name,
-                        icon_url=ctx.message.author.display_avatar.url
-                    )
-                    await ctx.reply(embed=answerEmbed) 
-                if answer == "scissors":
-                    answerEmbed = discord.Embed(color=discord.Colour.random(),title="I win",description=f"I picked **{computers_answer}**. :rock:")
-                    answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
-                    answerEmbed.set_author(
-                        name=ctx.message.author.display_name,
-                        icon_url=ctx.message.author.display_avatar.url
-                    )
-                    await ctx.reply(embed=answerEmbed) 
-            if computers_answer == "paper":
-                if answer == "rock":
-                    answerEmbed = discord.Embed(color=discord.Colour.random(),title="I win",description=f"I picked **{computers_answer}**. :newspaper:")
-                    answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
-                    answerEmbed.set_author(
-                        name=ctx.message.author.display_name,
-                        icon_url=ctx.message.author.display_avatar.url
-                    )
-                    await ctx.reply(embed=answerEmbed) 
-                if answer == "scissors":
-                    answerEmbed = discord.Embed(color=discord.Colour.random(),title="You win",description=f"I picked **{computers_answer}**. :newspaper:")
-                    answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
-                    answerEmbed.set_author(
-                        name=ctx.message.author.display_name,
-                        icon_url=ctx.message.author.display_avatar.url
-                    )
-                    await ctx.reply(embed=answerEmbed) 
-            if computers_answer == "scissors":
-                if answer == "rock":
-                    answerEmbed = discord.Embed(color=discord.Colour.random(),title="You win",description=f"I picked **{computers_answer}**. :scissors:")
-                    answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
-                    answerEmbed.set_author(
-                        name=ctx.message.author.display_name,
-                        icon_url=ctx.message.author.display_avatar.url
-                    )
-                    await ctx.reply(embed=answerEmbed) 
-                if answer == "paper":
-                    answerEmbed = discord.Embed(color=discord.Colour.random(),title="I win",description=f"I picked **{computers_answer}**. :scissors:")
-                    answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
-                    answerEmbed.set_author(
-                        name=ctx.message.author.display_name,
-                        icon_url=ctx.message.author.display_avatar.url
-                    )
-                    await ctx.reply(embed=answerEmbed) 
+    @commands.command(aliases=['rockpaperscissors'],name='rps',description='Play Rock Paper Scissors against someone')
+    async def _rps(self, ctx, user: commands.MemberConverter):
+        if ctx.author.dm_channel == None:
+            await ctx.author.create_dm()
+        if user.dm_channel == None:
+            await user.create_dm()
+        def check(ms):
+            return ms.channel == ctx.message.channel and ms.author == user
+        def check2(ms):
+            return ms.channel == ctx.author.dm_channel and ms.author == ctx.message.author
+        def check3(ms):
+            return ms.channel == user.dm_channel and ms.author == user
+        choices = ['rock','paper','scissors']
+
+        await ctx.send(f'{user.mention}\n{ctx.message.author.mention} has challenged you to a game of Rock Paper Scissors, do you accept?\n(yes or no)')
+        msg = await self.client.wait_for('message',check=check)
+        if msg.content.lower() != 'yes':
+            return await ctx.reply('{user.mention} denied the rock paper scissors challenge.')
+        await ctx.reply(f'{user.mention} accepted the challenge! I will DM {ctx.message.author.mention} first then {user.mention}')
+
+        await ctx.message.author.send('Your turn! Rock, Paper or Scissors?')
+        msg = await self.client.wait_for('message',check=check2)
+        if msg.content.lower() not in choices:
+            await msg.reply('invalid choice, cancelling challenge')
+            return await ctx.send(f'{ctx.author.mention} used an invalid choice of {msg.content}, challenge cancelled.')
+        authorChoice = msg.content.lower()
+
+        await user.send('Your turn! Rock, Paper or Scissors?')
+        msg = await self.client.wait_for('message',check=check3)
+        if msg.content.lower() not in choices:
+            await msg.reply('invalid choice, cancelling challenge')
+            return await ctx.send(f'{user.mention} used an invalid choice of {msg.content}, challenge cancelled.')
+        userChoice = msg.content.lower()
+
+        authorWinEmbed = discord.Embed(title=f'{ctx.author.display_name} won!',description=f'{ctx.author.mention} chose {authorChoice} which beat {userChoice}')
+        authorWinEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+        embed_set_author(ctx, authorWinEmbed)
+
+        userWinEmbed = discord.Embed(title=f'{user.display_name} won!',description=f'{user.mention} chose {userChoice} which beat {authorChoice}')
+        userWinEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+        embed_set_author(ctx, userWinEmbed)
+        
+        tieEmbed = discord.Embed(title='Tie',description=f'{user.mention} and {ctx.author.mention} both chose {userChoice}')
+        tieEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+        embed_set_author(ctx, tieEmbed)
+
+        if authorChoice == 'rock':
+            if userChoice == 'rock':
+                await ctx.reply(embed=tieEmbed)
+            elif userChoice == 'paper':
+                await ctx.reply(embed=userWinEmbed)
+            elif userChoice == 'scissors':
+                await ctx.reply(embed=authorWinEmbed)
+        elif authorChoice == 'paper':
+            if userChoice == 'rock':
+                await ctx.reply(embed=authorWinEmbed)
+            elif userChoice == 'paper':
+                await ctx.reply(embed=tieEmbed)
+            elif userChoice == 'scissosrs':
+                await ctx.reply(embed=userWinEmbed)
+        elif authorChoice == 'scissors':
+            if userChoice == 'rock':
+                await ctx.reply(embed=userWinEmbed)
+            elif userChoice == 'paper':
+                await ctx.reply(embed=authorWinEmbed)
+            elif userChoice == 'scissors':
+                await ctx.reply(embed=tieEmbed)
+
+
+    #@commands.command(name='rps',description='Play Rock Paper Scissors against the bot.')
+    #async def rps(self, ctx, message):
+    #    answer = message.lower()
+    #    choices = ["rock", "paper", "scissors"]
+    #    computers_answer = random.choice(choices)
+    #    if answer not in choices:
+    #        incorrectEmbed = discord.Embed(title="Invalid",description=f"'{answer}' is not valid. Please use one of the following: rock, paper, scissors.",color=discord.Colour.random())
+    #        incorrectEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+    #        incorrectEmbed.set_author(
+    #            name=ctx.message.author.display_name,
+    #            icon_url=ctx.message.author.display_avatar.url
+    #        )
+    #        await ctx.reply(embed=incorrectEmbed)
+    #    else:
+    #        if computers_answer == answer:
+    #            answerEmbed = discord.Embed(color=discord.Colour.random(),title="Tie",description=f"We both picked **{answer}**.")
+    #            answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+    #            answerEmbed.set_author(
+    #                name=ctx.message.author.display_name,
+    #                icon_url=ctx.message.author.display_avatar.url
+    #            )
+    #            await ctx.reply(embed=answerEmbed)
+    #        if computers_answer == "rock":
+    #            if answer == "paper":
+    #                answerEmbed = discord.Embed(color=discord.Colour.random(),title="You win",description=f"I picked **{computers_answer}**. :rock:")
+    #                answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+    #                answerEmbed.set_author(
+    #                    name=ctx.message.author.display_name,
+    #                    icon_url=ctx.message.author.display_avatar.url
+    #                )
+    #                await ctx.reply(embed=answerEmbed) 
+    #            if answer == "scissors":
+    #                answerEmbed = discord.Embed(color=discord.Colour.random(),title="I win",description=f"I picked **{computers_answer}**. :rock:")
+    #                answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+    #                answerEmbed.set_author(
+    #                    name=ctx.message.author.display_name,
+    #                    icon_url=ctx.message.author.display_avatar.url
+    #                )
+    #                await ctx.reply(embed=answerEmbed) 
+    #        if computers_answer == "paper":
+    #            if answer == "rock":
+    #                answerEmbed = discord.Embed(color=discord.Colour.random(),title="I win",description=f"I picked **{computers_answer}**. :newspaper:")
+    #                answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+    #                answerEmbed.set_author(
+    #                    name=ctx.message.author.display_name,
+    #                    icon_url=ctx.message.author.display_avatar.url
+    #                )
+    #                await ctx.reply(embed=answerEmbed) 
+    #            if answer == "scissors":
+    #                answerEmbed = discord.Embed(color=discord.Colour.random(),title="You win",description=f"I picked **{computers_answer}**. :newspaper:")
+    #                answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+    #                answerEmbed.set_author(
+    #                    name=ctx.message.author.display_name,
+    #                    icon_url=ctx.message.author.display_avatar.url
+    #                )
+    #                await ctx.reply(embed=answerEmbed) 
+    #        if computers_answer == "scissors":
+    #            if answer == "rock":
+    #                answerEmbed = discord.Embed(color=discord.Colour.random(),title="You win",description=f"I picked **{computers_answer}**. :scissors:")
+    #                answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+    #                answerEmbed.set_author(
+    #                    name=ctx.message.author.display_name,
+    #                    icon_url=ctx.message.author.display_avatar.url
+    #                )
+    #                await ctx.reply(embed=answerEmbed) 
+    #            if answer == "paper":
+    #                answerEmbed = discord.Embed(color=discord.Colour.random(),title="I win",description=f"I picked **{computers_answer}**. :scissors:")
+    #                answerEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+    #                answerEmbed.set_author(
+    #                    name=ctx.message.author.display_name,
+    #                    icon_url=ctx.message.author.display_avatar.url
+    #                )
+    #                await ctx.reply(embed=answerEmbed) 
 
     @commands.command(aliases=['ng','numberg','numberguess'], name='nguess', description='Guess the bots number.')
     async def nguess(self,ctx, *, number=0):
@@ -701,14 +766,28 @@ class Fun(commands.Cog):
     #async def ping(self, ctx):
     #    await ctx.reply('Why do you want this from me. Please leave me alone.')
 
+    @commands.command(name='gif', description='Looks up a gif using tenor.')
+    async def _gif(self, ctx, query=None):
+        url = f'https://api.tenor.com/v1/random?key=LIVDSRZULELA&q={query}&limit=1'
+        if query == None:
+            url = 'https://api.tenor.com/v1/random?key=LIVDSRZULELA&limit=1'
+        responseApi = requests.get(url).json()
+        gif = responseApi['results'][0]['media'][0]['gif']['url']
+
+        embed = discord.Embed(title=f'{query}',description=f'Result for {query} on Tenor',type='gifv')
+        embed.set_image(url=gif)
+        embed_set_author(ctx, embed)
+        await ctx.reply(embed=embed)
+
     @commands.command(name='meth', description='meth')
     async def _meth(self, ctx):
         gif = 'https://media.tenor.com/images/b4ff5850dbdc71b5f9da4c87d132be0d/tenor.gif'
 
         embed = discord.Embed(title=f'{ctx.author.display_name} meth',description=f'meth {ctx.author.mention}',color=0xA7C7E7,type='gifv')
         embed.set_image(url=gif)
+        embed.set_footer(text='meth video by monke :)')
         embed_set_author(ctx, embed)
-        await ctx.reply(embed=embed)
+        await ctx.reply(embed=embed,file=discord.File('./meth.mp4'))
 
     @commands.command(name='headpat', description='Lets you headpat a user you @')
     async def _headpat(self, ctx, user: commands.MemberConverter):   
