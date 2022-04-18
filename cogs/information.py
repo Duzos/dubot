@@ -49,7 +49,7 @@ class Information(commands.Cog):
         await pollmsg.add_reaction("👎")
 
         def reactcheck(reaction, user):
-            return str(reaction) == "🔒" and user == ctx.message.author and msg == ctx.message
+            return str(reaction) == "🔒" and user == ctx.message.author and msg
 
         msg = await ctx.reply(f"Question asked, check {channel.mention}\nReact with :lock: to close the poll.")
         await msg.add_reaction("🔒")

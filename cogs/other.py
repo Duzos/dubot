@@ -389,7 +389,6 @@ class Other(commands.Cog):
 
     @commands.command(name='help',description='This command.',aliases=['commands','command'],usage='cog')
     async def help(self,ctx,cog='all'):
-
         help_embed = discord.Embed(title='Help',color=discord.Colour.random())
         help_embed.set_thumbnail(url=self.client.user.display_avatar.url)
         help_embed.set_footer(text=f'Requested by {ctx.message.author.display_name} | do help <category>',icon_url=ctx.message.author.display_avatar.url)
@@ -399,7 +398,8 @@ class Other(commands.Cog):
         if cog == 'all':
             values = ""
             for cog in cogs:
-                values = values + f"**{cog}**\n"
+                if cog != "owner":
+                    values = values + f"**{cog}**\n"
             pass
             help_embed.add_field(name='Categories',value=values,inline=True)
         else:

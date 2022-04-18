@@ -260,14 +260,12 @@ class Moderation(commands.Cog):
             msg = await ctx.reply("Please wait while I setup the Muted role.")
         except:
             msg = await ctx.send("Please wait while I setup the Muted role.")
-        for discord.TextChannel in channels:
-            await discord.TextChannel.set_permissions(role,send_messages=False)
-        for discord.VoiceChannel in channels:
-            await discord.VoiceChannel.set_permissions(role,speak=False) 
-        try:
-            await msg.delete()
-        except discord.Forbidden:
-            pass
+        
+        overwrite = discord.PermissionOverwrite()
+        overwrite.send_messages = False
+        overwrite.speak = False
+        for channel in channels:
+            await channel.set_permissions(role,overwrite=overwrite)            
         try:
             await user.add_roles(role)
         except discord.Forbidden:
@@ -289,17 +287,8 @@ class Moderation(commands.Cog):
                 icon_url=ctx.message.author.display_avatar.url
             )
         muteEmbed.add_field(name='Reason:',value=reason)
-        try:
-            await ctx.reply(embed=muteEmbed)
-        except:
-            await ctx.send(embed=muteEmbed)
-        muteEmbed = discord.Embed(title='Mute',description=f'Muted {user.mention}.',color=discord.Colour.random())
+        await ctx.reply(embed=muteEmbed)
         muteEmbed.set_thumbnail(url=ctx.guild.icon)
-        muteEmbed.set_author(
-                name=ctx.message.author.display_name,
-                icon_url=ctx.message.author.display_avatar.url
-            )
-        muteEmbed.add_field(name='Reason:',value=reason)
         muteEmbed.add_field(name='Server:',value=ctx.guild.name)
         await user.send(embed=muteEmbed)
     
