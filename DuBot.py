@@ -22,6 +22,7 @@ def get_prefix(client, message):
 intents = discord.Intents.default()
 intents.presences = True
 intents.members = True
+intents.reactions = True
 
 # Getting items from the config
 with open('config.json','r') as cf:

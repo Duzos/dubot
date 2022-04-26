@@ -1,17 +1,11 @@
+
 import discord
-from discord import activity
-from discord.embeds import Embed, EmptyEmbed
+from discord.embeds import EmptyEmbed
 from discord.ext import commands
 import random
-from random import Random, randint
-import datetime
-from datetime import datetime
-from datetime import date
+from random import randint
 import json
 import requests
-from discord.ext.commands.converter import PartialMessageConverter, clean_content
-from requests.api import request
-from requests.sessions import TooManyRedirects
 import praw
 import asyncio
 
@@ -492,9 +486,11 @@ class Fun(commands.Cog):
             await ctx.reply("You cannot have `@everyone` or `@here` in your message!")    
             return
         try:
-            await ctx.reply(message)
+            await ctx.reply(f'{message}\nMessage from {ctx.message.author.mention}')
         except:
-            await ctx.send(message)
+            await ctx.send(f'{message}\nMessage from {ctx.message.author.mention}')
+        
+
 
     @commands.command(name='reverse',description='Reverses a text.')
     async def reverse(self,ctx,*,message=None):
@@ -537,6 +533,74 @@ class Fun(commands.Cog):
         )
         await ctx.reply(embed=diceEmbed)
 
+    # @commands.command(aliases=['rockpaperscissors'],name='rps',description='Play Rock Paper Scissors against someone')
+    # async def _rps(self, ctx, user: commands.MemberConverter):
+    #     if ctx.author.dm_channel == None:
+    #         await ctx.author.create_dm()
+    #     if user.dm_channel == None:
+    #         await user.create_dm()
+    #     def check(ms):
+    #         return ms.channel == ctx.message.channel and ms.author == user
+    #     def check2(ms):
+    #         return ms.channel == ctx.author.dm_channel and ms.author == ctx.message.author
+    #     def check3(ms):
+    #         return ms.channel == user.dm_channel and ms.author == user
+    #     choices = ['rock','paper','scissors']
+
+    #     await ctx.send(f'{user.mention}\n{ctx.message.author.mention} has challenged you to a game of Rock Paper Scissors, do you accept?\n(yes or no)')
+    #     msg = await self.client.wait_for('message',check=check)
+    #     if msg.content.lower() != 'yes':
+    #         return await ctx.reply(f'{user.mention} denied the rock paper scissors challenge.')
+    #     await ctx.reply(f'{user.mention} accepted the challenge! I will DM {ctx.message.author.mention} first then {user.mention}')
+
+    #     await ctx.message.author.send('Your turn! Rock, Paper or Scissors?')
+    #     msg = await self.client.wait_for('message',check=check2)
+    #     if msg.content.lower() not in choices:
+    #         await msg.reply('invalid choice, cancelling challenge')
+    #         return await ctx.send(f'{ctx.author.mention} used an invalid choice of {msg.content}, challenge cancelled.')
+    #     authorChoice = msg.content.lower()
+
+    #     await user.send('Your turn! Rock, Paper or Scissors?')
+    #     msg = await self.client.wait_for('message',check=check3)
+    #     if msg.content.lower() not in choices:
+    #         await msg.reply('invalid choice, cancelling challenge')
+    #         return await ctx.send(f'{user.mention} used an invalid choice of {msg.content}, challenge cancelled.')
+    #     userChoice = msg.content.lower()
+
+    #     authorWinEmbed = discord.Embed(title=f'{ctx.author.display_name} won!',description=f'{ctx.author.mention} chose {authorChoice} which beat {userChoice}')
+    #     authorWinEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+    #     embed_set_author(ctx, authorWinEmbed)
+
+    #     userWinEmbed = discord.Embed(title=f'{user.display_name} won!',description=f'{user.mention} chose {userChoice} which beat {authorChoice}')
+    #     userWinEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+    #     embed_set_author(ctx, userWinEmbed)
+        
+    #     tieEmbed = discord.Embed(title='Tie',description=f'{user.mention} and {ctx.author.mention} both chose {userChoice}')
+    #     tieEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+    #     embed_set_author(ctx, tieEmbed)
+
+    #     if authorChoice == 'rock':
+    #         if userChoice == 'rock':
+    #             await ctx.reply(embed=tieEmbed)
+    #         elif userChoice == 'paper':
+    #             await ctx.reply(embed=userWinEmbed)
+    #         elif userChoice == 'scissors':
+    #             await ctx.reply(embed=authorWinEmbed)
+    #     elif authorChoice == 'paper':
+    #         if userChoice == 'rock':
+    #             await ctx.reply(embed=authorWinEmbed)
+    #         elif userChoice == 'paper':
+    #             await ctx.reply(embed=tieEmbed)
+    #         elif userChoice == 'scissors':
+    #             await ctx.reply(embed=userWinEmbed)
+    #     elif authorChoice == 'scissors':
+    #         if userChoice == 'rock':
+    #             await ctx.reply(embed=userWinEmbed)
+    #         elif userChoice == 'paper':
+    #             await ctx.reply(embed=authorWinEmbed)
+    #         elif userChoice == 'scissors':
+    #             await ctx.reply(embed=tieEmbed)
+
     @commands.command(aliases=['rockpaperscissors'],name='rps',description='Play Rock Paper Scissors against someone')
     async def _rps(self, ctx, user: commands.MemberConverter):
         if ctx.author.dm_channel == None:
@@ -545,31 +609,49 @@ class Fun(commands.Cog):
             await user.create_dm()
         def check(ms):
             return ms.channel == ctx.message.channel and ms.author == user
-        def check2(ms):
-            return ms.channel == ctx.author.dm_channel and ms.author == ctx.message.author
-        def check3(ms):
-            return ms.channel == user.dm_channel and ms.author == user
-        choices = ['rock','paper','scissors']
+        def check2(reaction, user):
+            return user == ctx.message.author and str(reaction.emoji) in choices
+        def check3(reaction, user):
+            return user == user and str(reaction.emoji) in choices
+        choices = ['🪨','📝','✂️']
 
         await ctx.send(f'{user.mention}\n{ctx.message.author.mention} has challenged you to a game of Rock Paper Scissors, do you accept?\n(yes or no)')
-        msg = await self.client.wait_for('message',check=check)
+        try:
+            msg = await self.client.wait_for('message',check=check,timeout=60.0)
+        except asyncio.TimeoutError:
+            msg.content = "no"
         if msg.content.lower() != 'yes':
             return await ctx.reply(f'{user.mention} denied the rock paper scissors challenge.')
         await ctx.reply(f'{user.mention} accepted the challenge! I will DM {ctx.message.author.mention} first then {user.mention}')
 
-        await ctx.message.author.send('Your turn! Rock, Paper or Scissors?')
-        msg = await self.client.wait_for('message',check=check2)
-        if msg.content.lower() not in choices:
-            await msg.reply('invalid choice, cancelling challenge')
-            return await ctx.send(f'{ctx.author.mention} used an invalid choice of {msg.content}, challenge cancelled.')
-        authorChoice = msg.content.lower()
+        msg = await ctx.message.author.send('Your turn! Rock, Paper or Scissors?\nUse the reactions to pick!')
+        await msg.add_reaction('🪨')
+        await msg.add_reaction('📝')
+        await msg.add_reaction('✂️')
+        reaction = await self.client.wait_for('reaction_add',check=check2)
 
-        await user.send('Your turn! Rock, Paper or Scissors?')
-        msg = await self.client.wait_for('message',check=check3)
-        if msg.content.lower() not in choices:
-            await msg.reply('invalid choice, cancelling challenge')
-            return await ctx.send(f'{user.mention} used an invalid choice of {msg.content}, challenge cancelled.')
-        userChoice = msg.content.lower()
+        if str(reaction[0].emoji) == choices[0]:
+            authorChoice = "rock"
+        elif str(reaction[0].emoji) == choices[1]:
+            authorChoice = "paper"
+        elif str(reaction[0].emoji) == choices[2]:
+            authorChoice = "scissors"
+        else:
+            return await ctx.send(f'{ctx.author.mention} used an invalid reaction')
+        msg = await user.send('Your turn! Rock, Paper or Scissors?\nUse the reactions to pick!')
+        await msg.add_reaction('🪨')
+        await msg.add_reaction('📝')
+        await msg.add_reaction('✂️')
+        reaction = await self.client.wait_for('reaction_add',check=check3)
+
+        if str(reaction[0].emoji) == choices[0]:
+            userChoice = "rock"
+        elif str(reaction[0].emoji) == choices[1]:
+            userChoice = "paper"
+        elif str(reaction[0].emoji) == choices[2]:
+            userChoice = "scissors"
+        else:
+            return await ctx.send(f'{user.mention} used an invalid reaction')
 
         authorWinEmbed = discord.Embed(title=f'{ctx.author.display_name} won!',description=f'{ctx.author.mention} chose {authorChoice} which beat {userChoice}')
         authorWinEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
@@ -595,7 +677,7 @@ class Fun(commands.Cog):
                 await ctx.reply(embed=authorWinEmbed)
             elif userChoice == 'paper':
                 await ctx.reply(embed=tieEmbed)
-            elif userChoice == 'scissosrs':
+            elif userChoice == 'scissors':
                 await ctx.reply(embed=userWinEmbed)
         elif authorChoice == 'scissors':
             if userChoice == 'rock':
