@@ -23,7 +23,7 @@ class Information(commands.Cog):
 
     @commands.command(name='poll',description='Run a poll')
     @has_permissions(manage_messages=True)
-    async def _poll(self, ctx, question=None,channel=None):
+    async def _poll(self, ctx,channel=None,*, question=None):
         def check(ms):
             return ms.channel == ctx.message.channel and ms.author == ctx.message.author
         if question == None:
@@ -41,12 +41,16 @@ class Information(commands.Cog):
         else:
             channel = await commands.TextChannelConverter().convert(ctx, channel)
         
+        msg = await ctx.send('What reactions do you want on the message?\nSend a message in this channel when you are done')
+        await self.client.wait_for('message',check=check)
+        msg = await msg.channel.fetch_message(msg.id)
+        reactionList = msg.reactions
 
         pollEmbed = discord.Embed(title='Poll',description=question,color=discord.Colour.random())
         pollEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
         pollmsg = await channel.send(embed=pollEmbed)
-        await pollmsg.add_reaction("👍")
-        await pollmsg.add_reaction("👎")
+        for reaction in reactionList:
+            await pollmsg.add_reaction(reaction.emoji)
 
         def reactcheck(reaction, user):
             return str(reaction) == "🔒" and user == ctx.message.author and msg
@@ -60,8 +64,6 @@ class Information(commands.Cog):
         highest_reaction = ""
         highest_reaction_number = 0
         for reaction in pollmsg.reactions:
-            if reaction.emoji != "👎" and reaction.emoji != "👍":
-                return
             if (reaction.count) > highest_reaction_number:
                 highest_reaction = reaction.emoji
                 highest_reaction_number = reaction.count

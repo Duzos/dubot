@@ -607,27 +607,33 @@ class Fun(commands.Cog):
             await ctx.author.create_dm()
         if user.dm_channel == None:
             await user.create_dm()
-        def check(ms):
-            return ms.channel == ctx.message.channel and ms.author == user
+        def check(reaction, member):
+            return member == user and str(reaction.emoji) in askChoices
         def check2(reaction, user):
             return user == ctx.message.author and str(reaction.emoji) in choices
-        def check3(reaction, user):
-            return user == user and str(reaction.emoji) in choices
+        def check3(reaction, member):
+            return member == user and str(reaction.emoji) in choices
         choices = ['🪨','📝','✂️']
+        askChoices = ['✅','❌']
 
-        await ctx.send(f'{user.mention}\n{ctx.message.author.mention} has challenged you to a game of Rock Paper Scissors, do you accept?\n(yes or no)')
+
+        msg = await ctx.send(f'{user.mention}\n{ctx.message.author.mention} has challenged you to a game of Rock Paper Scissors, do you accept?\n(use the reactions)')
+        for reaction in askChoices:
+            await msg.add_reaction(reaction)
         try:
-            msg = await self.client.wait_for('message',check=check,timeout=60.0)
+            reaction = await self.client.wait_for('reaction_add',check=check,timeout=60.0)
         except asyncio.TimeoutError:
-            msg.content = "no"
-        if msg.content.lower() != 'yes':
             return await ctx.reply(f'{user.mention} denied the rock paper scissors challenge.')
-        await ctx.reply(f'{user.mention} accepted the challenge! I will DM {ctx.message.author.mention} first then {user.mention}')
 
+        if str(reaction[0].emoji) == askChoices[1]:
+            return await ctx.reply(f'{user.mention} denied the rock paper scissors challenge.')
+        elif str(reaction[0].emoji) == askChoices[0]:
+            await ctx.reply(f'{user.mention} accepted the challenge! I will DM {ctx.message.author.mention} first then {user.mention}')
+        else:
+            return await ctx.reply('An error happened')
         msg = await ctx.message.author.send('Your turn! Rock, Paper or Scissors?\nUse the reactions to pick!')
-        await msg.add_reaction('🪨')
-        await msg.add_reaction('📝')
-        await msg.add_reaction('✂️')
+        for reaction in choices:
+            await msg.add_reaction(reaction)
         reaction = await self.client.wait_for('reaction_add',check=check2)
 
         if str(reaction[0].emoji) == choices[0]:
@@ -639,9 +645,8 @@ class Fun(commands.Cog):
         else:
             return await ctx.send(f'{ctx.author.mention} used an invalid reaction')
         msg = await user.send('Your turn! Rock, Paper or Scissors?\nUse the reactions to pick!')
-        await msg.add_reaction('🪨')
-        await msg.add_reaction('📝')
-        await msg.add_reaction('✂️')
+        for reaction in choices:
+            await msg.add_reaction(reaction)
         reaction = await self.client.wait_for('reaction_add',check=check3)
 
         if str(reaction[0].emoji) == choices[0]:
