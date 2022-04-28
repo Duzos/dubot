@@ -320,27 +320,37 @@ class Fun(commands.Cog):
             triviaAnswer = i['correct_answer']
             triviaAnswer = triviaAnswer.lower()
 
-        questionEmbed = discord.Embed(title='Trivia Question',description=triviaQuestion,color=discord.Colour.random())
+        questionEmbed = discord.Embed(title='Trivia Question',description=f'{triviaQuestion}\nUse the reactions for either true or false.',color=discord.Colour.random())
         questionEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         questionEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
         questionEmbed.set_footer(text=f'Category: {triviaCat} | Difficulty: {triviaDiff}')
-        await ctx.reply(embed=questionEmbed)
+        msg = await ctx.reply(embed=questionEmbed)
 
-        def check(ms):
-            return ms.channel == ctx.message.channel and ms.author == ctx.message.author
-        playerMessage = await self.client.wait_for('message',check=check)
-        playerAnswer = playerMessage.content.lower()
+        def check(reaction, user):
+                return user == ctx.message.author and str(reaction.emoji) in choices
+        choices = ['✅','❌']
+        for reaction in choices:
+            await msg.add_reaction(reaction)
+        try:
+            reaction = await self.client.wait_for('reaction_add',check=check,timeout=60.0)
+        except asyncio.TimeoutError:
+            return await ctx.reply(f'{ctx.author.mention} trivia question over, you took too long to respond.')
+        
+        if str(reaction[0].emoji) == choices[0]:
+            playerAnswer = 'true'
+        elif str(reaction[0].emoji) == choices[1]:
+            playerAnswer = 'false'
 
         if playerAnswer == triviaAnswer:
             embed = discord.Embed(title='Trivia Question',description='You won!',color=discord.Colour.green())
             embed.set_thumbnail(url=self.client.user.display_avatar.url)
             embed_set_author(ctx, embed)
-            await playerMessage.reply(embed=embed)
+            await msg.reply(embed=embed)
         else:
             embed = discord.Embed(title='Trivia Question',description=f'You Lost!\nThe correct answer was: **{triviaAnswer}**',color=discord.Colour.red())
             embed.set_thumbnail(url=self.client.user.display_avatar.url)
             embed_set_author(ctx, embed)
-            await playerMessage.reply(embed=embed)
+            await msg.reply(embed=embed)
 
     @commands.command(name='dog',description='Sends a random dog.')
     async def _dog(self, ctx):
@@ -623,7 +633,7 @@ class Fun(commands.Cog):
         try:
             reaction = await self.client.wait_for('reaction_add',check=check,timeout=60.0)
         except asyncio.TimeoutError:
-            return await ctx.reply(f'{user.mention} denied the rock paper scissors challenge.')
+            return await ctx.reply(f'{user.mention} took to long to respond to the rock paper scissors challenge.')
 
         if str(reaction[0].emoji) == askChoices[1]:
             return await ctx.reply(f'{user.mention} denied the rock paper scissors challenge.')
@@ -815,6 +825,55 @@ class Fun(commands.Cog):
 #        today = date.today()
 #        datenow = today.strftime("%B %d, %Y")
 #        await ctx.reply(f"The date in the UK is {datenow}.") 
+
+    @commands.command(name='nwordchoice',description='Do you want this feature enabled?')
+    async def _nwordchoice(self, ctx, choice=None):
+        if choice == None:
+            msg = await ctx.reply('Do you want this to be enabled?\nUse the reactions')
+            def check(reaction, user):
+                    return user == ctx.message.author and str(reaction.emoji) in choices
+            choices = ['✅','❌']
+            for reaction in choices:
+                await msg.add_reaction(reaction)
+            try:
+                reaction = await self.client.wait_for('reaction_add',check=check,timeout=60.0)
+            except asyncio.TimeoutError:
+                return await ctx.reply(f'{ctx.author.mention} you took too long to respond (60 seconds)')
+            
+            if str(reaction[0].emoji) == choices[0]:
+                choice = 'true'
+            elif str(reaction[0].emoji) == choices[1]:
+                choice = 'false'
+                
+        choice = choice.lower()
+        if choice != 'false' and choice != 'true':
+            return await ctx.reply('invalid choice.')
+
+        with open('json/data.json','r') as f:
+            data = json.load(f)
+
+        if choice == 'false':
+            data[f'{ctx.guild.id} nword'] = False
+            with open('json/data.json', 'w') as f:
+                json.dump(data, f, indent=4)
+            return await ctx.reply('Feature disabled.')
+
+        data[f'{ctx.guild.id} nword'] = True
+        with open('json/data.json', 'w') as f:
+            json.dump(data, f, indent=4)
+        await ctx.reply('Feature enabled.')        
+
+    @commands.command(name='nwordcount',description='How many times you have been racist!')
+    async def _nwordcount(self, ctx, user: commands.MemberConverter=None):
+        if user == None:
+            user = ctx.message.author
+        with open('json/data.json', 'r') as f:
+            data = json.load(f)
+        
+        count = data[f'{user.id} nwordcount']
+
+        await ctx.reply(f'{user.mention} has said the n word {count} times.')
+
 
     @commands.command(aliases=["gay"], name='howgay', description='Gives a value from 1-100 depending on how gay you are')
     async def howgay(self, ctx, user : commands.MemberConverter=None):

@@ -163,6 +163,7 @@ class Other(commands.Cog):
     #    await ctx.reply("no im not adding this command this is getting removed after.")
 
     @commands.command(aliases=['reportbug', 'bug', 'error'],name='bug_report',description='Reports a bug.')
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def bug_report(self, ctx, *, message=None):
         if message == None:
             def check(ms):
@@ -188,6 +189,7 @@ class Other(commands.Cog):
         await ctx.message.author.send(embed=confirmEmbed) 
 
     @commands.command(aliases=['suggest', 'suggestion'],name='idea', description='give me ideas')
+    @commands.cooldown(1, 30, commands.BucketType.user)
     async def idea(self, ctx, *, message=None):
         if message == None:
             def check(ms):

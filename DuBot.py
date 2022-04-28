@@ -16,7 +16,10 @@ def get_prefix(client, message):
         prefixes = json.load(f)
 
     guildID = str(message.guild.id)
-    return prefixes[f"{guildID} prefix"]
+    try:
+        return prefixes[f"{guildID} prefix"]
+    except:
+        return ['d.','D.']
 
 # The bots intents
 intents = discord.Intents.default()
@@ -63,7 +66,22 @@ async def on_message(message):
     # open that json
     with open('json/data.json','r') as f:
         jsonData = json.load(f)
-    # Anti Swearing
+    
+    # n word stuff
+    try:
+        if jsonData[f'{message.guild.id} nword'] == True:
+            splitMsg = message.content.lower().split()
+            for value in splitMsg:
+                if value in ['nigger','nigga']: # ok i know im white but please dont get mad about this, i kinda have to put it somewhere if i want this feature to work :/
+                    count = jsonData[f'{message.author.id} nwordcount']
+                    count += 1
+                    jsonData[f'{message.author.id} nwordcount'] = count
+                    await message.reply(f'You have now said the n word {count} times.')
+                    with open('json/data.json', 'w') as f:
+                        json.dump(jsonData, f, indent=4)
+    except:
+        pass
+    # Anti Swearing 
     try:
         if jsonData[f'{message.guild.id} antiswear'] == True:
             swearList = jsonData[f'{message.guild.id} swearwords']
@@ -82,6 +100,13 @@ async def on_message(message):
     #run the command.    
     await client.process_commands(message)
 
+    # seeing if the message author has the nword stuff setup for them already
+    if f'{message.author.id} nwordcount' not in jsonData:
+        jsonData[f'{message.author.id} nwordcount'] = 0
+        with open('json/data.json', 'w') as f:
+            json.dump(jsonData, f, indent=4)
+
+    # say toggle stuff
     senderID = f'{message.author.id} say'
 
     if senderID not in jsonData:
