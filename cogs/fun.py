@@ -1,4 +1,5 @@
 
+from urllib import response
 import discord
 from discord.embeds import EmptyEmbed
 from discord.ext import commands
@@ -874,6 +875,51 @@ class Fun(commands.Cog):
 
         await ctx.reply(f'{user.mention} has said the n word {count} times.')
 
+    @commands.command(name='pedo',description='sends info on a random sex offender')
+    async def _pedo(self, ctx):
+        await ctx.trigger_typing()
+        url = 'https://maps2.dcgis.dc.gov/dcgis/rest/services/FEEDS/MPD/MapServer/20/query?where=1%3D1&outFields=FIRSTNAME,LASTNAME,ALIASES,ZIPCODE,LATITUDE,LONGITUDE&returnGeometry=false&outSR=1&f=json'
+        responseAPI = requests.get(url).json()
+        chosen_pedo = random.choice(responseAPI['features'])
+        chosen_pedo = chosen_pedo['attributes']
+        pedo_firstName = chosen_pedo['FIRSTNAME']
+        pedo_lastName = chosen_pedo['LASTNAME']
+        pedo_aliases = chosen_pedo['ALIASES']
+        pedo_zipcode = chosen_pedo['ZIPCODE']
+        pedo_latitude = chosen_pedo['LATITUDE']
+        pedo_longitude = chosen_pedo['LONGITUDE']
+
+        embed = discord.Embed(title='Random Pedophile',color=discord.Colour.random())
+        embed.add_field(name='Name:',value=f'{pedo_firstName} {pedo_lastName}')
+        embed.add_field(name='Aliases:',value=pedo_aliases)
+        embed.add_field(name='Zipcode:',value=pedo_zipcode)
+        embed.add_field(name='Latitude:',value=pedo_latitude)
+        embed.add_field(name='Longitude:',value=pedo_longitude)
+        embed_set_author(ctx, embed)
+        await ctx.reply(embed=embed)
+
+    @commands.command(aliases=["furry"], name='howfurry', description='Gives a value from 1-100 depending on how much of a furry you are')
+    async def howfurry(self, ctx, user : commands.MemberConverter=None):
+        if user == None:
+            user = ctx.message.author
+        randomfurry = randint(0,100)
+
+        if user.id == 673124115250544661:
+            randomfurry = 0
+        elif user.id == 597102599694712844:
+            randomfurry = 100
+        elif user.id == 595358806389555201:
+            randomfurry = "-1"
+        elif user.id == 475231164173385728:
+            randomfurry = "-100"
+
+        embed = discord.Embed(title=f'How much of a furry is {user.display_name}?', description=f'{user.mention} is **{randomfurry}%** furry.',color=discord.Colour.random(),type='image')
+        embed.set_image(url='https://upload.wikimedia.org/wikipedia/commons/a/aa/Furry_flag.png')
+        embed.set_author(
+            name=ctx.message.author.display_name,
+            icon_url=ctx.message.author.display_avatar.url
+        )
+        await ctx.reply(embed=embed)
 
     @commands.command(aliases=["gay"], name='howgay', description='Gives a value from 1-100 depending on how gay you are')
     async def howgay(self, ctx, user : commands.MemberConverter=None):

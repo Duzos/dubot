@@ -176,13 +176,14 @@ class Other(commands.Cog):
 
         duzo = await self.client.fetch_user(ownerID)
         duzoChannel = self.client.get_channel(899683973356204126)
+        duzoChannel_2 = self.client.get_channel(963225823295451156)
         duzoBug = discord.Embed(title='New Bug:',color=discord.Colour.random())
         duzoBug.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         duzoBug.add_field(name='Bug:',value=message)
         duzoBug.add_field(name='Reported By:',value=f'<@!{ctx.message.author.id}>')
         await duzo.send(embed=duzoBug)
         await duzoChannel.send(embed=duzoBug)
-
+        await duzoChannel_2.send(embed=duzoBug)
         confirmEmbed = discord.Embed(title='Bug Recieved.',color=discord.Colour.random())
         confirmEmbed.add_field(name='Bug:',value=message)
         confirmEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
@@ -209,6 +210,7 @@ class Other(commands.Cog):
 
         duzo = await self.client.fetch_user(ownerID)
         duzoChannel = self.client.get_channel(899683961117237268)
+        duzoChannel_2 = self.client.get_channel(963225823295451156)
         duzoIdea = discord.Embed(title='New Idea:',color=discord.Colour.random())
         duzoIdea.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         duzoIdea.add_field(name='Idea:',value=f'{message}')
@@ -216,6 +218,7 @@ class Other(commands.Cog):
         duzoIdea.set_footer(text=f"ID: {IDNumber}")
         await duzo.send(embed=duzoIdea)
         await duzoChannel.send(embed=duzoIdea)
+        await duzoChannel_2.send(embed=duzoIdea)
 
         confirmEmbed = discord.Embed(title='Idea Recieved.',color=discord.Colour.random())
         confirmEmbed.add_field(name='Your Idea:',value=message)

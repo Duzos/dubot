@@ -15,7 +15,10 @@ def get_prefix(client, message):
     with open('json/data.json', 'r') as f:
         prefixes = json.load(f)
 
-    guildID = str(message.guild.id)
+    try:
+        guildID = str(message.guild.id)
+    except:
+        pass
     try:
         return prefixes[f"{guildID} prefix"]
     except:
@@ -72,7 +75,7 @@ async def on_message(message):
         if jsonData[f'{message.guild.id} nword'] == True:
             splitMsg = message.content.lower().split()
             for value in splitMsg:
-                if value in ['nigger','nigga']: # ok i know im white but please dont get mad about this, i kinda have to put it somewhere if i want this feature to work :/
+                if value in ['nigger','nigga','niggers','niggas']: # ok i know im white but please dont get mad about this, i kinda have to put it somewhere if i want this feature to work :/
                     count = jsonData[f'{message.author.id} nwordcount']
                     count += 1
                     jsonData[f'{message.author.id} nwordcount'] = count

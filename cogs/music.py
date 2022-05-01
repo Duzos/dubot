@@ -476,25 +476,25 @@ class Music(commands.Cog):
         if not ctx.voice_state.voice:
             await ctx.invoke(self._join)
         
-        if "/playlist?list=" in search:
+        # if "/playlist?list=" in search:
 
-            msg = await ctx.send("Please wait while I go through the playlist. The time this will take depends on the length of the playlist.")
-            async with ctx.typing():
-                result = YTDLSource.ytdl.extract_info(search, download=False)
-                for video in result["entries"]:
-                    if not video:
-                        continue
-                    video = video["webpage_url"]
-                    try:
-                        source = await YTDLSource.create_source(ctx, video, loop=self.client.loop)
-                    except YTDLError as e:
-                        await msg.edit('An error occurred while processing this request: {}'.format(str(e)))
-                    else:
-                        song = Song(source)
-                        await ctx.voice_state.songs.put(song)
-                        # await msg.edit('Enqueued {}'.format(str(source)))
-                await ctx.send("Fully enqueued playlist.")
-            return
+        #     msg = await ctx.send("Please wait while I go through the playlist. The time this will take depends on the length of the playlist.")
+        #     async with ctx.typing():
+        #         result = YTDLSource.ytdl.extract_info(search, download=False)
+        #         for video in result["entries"]:
+        #             if not video:
+        #                 continue
+        #             video = video["webpage_url"]
+        #             try:
+        #                 source = await YTDLSource.create_source(ctx, video, loop=self.client.loop)
+        #             except YTDLError as e:
+        #                 await msg.edit('An error occurred while processing this request: {}'.format(str(e)))
+        #             else:
+        #                 song = Song(source)
+        #                 await ctx.voice_state.songs.put(song)
+        #                 # await msg.edit('Enqueued {}'.format(str(source)))
+        #         await ctx.send("Fully enqueued playlist.")
+        #     return
             # await ctx.send("Enqueued {}".format(str(search)))
             
 
