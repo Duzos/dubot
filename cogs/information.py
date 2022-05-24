@@ -151,7 +151,7 @@ class Information(commands.Cog):
         pingEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         await ctx.reply(embed=pingEmbed)
 
-    @commands.command(name='avatar', description='Gets you the avatar of someone.')
+    @commands.command(aliases=['pfp'],name='avatar', description='Gets you the avatar of someone.')
     async def avatar(self, ctx, user: commands.MemberConverter=None):
         user = user or ctx.message.author
         

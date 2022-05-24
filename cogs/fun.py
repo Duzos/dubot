@@ -1,5 +1,4 @@
-
-from urllib import response
+from urllib import request
 import discord
 from discord.embeds import EmptyEmbed
 from discord.ext import commands
@@ -12,6 +11,7 @@ import asyncio
 
 with open('config.json','r') as f:
     config = json.load(f)
+ttsToken = config['ttsToken']
 redditID = config['redditID']
 redditSecret = config['redditSecret']
 redditAgent = config['redditAgent']
@@ -25,6 +25,12 @@ class Fun(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    @commands.command(name='tts',description='Text to speech!')
+    async def _tts(self, ctx,*,args: str):
+        args = "%20".join( args.split() )
+        url = f'https://api.voicerss.org/?key={ttsToken}&hl=en-us&c=MP3&f=16khz_16bit_stereo&src={args}'
+        request.urlretrieve(url,'tts.mp3')
+        await ctx.reply(file = discord.File('./tts.mp3'))
 
     @commands.command(name='insult',description='Produces an insult for you')
     async def _insult(self, ctx):
@@ -43,72 +49,106 @@ class Fun(commands.Cog):
     @commands.command(name='truth',description='Pick a truth')
     async def _truth(self, ctx):
         await ctx.trigger_typing()
-        url = 'https://gist.githubusercontent.com/deepakshrma/9498a19a3ed460fc662c536d138c29b1/raw/f29d323b9b3f0a82f66ed58c7117fb9b599fb8d5/truth-n-dare.json'
-        responseApi = requests.get(url).json()
-        truth_list = [
-            item
-            for item in responseApi
-            if item["type"] == "Truth"
-        ]
+        url = 'https://api.truthordarebot.xyz/v1/truth'
+        choice = requests.get(url).json()
 
-        choice = random.choice(truth_list)
         choiceType = choice['type']
         choiceID = choice['id']
-        choiceLevel = choice['level']
-        choiceSum = choice['summary']
+        choiceRating = choice['rating']
+        choiceQuestion = choice['question']
 
-        embed = discord.Embed(title=choiceType,description=choiceSum,color=discord.Colour.random())
+        embed = discord.Embed(title=choiceType,description=choiceQuestion,color=discord.Colour.random())
         embed_set_author(ctx, embed)
         embed.set_thumbnail(url=self.client.user.display_avatar.url)
-        embed.set_footer(text=f'ID: {choiceID} | Level: {choiceLevel}')
+        embed.set_footer(text=f'ID: {choiceID} | Rating: {choiceRating}')
         await ctx.reply(embed=embed)
 
     @commands.command(name='dare',description='Pick a dare')
     async def _dare(self, ctx):
         await ctx.trigger_typing()
-        url = 'https://gist.githubusercontent.com/deepakshrma/9498a19a3ed460fc662c536d138c29b1/raw/f29d323b9b3f0a82f66ed58c7117fb9b599fb8d5/truth-n-dare.json'
-        responseApi = requests.get(url).json()
-        dare_list = [
-            item
-            for item in responseApi
-            if item["type"] == "Dare"
-        ]
+        url = 'https://api.truthordarebot.xyz/v1/dare'
+        choice = requests.get(url).json()
 
-        choice = random.choice(dare_list)
         choiceType = choice['type']
         choiceID = choice['id']
-        choiceLevel = choice['level']
-        choiceSum = choice['summary']
-        embed = discord.Embed(title=choiceType,description=choiceSum,color=discord.Colour.random())
+        choiceRating = choice['rating']
+        choiceQuestion = choice['question']
+
+        embed = discord.Embed(title=choiceType,description=choiceQuestion,color=discord.Colour.random())
         embed_set_author(ctx, embed)
         embed.set_thumbnail(url=self.client.user.display_avatar.url)
-        embed.set_footer(text=f'ID: {choiceID} | Level: {choiceLevel}')
+        embed.set_footer(text=f'ID: {choiceID} | Rating: {choiceRating}')
         await ctx.reply(embed=embed)
 
 
     @commands.command(aliases=['tod'],name='truthordare',description='Play truth or dare')
     async def _tod(self, ctx):
         await ctx.trigger_typing()
-        url = 'https://gist.githubusercontent.com/deepakshrma/9498a19a3ed460fc662c536d138c29b1/raw/f29d323b9b3f0a82f66ed58c7117fb9b599fb8d5/truth-n-dare.json'
-        responseApi = requests.get(url).json()
-        sfw_list = [
-            item
-            for item in responseApi
-            if int(item['level']) < 4
-        ]
-        choice = random.choice(sfw_list)
-        choiceID = choice['id']
-        choiceLevel = choice['level']
+        urls = ['https://api.truthordarebot.xyz/v1/dare','https://api.truthordarebot.xyz/v1/truth']
+        url = random.choice(url)
+        choice = requests.get(url).json()
+
         choiceType = choice['type']
-        choiceSum = choice['summary']
+        choiceID = choice['id']
+        choiceRating = choice['rating']
+        choiceQuestion = choice['question']
 
-
-        embed = discord.Embed(title=choiceType,description=choiceSum,color=discord.Colour.random())
+        embed = discord.Embed(title=choiceType,description=choiceQuestion,color=discord.Colour.random())
         embed_set_author(ctx, embed)
         embed.set_thumbnail(url=self.client.user.display_avatar.url)
-        embed.set_footer(text=f'ID: {choiceID} | Level: {choiceLevel}')
+        embed.set_footer(text=f'ID: {choiceID} | Rating: {choiceRating}')
         await ctx.reply(embed=embed)
 
+    @commands.command(aliases=['wyr'],name='wouldyourather',description='Play would you rather!')
+    async def _wyr(self, ctx):
+        await ctx.trigger_typing()
+        url = 'https://api.truthordarebot.xyz/v1/wyr'
+        choice = requests.get(url).json()
+
+        choiceType = choice['type']
+        choiceID = choice['id']
+        choiceRating = choice['rating']
+        choiceQuestion = choice['question']
+
+        embed = discord.Embed(title=choiceType,description=choiceQuestion,color=discord.Colour.random())
+        embed_set_author(ctx, embed)
+        embed.set_thumbnail(url=self.client.user.display_avatar.url)
+        embed.set_footer(text=f'ID: {choiceID} | Rating: {choiceRating}')
+        await ctx.reply(embed=embed)
+
+    @commands.command(aliases=['nhie'],name='neverhaveiever',description='Play never have i ever!')
+    async def _nhie(self, ctx):
+        await ctx.trigger_typing()
+        url = 'https://api.truthordarebot.xyz/v1/nhie'
+        choice = requests.get(url).json()
+
+        choiceType = choice['type']
+        choiceID = choice['id']
+        choiceRating = choice['rating']
+        choiceQuestion = choice['question']
+
+        embed = discord.Embed(title=choiceType,description=choiceQuestion,color=discord.Colour.random())
+        embed_set_author(ctx, embed)
+        embed.set_thumbnail(url=self.client.user.display_avatar.url)
+        embed.set_footer(text=f'ID: {choiceID} | Rating: {choiceRating}')
+        await ctx.reply(embed=embed)
+
+    @commands.command(name='paranoia',description='Get a random paranoia question!')
+    async def _paranoia(self, ctx):
+        await ctx.trigger_typing()
+        url = 'https://api.truthordarebot.xyz/v1/paranoia'
+        choice = requests.get(url).json()
+
+        choiceType = choice['type']
+        choiceID = choice['id']
+        choiceRating = choice['rating']
+        choiceQuestion = choice['question']
+
+        embed = discord.Embed(title=choiceType,description=choiceQuestion,color=discord.Colour.random())
+        embed_set_author(ctx, embed)
+        embed.set_thumbnail(url=self.client.user.display_avatar.url)
+        embed.set_footer(text=f'ID: {choiceID} | Rating: {choiceRating}')
+        await ctx.reply(embed=embed)
 
     @commands.command(name='ben-call',description='Call Talking Ben.')
     async def _ben_call(self, ctx):
@@ -613,11 +653,9 @@ class Fun(commands.Cog):
     #             await ctx.reply(embed=tieEmbed)
 
     @commands.command(aliases=['rockpaperscissors'],name='rps',description='Play Rock Paper Scissors against someone')
-    async def _rps(self, ctx, user: commands.MemberConverter):
+    async def _rps(self, ctx, user: commands.MemberConverter=None):
         if ctx.author.dm_channel == None:
             await ctx.author.create_dm()
-        if user.dm_channel == None:
-            await user.create_dm()
         def check(reaction, member):
             return member == user and str(reaction.emoji) in askChoices
         def check2(reaction, user):
@@ -627,22 +665,26 @@ class Fun(commands.Cog):
         choices = ['🪨','📝','✂️']
         askChoices = ['✅','❌']
 
+        if user != None:
+            if user.dm_channel == None:
+                await user.create_dm()
+            msg = await ctx.send(f'{user.mention}\n{ctx.message.author.mention} has challenged you to a game of Rock Paper Scissors, do you accept?\n(use the reactions)')
+            for reaction in askChoices:
+                await msg.add_reaction(reaction)
+            try:
+                reaction = await self.client.wait_for('reaction_add',check=check,timeout=60.0)
+            except asyncio.TimeoutError:
+                return await ctx.reply(f'{user.mention} took to long to respond to the rock paper scissors challenge.')
 
-        msg = await ctx.send(f'{user.mention}\n{ctx.message.author.mention} has challenged you to a game of Rock Paper Scissors, do you accept?\n(use the reactions)')
-        for reaction in askChoices:
-            await msg.add_reaction(reaction)
-        try:
-            reaction = await self.client.wait_for('reaction_add',check=check,timeout=60.0)
-        except asyncio.TimeoutError:
-            return await ctx.reply(f'{user.mention} took to long to respond to the rock paper scissors challenge.')
-
-        if str(reaction[0].emoji) == askChoices[1]:
-            return await ctx.reply(f'{user.mention} denied the rock paper scissors challenge.')
-        elif str(reaction[0].emoji) == askChoices[0]:
-            await ctx.reply(f'{user.mention} accepted the challenge! I will DM {ctx.message.author.mention} first then {user.mention}')
+            if str(reaction[0].emoji) == askChoices[1]:
+                return await ctx.reply(f'{user.mention} denied the rock paper scissors challenge.')
+            elif str(reaction[0].emoji) == askChoices[0]:
+                await ctx.reply(f'{user.mention} accepted the challenge! I will DM {ctx.message.author.mention} first then {user.mention}')
+            else:
+                return await ctx.reply('An error happened')
+            msg = await ctx.message.author.send('Your turn! Rock, Paper or Scissors?\nUse the reactions to pick!')
         else:
-            return await ctx.reply('An error happened')
-        msg = await ctx.message.author.send('Your turn! Rock, Paper or Scissors?\nUse the reactions to pick!')
+            msg =  await ctx.reply('Rock, Paper or Scissors?\nUse the reactions to pick!')
         for reaction in choices:
             await msg.add_reaction(reaction)
         reaction = await self.client.wait_for('reaction_add',check=check2)
@@ -655,31 +697,46 @@ class Fun(commands.Cog):
             authorChoice = "scissors"
         else:
             return await ctx.send(f'{ctx.author.mention} used an invalid reaction')
-        msg = await user.send('Your turn! Rock, Paper or Scissors?\nUse the reactions to pick!')
-        for reaction in choices:
-            await msg.add_reaction(reaction)
-        reaction = await self.client.wait_for('reaction_add',check=check3)
 
-        if str(reaction[0].emoji) == choices[0]:
-            userChoice = "rock"
-        elif str(reaction[0].emoji) == choices[1]:
-            userChoice = "paper"
-        elif str(reaction[0].emoji) == choices[2]:
-            userChoice = "scissors"
+        if user != None:
+            msg = await user.send('Your turn! Rock, Paper or Scissors?\nUse the reactions to pick!')
+            for reaction in choices:
+                await msg.add_reaction(reaction)
+            reaction = await self.client.wait_for('reaction_add',check=check3)
+
+            if str(reaction[0].emoji) == choices[0]:
+                userChoice = "rock"
+            elif str(reaction[0].emoji) == choices[1]:
+                userChoice = "paper"
+            elif str(reaction[0].emoji) == choices[2]:
+                userChoice = "scissors"
+            else:
+                return await ctx.send(f'{user.mention} used an invalid reaction')
         else:
-            return await ctx.send(f'{user.mention} used an invalid reaction')
+            botChoices = ['rock','paper','scissors']
+            userChoice = random.choice(botChoices)
+        
 
         authorWinEmbed = discord.Embed(title=f'{ctx.author.display_name} won!',description=f'{ctx.author.mention} chose {authorChoice} which beat {userChoice}')
         authorWinEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
         embed_set_author(ctx, authorWinEmbed)
 
-        userWinEmbed = discord.Embed(title=f'{user.display_name} won!',description=f'{user.mention} chose {userChoice} which beat {authorChoice}')
-        userWinEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
-        embed_set_author(ctx, userWinEmbed)
-        
-        tieEmbed = discord.Embed(title='Tie',description=f'{user.mention} and {ctx.author.mention} both chose {userChoice}')
-        tieEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
-        embed_set_author(ctx, tieEmbed)
+        if user != None:
+            userWinEmbed = discord.Embed(title=f'{user.display_name} won!',description=f'{user.mention} chose {userChoice} which beat {authorChoice}')
+            userWinEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+            embed_set_author(ctx, userWinEmbed)
+            
+            tieEmbed = discord.Embed(title='Tie',description=f'{user.mention} and {ctx.author.mention} both chose {userChoice}')
+            tieEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+            embed_set_author(ctx, tieEmbed)
+        else:
+            userWinEmbed = discord.Embed(title=f'Dubot won!',description=f'Dubot chose {userChoice} which beat {authorChoice}')
+            userWinEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+            embed_set_author(ctx, userWinEmbed)
+            
+            tieEmbed = discord.Embed(title='Tie',description=f'Dubot and {ctx.author.mention} both chose {userChoice}')
+            tieEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
+            embed_set_author(ctx, tieEmbed)
 
         if authorChoice == 'rock':
             if userChoice == 'rock':
@@ -906,8 +963,8 @@ class Fun(commands.Cog):
 
         if user.id == 673124115250544661:
             randomfurry = 0
-        elif user.id == 597102599694712844:
-            randomfurry = 100
+        elif user.id == 597102599694712844 or user.id == 509436097835827210 or user.id == 578844127878184961:
+            randomfurry = 100 
         elif user.id == 595358806389555201:
             randomfurry = "-1"
         elif user.id == 475231164173385728:
@@ -921,17 +978,29 @@ class Fun(commands.Cog):
         )
         await ctx.reply(embed=embed)
 
+    @commands.command(aliases=["bi"], name='bisexual', description='actually predicts if your are bi or yourent bi')
+    async def bi(self, ctx, user : commands.MemberConverter=None):
+        if user == None:
+            user = ctx.message.author
+        
+        choices = ['is bisexual','is not bisexual']
+        randombi = random.choice(choices)
+        if user.id == 509436097835827210 or user.id == 597102599694712844 or user.id == 578844127878184961 or user.id == 327807253052653569 or user.id == 709763530232168560: 
+            randombi = choices[0]
+        embed = discord.Embed(title=f'is {user.display_name} bi?', description=f'{user.mention} {randombi}',color=discord.Colour.random(),type='image')
+        embed.set_image(url='https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Bisexual_Pride_Flag.svg/800px-Bisexual_Pride_Flag.svg.png')
+        embed_set_author(ctx, embed)
+        await ctx.reply(embed=embed)
+
     @commands.command(aliases=["gay"], name='howgay', description='Gives a value from 1-100 depending on how gay you are')
     async def howgay(self, ctx, user : commands.MemberConverter=None):
         if user == None:
             user = ctx.message.author
         randomgay = randint(0,100)
-        if user.id == 509436097835827210:
-            randomgay = "~1"
         if user.id == 709763530232168560:
             randomgay = 100
-        if user.id == 327807253052653569 or user.id == 578844127878184961 or user.id == 595358806389555201:
-            randomgay = 0
+        elif user.id == 509436097835827210 or user.id == 597102599694712844 or user.id == 578844127878184961 or user.id == 327807253052653569: 
+            randomgay = 50
         gayembed = discord.Embed(title=f'How gay is {user.display_name}?', description=f'{user.mention} is **{randomgay}%** gay.',color=discord.Colour.random(),type='image')
         gayembed.set_image(url='https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Gay_Pride_Flag.svg/383px-Gay_Pride_Flag.svg.png')
         gayembed.set_author(
@@ -958,9 +1027,10 @@ class Fun(commands.Cog):
     #async def ping(self, ctx):
     #    await ctx.reply('Why do you want this from me. Please leave me alone.')
 
-    @commands.command(name='gif', description='Looks up a gif using tenor.')
-    async def _gif(self, ctx, query=None):
-        url = f'https://api.tenor.com/v1/random?key=LIVDSRZULELA&q={query}&limit=1'
+    @commands.command(name='gif', description='Looks up a gif using tenor. Seperate tags with spaces.')
+    async def _gif(self, ctx,*, query=None):
+        query_seperate = query.replace(' ', '+')
+        url = f'https://api.tenor.com/v1/random?key=LIVDSRZULELA&q={query_seperate}&limit=1'
         if query == None:
             url = 'https://api.tenor.com/v1/random?key=LIVDSRZULELA&limit=1'
         responseApi = requests.get(url).json()

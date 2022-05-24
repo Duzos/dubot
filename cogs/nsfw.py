@@ -28,9 +28,9 @@ class NSFW(commands.Cog):
     @is_nsfw()
     async def _lewdneko(self, ctx):
         await ctx.trigger_typing()
-        url = 'https://nekos.life/api/v2/img/nsfw_neko_gif'
+        url = 'http://api.nekos.fun:8080/api/lewd'
         responseApi = requests.get(url).json()
-        nekoImagery = responseApi['url']
+        nekoImagery = responseApi['image']
 
         embed = discord.Embed(title='Neko',description=nekoImagery,color=0xC3B1E1,type='image')
         embed.set_footer(text=f'API: {url}')
@@ -77,14 +77,15 @@ class NSFW(commands.Cog):
         await ctx.reply(embed=embed)
 
 
-    @commands.command(aliases=['rule34'],name='nsfw',description='Finds a nsfw image of what you request.')
+    @commands.command(aliases=['rule34'],name='nsfw',description='Finds a nsfw image of what you request. Seperate tags with spaces.')
     @is_nsfw()
-    async def _nsfw(self, ctx, request=None):
+    async def _nsfw(self, ctx,*, request=None):
         await ctx.trigger_typing()
         if request == None:
             nsfwJson = requests.get("http://api.rule34.xxx//index.php?page=dapi&s=post&q=index&json=1").json()
         else:
-            nsfwJson = requests.get("http://api.rule34.xxx//index.php?page=dapi&s=post&q=index&json=1&tags="+request).json()
+            request_seperated = "+".join( request.split() )
+            nsfwJson = requests.get("http://api.rule34.xxx//index.php?page=dapi&s=post&q=index&json=1&tags="+request_seperated).json()
         chosenKey = random.choice(nsfwJson)
         nsfwFile = chosenKey["file_url"]
         nsfwID = chosenKey["id"]

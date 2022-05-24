@@ -17,7 +17,10 @@ class Moderation(commands.Cog):
         if user == None:
             await ctx.reply("Please provide a user!")
             return
-        
+
+        if ctx.author.top_role.position < user.top_role.position:
+            return await ctx.reply('You cannot warn someone with a higher role than you!')    
+    
         with open('json/data.json','r') as f:
             data = json.load(f)
 
@@ -197,10 +200,12 @@ class Moderation(commands.Cog):
 
     @commands.command(name='mute',description='Mutes the user you ping.')
     @has_permissions(manage_roles=True)
-    async def mute(self,ctx, user: commands.MemberConverter=None,*,reason=None):
+    async def mute(self,ctx, user: commands.MemberConverter=None,*,reason=None): 
         if user == None:
             await ctx.reply("Please provide a user!")
             return
+        if ctx.author.top_role.position < user.top_role.position:
+            return await ctx.reply('You cannot mute someone with a higher role than you!')
         guild = ctx.message.guild 
         roles = await guild.fetch_roles()
         channels = await guild.fetch_channels()
@@ -403,8 +408,10 @@ class Moderation(commands.Cog):
     @commands.command(aliases=['goawayforever'], name='ban', description='Bans a user')
     @has_permissions(ban_members=True)
     async def ban(self, ctx, member : commands.MemberConverter, *, reason=None):
+        if ctx.author.top_role.position < member.top_role.position:
+            return await ctx.reply('You cannot ban someone with a higher role than you!')
         try:
-            await member.ban(reason=reason)
+            await member.ban(reason=reason,delete_message_days=0)
         except discord.Forbidden:
             botPermEmbed = discord.Embed(title='ERROR',description=f'{self.client.user.name} is missing the required permission(s) to run this command.',color=0x992D22)
             botPermEmbed.set_author(
@@ -436,12 +443,17 @@ class Moderation(commands.Cog):
         banEmbed.set_thumbnail(url=ctx.guild.icon)
         banEmbed.add_field(name='Reason:',value=reason)
         banEmbed.add_field(name='Server:',value=ctx.guild.name)
-        await member.send(embed=banEmbed)
+        try:
+            await member.send(embed=banEmbed)
+        except:
+            pass
 
     @commands.command(aliases=['goaway','dickkick'], name='kick', description='Kicks a user')
     @has_permissions(kick_members=True)
     async def kick(self, ctx, member : commands.MemberConverter, *, reason=None):
-        
+        if ctx.author.top_role.position < member.top_role.position:
+            return await ctx.reply('You cannot kick someone with a higher role than you!')
+
         try:
             await member.kick(reason=reason)
         except discord.Forbidden:
@@ -469,7 +481,10 @@ class Moderation(commands.Cog):
         kickEmbed.set_thumbnail(url=ctx.guild.icon)
         kickEmbed.add_field(name='Reason:',value=reason)
         kickEmbed.add_field(name='Server:',value=ctx.guild.name)
-        await member.send(embed=kickEmbed)
+        try:
+            await member.send(embed=kickEmbed)
+        except:
+            pass
 
     @commands.command(aliases=["toggletickets","toggleticket","ticketstoggle"],name='tickettoggle',description='Toggles tickets.')
     @has_permissions(manage_channels=True)

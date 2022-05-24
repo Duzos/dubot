@@ -57,6 +57,7 @@ async def on_ready():
 def embed_set_author(ctx, embed: discord.Embed):
     return embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
 
+
 # On Messages
 
 

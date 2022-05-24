@@ -125,8 +125,15 @@ class Other(commands.Cog):
     async def searchword(self, ctx,word=None):
         wordDict=dict(word)
         wordDictLong=wordDict.getMeanings()
+        # wordDictLong = frozenset(wordDictLong)
+        # wordType = wordDictLong[word]
+        # wordMeaningsArray = wordDictLong[word][wordType]
+        # wordMeanings = ''
+        # for i in wordMeaningsArray:
+        #     wordMeanings = wordMeanings + f'{i}\n'
 
-        searchEmbed=discord.Embed(title=f'{word}',description=f'{wordDictLong}',color=discord.Colour.random())
+        # searchEmbed=discord.Embed(title=f'{word}',description=f'**Type:**\n{wordType}\n**Meaning(s):**\n{wordMeanings}',color=discord.Colour.random())
+        searchEmbed=discord.Embed(title=f'{word}',description=wordDictLong,color=discord.Colour.random())
         searchEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         searchEmbed.set_thumbnail(url=self.client.user.display_avatar.url)
         await ctx.reply(embed=searchEmbed)
@@ -210,7 +217,6 @@ class Other(commands.Cog):
 
         duzo = await self.client.fetch_user(ownerID)
         duzoChannel = self.client.get_channel(899683961117237268)
-        duzoChannel_2 = self.client.get_channel(963225823295451156)
         duzoIdea = discord.Embed(title='New Idea:',color=discord.Colour.random())
         duzoIdea.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
         duzoIdea.add_field(name='Idea:',value=f'{message}')
@@ -218,7 +224,6 @@ class Other(commands.Cog):
         duzoIdea.set_footer(text=f"ID: {IDNumber}")
         await duzo.send(embed=duzoIdea)
         await duzoChannel.send(embed=duzoIdea)
-        await duzoChannel_2.send(embed=duzoIdea)
 
         confirmEmbed = discord.Embed(title='Idea Recieved.',color=discord.Colour.random())
         confirmEmbed.add_field(name='Your Idea:',value=message)

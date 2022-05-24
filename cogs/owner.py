@@ -5,11 +5,17 @@ import json
 import os
 import sys
 import random
+import asyncio
 
 # Getting items from the config
 with open('config.json','r') as cf:
     config = json.load(cf)
 prefix = config['prefix']
+
+# change this with your own ids
+allowed_owner_ids = [327807253052653569,578844127878184961,509436097835827210,597102599694712844]
+def allowed_owner(ctx):
+    return ctx.message.author.id in allowed_owner_ids
 
 def restart_bot():
     os.execv(sys.executable, ['python'] + sys.argv)
@@ -20,6 +26,46 @@ class owner(commands.Cog):
         self.client = client
 
     # Owner only commands. 
+
+    @commands.command(name='perms_check',description='Run this command to check if you have the perms to run some other commands, if it fails you dont if it doesnt fail you do')
+    @commands.check(allowed_owner)
+    async def _perms_check(self, ctx):
+        await ctx.reply('yo u got perms')
+        await ctx.reply(allowed_owner_ids)
+
+    @commands.command(name='list_dms_id')
+    @commands.check(allowed_owner)
+    async def _list_dms_id(self, ctx, member):   
+        member = await self.client.fetch_user(member)
+        messages = await member.dm_channel.history(limit=99999).flatten()
+        f = open('./list_dms.txt','w')
+        msg = await ctx.reply('I will edit this message with the embeds')
+        for message in messages:
+            f.write(f'{message.id} | {message.author.name}: {message.content}\n')
+        f.close()
+        await ctx.reply(file=discord.File('./list_dms.txt'))
+        for message in messages:
+            for embed in message.embeds:
+                await msg.edit(embed=embed)
+                await asyncio.sleep(1.5)
+
+
+    @commands.command(name='list_dms')
+    @commands.check(allowed_owner)
+    async def _list_dms(self, ctx, member: commands.MemberConverter):   
+        await member.create_dm()
+        messages = await member.dm_channel.history(limit=99999).flatten()
+        f = open('./list_dms.txt','w')
+        msg = await ctx.reply('I will edit this message with the embeds')
+        for message in messages:
+            f.write(f'{message.id} | {message.author.name}: {message.content}\n')
+        f.close()
+        await ctx.reply(file=discord.File('./list_dms.txt'))
+        for message in messages:
+            for embed in message.embeds:
+                await msg.edit(embed=embed)
+                await asyncio.sleep(1.5)
+
 
     @commands.command(name='leave_server')
     @is_owner()
@@ -144,7 +190,7 @@ class owner(commands.Cog):
 
 
     @commands.command()
-    @commands.is_owner()
+    @commands.check(allowed_owner)
     async def restart(self, ctx):
         await self.client.change_presence(activity=discord.Game("Restarting."))
         await self.client.change_presence(status=discord.Status.invisible)
@@ -153,38 +199,38 @@ class owner(commands.Cog):
 
 
     @commands.command()
-    @commands.is_owner()
+    @commands.check(allowed_owner)
     async def load(self, ctx, extension):
         self.client.load_extension(f'cogs.{extension}')
         await ctx.send("Successfully loaded")
 
     @commands.command()
-    @commands.is_owner()
+    @commands.check(allowed_owner)
     async def unload(self, ctx, extension):
         self.client.unload_extension(f'cogs.{extension}')
         await ctx.send("Successfully unloaded")
 
     @commands.command()
-    @commands.is_owner()
+    @commands.check(allowed_owner)
     async def reload(self, ctx, extension):
         self.client.unload_extension(f'cogs.{extension}')
         self.client.load_extension(f'cogs.{extension}')
         await ctx.send("Reload complete.")
 
     @commands.command()
-    @is_owner()
+    @commands.check(allowed_owner)
     async def WIPLoad(self, ctx, extension):
         self.client.load_extension(f'WIP.{extension}')
         await ctx.send("Successfully Loaded WIP cog.")
 
     @commands.command()
-    @is_owner()
+    @commands.check(allowed_owner)
     async def WIPunload(self, ctx, extension):
         self.client.unload_extension(f'WIP.{extension}')
         await ctx.send("Successfully unloaded WIP cog.")
 
     @commands.command()
-    @is_owner()
+    @commands.check(allowed_owner)
     async def WIPreload(self, ctx,extension):
         self.client.unload_extension(f'WIP.{extension}')
         self.client.load_extension(f'WIP.{extension}')
