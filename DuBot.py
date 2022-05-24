@@ -47,7 +47,7 @@ client.remove_command('help')
 @client.event
 async def on_ready():
     try:
-        await client.change_presence(status=discord.Status.online, activity=discord.Game(f"in {len(client.guilds)} servers."))
+        await client.change_presence(status=discord.Status.online, activity=discord.Activity(name="you have fun!",type=discord.ActivityType.watching))
     except Exception as e:
         owner = client.get_user(ownerID)
         await owner.send('Failed to update status\n{}:{}'.format(type(e).__name__, e))
@@ -307,11 +307,6 @@ async def on_guild_join(guild):
     with open('json/data.json', 'w') as f:
         json.dump(joinSetup, f, indent=4)
 
-    try:
-        await client.change_presence(status=discord.Status.online, activity=discord.Game(f"in {len(client.guilds)} servers."))
-    except Exception as e:
-        owner = client.get_user(ownerID)
-        await owner.send('Failed to update status\n{}:{}'.format(type(e).__name__, e))
 
 
 @client.event
