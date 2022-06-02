@@ -198,13 +198,22 @@ async def on_member_join(member : discord.Member):
             welcomeMessageChoice = jsonData[f"{idGuild} welcomeMessageChoice"]
         except:
             pass
+
         welcomeChannel = jsonData[f"{idGuild} welcomeChannel"]
-        welcomeEmbed = discord.Embed(title='New Member', description=f'{member.mention} joined!',color=discord.Colour.random())
+        welcomeEmbed = discord.Embed(title='Welcome!', description=f'A Member Just Joined **{guild.name}**',color=discord.Colour.random())
         welcomeEmbed.set_thumbnail(url=member.display_avatar.url)
         welcomeEmbed.set_author(
             name=client.user.display_name,
             icon_url=client.user.display_avatar.url
-            )
+        )
+
+        date_format = "%a, %d %b %Y %I:%M %p"
+        welcomeEmbed.add_field(name='**Member**',value=member.mention,inline=False)
+        welcomeEmbed.add_field(name='**Member ID**',value=member.id,inline=False)
+        welcomeEmbed.add_field(name='**Joined Discord**',value=member.created_at.strftime(date_format),inline=False)
+        welcomeEmbed.add_field(name=f'**Joined {guild.name}**',value=member.joined_at.strftime(date_format),inline=False)
+        welcomeEmbed.add_field(name='Member Number',value=f'#{member.discriminator}',inline=False)
+
         try:
             await client.get_channel(welcomeChannel).send(embed=welcomeEmbed)
         except:

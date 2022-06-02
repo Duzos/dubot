@@ -1,6 +1,3 @@
-from operator import truediv
-from discord import channel, client
-from discord.errors import NotFound
 from random_word import RandomWords
 rword = RandomWords()
 from PyDictionary import PyDictionary
@@ -15,6 +12,7 @@ from discord.ext.commands.converter import MessageConverter
 from discord.ext.commands.core import has_permissions, is_nsfw
 import praw
 import requests
+from urllib import request
 
 def embed_set_author(ctx, embed: discord.Embed):
     return embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
@@ -34,6 +32,14 @@ class Other(commands.Cog):
 
     def __init__(self, client):
         self.client = client
+
+    @commands.command(name='qr',description='Generates a QR Code')
+    async def _qr(self, ctx,*,args: str):
+        url = f'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={args}'
+        request.urlretrieve(url,'qr.png')
+        embed = discord.Embed(title='QR Code Generator',description=f'QR Code for {args}',color=discord.Colour.random())
+        embed.set_footer(url)
+        await ctx.reply(embed=embed,file = discord.File('./qr.png'))
 
     @commands.command(name='nekomimi',description='Sends a neko (wtf is a neko)')
     async def _neko(self, ctx):

@@ -341,5 +341,24 @@ class owner(commands.Cog):
             message = message + f"{guild.name} | {guild.id} | {guild.member_count} Members\n"
         await ctx.send(message)
 
+    @commands.command(name='guild_info_owner')
+    @commands.check(allowed_owner)
+    async def _guild_info_owner(self, ctx, guild: commands.GuildConverter):
+        date_format = "%a, %d %b %Y %I:%M %p"
+
+        roleList = ", ".join([str(r.name) for r in guild.roles])
+
+        ginfoEmbed = discord.Embed(title=f'Info on {guild.name}',description=f'**Description:**\n```{guild.description}```\n**Member Count:**\n```{guild.member_count}```\n**Owner:**\n```{guild.owner}```\n**Roles:**\n```{roleList}```\n**Boost Level:**\n```{guild.premium_tier}```\n**Boost Count:**\n```{guild.premium_subscription_count}```\n**ID:**\n```{guild.id}```\n**Guild Created On:**\n```{guild.created_at.strftime(date_format)}```',color=discord.Colour.random())
+        ginfoEmbed.set_thumbnail(url=guild.icon)
+        ginfoEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
+        await ctx.reply(embed=ginfoEmbed)
+
+    @commands.command(name='guild_invite_owner')
+    @commands.check(allowed_owner)
+    async def _guild_invite_owner(self, ctx, guild: commands.GuildConverter):      
+        guildChannel = guild.text_channels[0]
+        invite = await guildChannel.create_invite(unique=False)
+        await ctx.send(f"Here's the invite: {invite}")
+    
 def setup(client):
     client.add_cog(owner(client))
