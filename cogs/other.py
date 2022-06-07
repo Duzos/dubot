@@ -243,50 +243,54 @@ class Other(commands.Cog):
     
     @commands.command(aliases=['welcomeoption','woption'],name='welcome_option', description='Turn welcome messages on and off.')
     @has_permissions(manage_channels=True)
-    async def welcome_option(self, ctx,welcomeChoice=None,welcomeChannel=None):
+    async def welcome_option(self, ctx):
+
+        # I absolutely despise the way this sets up the welcome stuff so if you have a better method pls dm me 
+        # - duzo :D
+
         def check(ms):
             return ms.channel == ctx.message.channel and ms.author == ctx.message.author
         with open('json/data.json', 'r') as f:
             welcome = json.load(f)
         
-
-        if welcomeChoice==None:
-            msg = await ctx.reply("Do you want it to be on or off?")
-            Msg = await self.client.wait_for('message', check=check)
-            welcomeChoice = Msg.content.upper()
-            await msg.delete()
-            await Msg.delete()
-
+        info_msg = await ctx.reply('All choices must be responded with either "yes" or "no" otherwise it will default to no.')
+        msg = await ctx.reply("Do you want it to be on?")
+        Msg = await self.client.wait_for('message', check=check)
+        welcomeChoice = Msg.content.upper()
+        await msg.delete()
+        await Msg.delete()
 
         idGuild = str(ctx.guild.id)
 
-        if welcomeChoice == "ON":
+        if welcomeChoice == "YES":
             welcomeChoice = True
-        elif welcomeChoice == "OFF":
+        elif welcomeChoice == "NO":
             welcomeChoice = False
             return
         else:
-            msg = await ctx.reply("Invalid choice, please choose on or off")
+            msg = await ctx.reply("Invalid choice, please choose yes or no")
             await msg.delete()
             return
 
-        if welcomeChannel==None:
-            msg = await ctx.reply("What is the channel you want the message to be sent in?")
-            ChannelMsg = await self.client.wait_for('message',check=check)
-            welcomeChannel = await commands.TextChannelConverter().convert(ctx, ChannelMsg.content)
-            await msg.delete()
-            await ChannelMsg.delete()
+        msg = await ctx.reply("What is the channel you want the message to be sent in?")
+        ChannelMsg = await self.client.wait_for('message',check=check)
+        welcomeChannel = await commands.TextChannelConverter().convert(ctx, ChannelMsg.content)
+        await msg.delete()
+        await ChannelMsg.delete()
 
         welcomeChannelID = welcomeChannel.id
 
-        msg = await ctx.reply("Do you want to DM the user with a welcome message? (on or off, if you dont put on or off i assume off.)")
+        msg = await ctx.reply("Do you want to DM the user with a welcome message?")
         ChannelMsg = await self.client.wait_for('message',check=check)
         welcomeMessageChoice = ChannelMsg.content.lower()
         await msg.delete()
         await ChannelMsg.delete()
-        if welcomeMessageChoice == "on":
+        if welcomeMessageChoice == "yes":
             welcomeMessageChoice = True
-        elif welcomeMessageChoice == "off":
+        elif welcomeMessageChoice == "no":
+            welcomeMessageChoice = False
+        else:
+            msg = await ctx.reply('Invalid choice chosen! Defaulting to no.')
             welcomeMessageChoice = False
 
         if welcomeMessageChoice == True:
@@ -299,13 +303,42 @@ class Other(commands.Cog):
         else:
             welcomeMessage = ""
 
+        msg = await ctx.reply('Do you want to turn on advanced welcome messages (more information)?')
+        channel_msg = await self.client.wait_for('message',check=check)
+        welcomeAdvanced = channel_msg.content.lower()
+        await msg.delete()
+        await channel_msg.delete()
+        if welcomeAdvanced == "yes":
+            welcomeAdvanced = True
+        else:
+            welcomeAdvanced = False
+
+        msg = await ctx.reply('Do you want the user to gain a role when they join? (Please make sure the bot has permissions to give the role!)')
+        channel_msg = await self.client.wait_for('message',check=check)
+        welcomeRoleChoice = channel_msg.content.lower()
+        await msg.delete()
+        await channel_msg.delete()
+        if welcomeRoleChoice == "yes":
+            welcomeRoleChoice = True
+            msg = await ctx.reply('Please mention the role you wish for them to gain')
+            channel_msg = await self.client.wait_for('message',check=check)
+            welcomeRole = channel_msg.role_mentions[0].id
+            await msg.delete()
+            await channel_msg.delete()
+        else:
+            welcomeRole = False
+            welcomeRoleChoice = False
+
         welcome[f"{idGuild} welcome"] = welcomeChoice
         welcome[f"{idGuild} welcomeChannel"] = welcomeChannelID
         welcome[f"{idGuild} welcomeMessageChoice"] = welcomeMessageChoice
         welcome[f'{idGuild} welcomeMessage'] = welcomeMessage
+        welcome[f'{idGuild} welcomeAdvanced'] = welcomeAdvanced
+        welcome[f'{idGuild} welcomeRoleChoice'] = welcomeRoleChoice
+        welcome[f'{idGuild} welcomeRole'] = welcomeRole
 
         msg = await ctx.reply("Done.")
-
+        await info_msg.delete()
         with open('json/data.json', 'w') as f:
             json.dump(welcome, f , indent=4)
 
@@ -349,8 +382,7 @@ class Other(commands.Cog):
         leave[f"{idGuild} leave"] = leaveChoice
         leave[f"{idGuild} leaveChannel"] = leaveChannelID
 
-        msg = await ctx.reply("Done.")
-        await msg.delete()
+        await ctx.reply("Done.")
 
         with open('json/data.json', 'w') as f:
             json.dump(leave, f , indent=4)

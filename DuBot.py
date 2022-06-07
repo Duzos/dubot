@@ -8,6 +8,7 @@ import os
 from datetime import datetime
 import discord
 from discord.ext import commands, tasks
+from itertools import cycle
 
 # Getting the prefix for the server
 
@@ -53,10 +54,22 @@ async def on_ready():
         await owner.send('Failed to update status\n{}:{}'.format(type(e).__name__, e))
     client.start_time = datetime.utcnow()
     print(f'{client.user.name} is ready')
+    change_status.start()
 
 def embed_set_author(ctx, embed: discord.Embed):
     return embed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)
 
+# Changing the status - Change these with your own statuses
+status_list = ['you have fun!','you.','Mention me for the prefix!','in Python','Minecraft']
+statuses = cycle(status_list)
+@tasks.loop(minutes=1)
+async def change_status():
+    current_status = next(statuses)
+    # edit this section if you dont want the first two statuses to be "Watching"
+    if current_status == status_list[0] or current_status == status_list[1]:
+        await client.change_presence(status=discord.Status.online, activity=discord.Activity(name=current_status,type=discord.ActivityType.watching))
+    else:
+        await client.change_presence(activity=discord.Game(current_status,status=discord.Status.online))
 
 # On Messages
 
@@ -67,10 +80,22 @@ async def on_message(message):
     if message.author.id == client.user.id:
         return   
 
+
     # open that json
     with open('json/data.json','r') as f:
         jsonData = json.load(f)
-    
+
+    # checking for mentions
+    if client.user.mentioned_in(message):
+        try:
+            currentPrefixes = jsonData[f"{guildID} prefix"]
+        except:
+            currentPrefixes = ['d.','D.']
+        prefix_organised = ""
+        for prefix in currentPrefixes:
+            prefix_organised = prefix_organised + f"{prefix}\n"
+        await message.reply(f'My prefixes here are:\n**{prefix_organised}**')    
+
     # n word stuff
     try:
         if jsonData[f'{message.guild.id} nword'] == True:
@@ -194,37 +219,43 @@ async def on_member_join(member : discord.Member):
     
 
     if welcomeChoiceGuild == True:
-        try:
+        #try:
             welcomeMessageChoice = jsonData[f"{idGuild} welcomeMessageChoice"]
-        except:
-            pass
+            welcomeAdvanced = jsonData[f'{idGuild} welcomeAdvanced']
+            welcomeRoleChoice = jsonData[f'{idGuild} welcomeRoleChoice']
 
-        welcomeChannel = jsonData[f"{idGuild} welcomeChannel"]
-        welcomeEmbed = discord.Embed(title='Welcome!', description=f'A Member Just Joined **{guild.name}**',color=discord.Colour.random())
-        welcomeEmbed.set_thumbnail(url=member.display_avatar.url)
-        welcomeEmbed.set_author(
-            name=client.user.display_name,
-            icon_url=client.user.display_avatar.url
-        )
 
-        date_format = "%a, %d %b %Y %I:%M %p"
-        welcomeEmbed.add_field(name='**Member**',value=member.mention,inline=False)
-        welcomeEmbed.add_field(name='**Member ID**',value=member.id,inline=False)
-        welcomeEmbed.add_field(name='**Joined Discord**',value=member.created_at.strftime(date_format),inline=False)
-        welcomeEmbed.add_field(name=f'**Joined {guild.name}**',value=member.joined_at.strftime(date_format),inline=False)
-        welcomeEmbed.add_field(name='Member Number',value=f'#{member.discriminator}',inline=False)
+            welcomeChannel = jsonData[f"{idGuild} welcomeChannel"]
+            welcomeEmbed = discord.Embed(title='Welcome!', description=f'A Member Just Joined **{guild.name}**',color=discord.Colour.random())
+            welcomeEmbed.set_thumbnail(url=member.display_avatar.url)
+            welcomeEmbed.set_author(
+                name=client.user.display_name,
+                icon_url=client.user.display_avatar.url
+            )
 
-        try:
+            welcomeEmbed.add_field(name='**Member**',value=member.mention,inline=False)
+            
+            if welcomeAdvanced == True: 
+                date_format = "%a, %d %b %Y %I:%M %p"
+                welcomeEmbed.add_field(name='**Member ID**',value=member.id,inline=False)
+                welcomeEmbed.add_field(name='**Joined Discord**',value=member.created_at.strftime(date_format),inline=False)
+                welcomeEmbed.add_field(name=f'**Joined {guild.name}**',value=member.joined_at.strftime(date_format),inline=False)
+                welcomeEmbed.add_field(name='Member Number',value=f'#{member.discriminator}',inline=False)
+
             await client.get_channel(welcomeChannel).send(embed=welcomeEmbed)
-        except:
-            pass
-        
-        try:
+            
             if welcomeMessageChoice == True:
                 welcomeMessage = jsonData[f"{idGuild} welcomeMessage"]
                 await member.send(welcomeMessage)
-        except:
-            pass
+
+            if welcomeRoleChoice == True:
+                welcomeRole = jsonData[f'{idGuild} welcomeRole']
+                welcomeRole = guild.get_role(welcomeRole)
+                await member.add_roles(welcomeRole)
+
+
+       # except:
+        #    pass
 
     try:
         if statsChoice == True:

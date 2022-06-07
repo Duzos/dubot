@@ -257,9 +257,15 @@ class Information(commands.Cog):
             jsonPrefix = json.load(f)
 
         guildID = str(ctx.guild.id)
-        currentPrefixes = jsonPrefix[f"{guildID} prefix"] 
+        try:
+            currentPrefixes = jsonPrefix[f"{guildID} prefix"]
+        except:
+            currentPrefixes = ['d.','D.']
+        prefix_organised = ""
+        for prefix in currentPrefixes:
+            prefix_organised = prefix_organised + f"{prefix}\n"
 
-        prefixEmbed = discord.Embed(title='Prefixes',description=currentPrefixes,color=discord.Colour.random())
+        prefixEmbed = discord.Embed(title='Prefixes',description=prefix_organised,color=discord.Colour.random())
         prefixEmbed.set_thumbnail(url=ctx.guild.icon)
         prefixEmbed.set_author(name=ctx.message.author.display_name,icon_url=ctx.message.author.display_avatar.url)                            
         await ctx.reply(embed=prefixEmbed)
