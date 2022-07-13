@@ -961,7 +961,7 @@ class Fun(commands.Cog):
             user = ctx.message.author
         randomfurry = randint(0,100)
 
-        if user.id == 673124115250544661:
+        if user.id == 673124115250544661 or user.id == 327807253052653569:
             randomfurry = 0
         elif user.id == 597102599694712844 or user.id == 509436097835827210 or user.id == 578844127878184961:
             randomfurry = 100 

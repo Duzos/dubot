@@ -73,7 +73,6 @@ async def change_status():
 
 # On Messages
 
-
 @client.event
 async def on_message(message):
     # if the message is the bot, dont work.
@@ -86,9 +85,9 @@ async def on_message(message):
         jsonData = json.load(f)
 
     # checking for mentions
-    if client.user.mentioned_in(message):
+    if str(client.user.id) in message.content:
         try:
-            currentPrefixes = jsonData[f"{guildID} prefix"]
+            currentPrefixes = jsonData[f"{message.guild} prefix"]
         except:
             currentPrefixes = ['d.','D.']
         prefix_organised = ""
